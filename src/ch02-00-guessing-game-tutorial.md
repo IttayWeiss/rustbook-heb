@@ -1,101 +1,75 @@
 # כתיבת משחק ניחוש מספר
 
-הבה נקפוץ ישר לראסט באמצעות פרוייקט מעשי, מתחילתו עד סופו. פרק זה יציג לכם כמה מושגים נפוצים של ראסט תוך הדגמת שימושם בתוכנית אמיתית. תלמדו על הפקודות ***
+הבה נקפוץ ישר לראסט באמצעות פרוייקט מעשי, מתחילתו עד סופו. פרק זה יציג לכם כמה מושגים נפוצים של ראסט תוך הדגמת שימושם בתוכנית אמיתית. תלמדו על הפקודות 'let' ו-'match', על מתודות (methods), פונקציות מקושרות, מכולות חיצוניות (external crates), ועוד! בפרקים הבאים נתעמק ברעיונות אלה ביתר פירוט. בפרק זה תתרגלו את את הבסיס.  
 
-‏Let’s jump into Rust by working through a hands-on project together! This
-‏chapter introduces you to a few common Rust concepts by showing you how to use
-‏them in a real program. You’ll learn about `let`, `match`, methods, associated
-‏functions, external crates, and more! In the following chapters, we’ll explore
-‏these ideas in more detail. In this chapter, you’ll just practice the
-‏fundamentals.
+אנחנו עומדים לבנות תכנית קלאסית למתחילים: משחק ניחוש מספר. הינה תאורו: התכנית תייצר מספר אקראי שלם בין 1 ל-100. אז היא תורה לשחקן להזין ניחוש. לאחר שניחוש מוזן התכנית תציין אם הניחוש נמוך או גבוהה מידי. במידה והניחוש מדוייק, התוכנית תדפיס הודעת ניצחון, ותסיים את ההרצה. 
 
-‏We’ll implement a classic beginner programming problem: a guessing game. Here’s
-‏how it works: the program will generate a random integer between 1 and 100. It
-‏will then prompt the player to enter a guess. After a guess is entered, the
-‏program will indicate whether the guess is too low or too high. If the guess is
-‏correct, the game will print a congratulatory message and exit.
+## ארגון פרוייקט חדש
 
-‏## Setting Up a New Project
+על מנת לארגן פרוייקט חדש, לכו לתיקיית ה-*פרוייקטים* שייצרתם בפרק 1, וצרו פרוייקט חדש באמצעות קארגו (Cargo), כך:
 
-‏To set up a new project, go to the *projects* directory that you created in
-‏Chapter 1 and make a new project using Cargo, like so:
-
-‏```console
-‏$ cargo new guessing_game
-‏$ cd guessing_game
+```console
+$ cargo new guessing_game
+$ cd guessing_game
 ```
+הפקודה הראשנוה, `cargo new`, לוקחת את שם הפרוייקט (`guessing_game`) כארגומנט הראשון. הפקודה השניה נכנסת לתיקייה החדשה של הפרוייקט. 
 
-‏The first command, `cargo new`, takes the name of the project (`guessing_game`)
-‏as the first argument. The second command changes to the new project’s
-‏directory.
+התבוננו כעט בקובץ *Cargo.toml*:
 
-‏Look at the generated *Cargo.toml* file:
 
-‏<!-- manual-regeneration
-‏cd listings/ch02-guessing-game-tutorial
-‏rm -rf no-listing-01-cargo-new
-‏cargo new no-listing-01-cargo-new --name guessing_game
-‏cd no-listing-01-cargo-new
-‏cargo run > output.txt 2>&1
-‏cd ../../..
+<!-- manual-regeneration
+cd listings/ch02-guessing-game-tutorial
+rm -rf no-listing-01-cargo-new
+cargo new no-listing-01-cargo-new --name guessing_game
+cd no-listing-01-cargo-new
+cargo run > output.txt 2>&1
+cd ../../..
 -->
 
-‏<span class="filename">Filename: Cargo.toml</span>
+<span class="filename">Filename: Cargo.toml</span>
 
-‏```toml
-‏{{#include ../listings/ch02-guessing-game-tutorial/no-listing-01-cargo-new/Cargo.toml}}
+```toml
+{{#include ../listings/ch02-guessing-game-tutorial/no-listing-01-cargo-new/Cargo.toml}}
 ```
 
-‏As you saw in Chapter 1, `cargo new` generates a “Hello, world!” program for
-‏you. Check out the *src/main.rs* file:
+כפי שראינו בפרק 1, הפקודה `cargo new` מייצרת תכנית "!Hello, world" עבורכם. בדקו את הקובץ *src/main.rs*: 
 
-‏<span class="filename">Filename: src/main.rs</span>
+<span class="filename">Filename: src/main.rs</span>
 
-‏```rust
-‏{{#rustdoc_include ../listings/ch02-guessing-game-tutorial/no-listing-01-cargo-new/src/main.rs}}
+```rust
+{{#rustdoc_include ../listings/ch02-guessing-game-tutorial/no-listing-01-cargo-new/src/main.rs}}
 ```
 
-‏Now let’s compile this “Hello, world!” program and run it in the same step
-‏using the `cargo run` command:
+כעת נוכל לקמפייל את תכנית ה-"!Hello, world" ולהריץ אותה בצעד אחד תוך שימוש בפקודה `cargo run`:
 
-‏```console
-‏{{#include ../listings/ch02-guessing-game-tutorial/no-listing-01-cargo-new/output.txt}}
+```console
+{{#include ../listings/ch02-guessing-game-tutorial/no-listing-01-cargo-new/output.txt}}
+```
+פקודת ה-`run` שימושית כאשר רוצים לבנות איטרטיבית פרוייקט במהירות, כפי שנעשה בפרוייקט הנוכחי, כדי לבדוק בזריזות כל איטרציה לפני שעוברים לאיטרציה הבאה. 
+
+פתחו שוב את הקובץ *src/main.rs*. אתם הולכים לכתוב את כל הקוד בקובץ הזה. 
+
+## עיבוד ניחוש
+
+החלק הראשון בתכנית של משחק הניחוש יבקש קלט מהמשתמש, יעבד את הקלט, ויבדוק אם הקלט הוכנס בצורה המצופה. כדי להתחיל, אנו נאפשר לשחקן להזין ניחוש. הקלידו את הקוד ברשימה 2-1 בקובץ *src/main.rs*.
+
+
+<span class="filename">Filename: src/main.rs</span>
+
+```rust,ignore
+{{#rustdoc_include ../listings/ch02-guessing-game-tutorial/listing-02-01/src/main.rs:all}}
 ```
 
-‏The `run` command comes in handy when you need to rapidly iterate on a project,
-‏as we’ll do in this game, quickly testing each iteration before moving on to
-‏the next one.
+<span class="caption">Listing 2-1: Code that gets a guess from the user and
+prints it</span>
 
-‏Reopen the *src/main.rs* file. You’ll be writing all the code in this file.
+קוד זה כולל הרבה אלמנטים, עליהם נעבור שורה אחר שורה. כדי לקבל קלט מהמשתמש ואז להדפיס את התוצאה כפלט, אנו צריכים להכניס את ספריית ה-`io` לקלט\פלט למרחב (scope). ספריית ה-`io` מגיעה מהספריה הסטנדרטית, הידועה כ-`std`:
 
-‏## Processing a Guess
-
-‏The first part of the guessing game program will ask for user input, process
-‏that input, and check that the input is in the expected form. To start, we’ll
-‏allow the player to input a guess. Enter the code in Listing 2-1 into
-‏*src/main.rs*.
-
-‏<span class="filename">Filename: src/main.rs</span>
-
-‏```rust,ignore
-‏{{#rustdoc_include ../listings/ch02-guessing-game-tutorial/listing-02-01/src/main.rs:all}}
+```rust,ignore
+{{#rustdoc_include ../listings/ch02-guessing-game-tutorial/listing-02-01/src/main.rs:io}}
 ```
 
-‏<span class="caption">Listing 2-1: Code that gets a guess from the user and
-‏prints it</span>
-
-‏This code contains a lot of information, so let’s go over it line by line. To
-‏obtain user input and then print the result as output, we need to bring the
-‏`io` input/output library into scope. The `io` library comes from the standard
-‏library, known as `std`:
-
-‏```rust,ignore
-‏{{#rustdoc_include ../listings/ch02-guessing-game-tutorial/listing-02-01/src/main.rs:io}}
-```
-
-‏By default, Rust has a set of items defined in the standard library that it
-‏brings into the scope of every program. This set is called the *prelude*, and
-‏you can see everything in it [in the standard library documentation][prelude].
+לראסט יש אוסף המוגדר בספריה הסטנדרטית אשר מוכנס, כברירת מחדל, למרחב של כל תוכנית. אוסף זה נקרא ה-*פריליוד* (prelude), וניתן לראות את כל תוכנו [בדוקומנטציה של הספריה הסדטנדרטית][prelude]
 
 ‏If a type you want to use isn’t in the prelude, you have to bring that type
 ‏into scope explicitly with a `use` statement. Using the `std::io` library
