@@ -1,0 +1,62 @@
+/* in general this book is rtl */
+body { direction: rtl; }
+/* code is still english */
+code { direction: ltr; }
+
+:not(pre) > .hljs {
+    /* make rtl work in inline code (written in `backticks`) */
+    display: inline-block;
+}
+
+.sidebar-hidden .sidebar {
+    transform: translateX(var(--sidebar-width));
+}
+
+.js:not(.sidebar-resizing) .page-wrapper {
+    transition: margin-right 0.3s ease, transform 0.3s ease;
+}
+
+.sidebar {
+    left: auto;
+    right: 0;
+    top: var(--menu-bar-height);
+}
+
+.sidebar .sidebar-resize-handle {
+    left: 0;
+    right: auto;
+}
+
+.sidebar-visible .page-wrapper {
+    transform: translateX(calc(0 - var(--sidebar-width)));
+}
+
+@media only screen and (min-width: 620px) {
+    .sidebar {
+        top: 0;
+    }
+
+    .sidebar-visible .page-wrapper {
+        margin-right: var(--sidebar-width);
+        margin-left: auto;
+    }
+}
+
+.previous {
+    float: right;
+    right: var(--page-padding);
+}
+
+.next {
+    float: left;
+    left: 0;
+    right: auto;
+}
+
+.fa-angle-left:before {
+    content: "\f105";
+}
+
+.fa-angle-right:before {
+    content: "\f104";
+}

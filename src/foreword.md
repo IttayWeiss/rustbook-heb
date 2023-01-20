@@ -1,41 +1,15 @@
-# Foreword
+# הקדמה
 
-It wasn’t always so clear, but the Rust programming language is fundamentally
-about *empowerment*: no matter what kind of code you are writing now, Rust
-empowers you to reach farther, to program with confidence in a wider variety of
-domains than you did before.
+זה לא היה תמיד ברור, אבל מהות שפת התכנות ראסט, ביסודה, היא *העצמה*: לא משנה איזה סוג קוד אתם כותבים כעט, ראסט מעצימה אתכם להגיע רחוק יותר, לתכנת בביטחון במגוון רחב יותר של תחומים משיכולתם קודם.  
 
-Take, for example, “systems-level” work that deals with low-level details of
-memory management, data representation, and concurrency. Traditionally, this
-realm of programming is seen as arcane, accessible only to a select few who
-have devoted the necessary years learning to avoid its infamous pitfalls. And
-even those who practice it do so with caution, lest their code be open to
-exploits, crashes, or corruption.
+קחו, למשל, עבודת "רמת-מערכות" הכוללת פרטי סף (low-level details) של ניהול זיכרון, הצגת מידע, ומקביליות. באופן מסורתי, תחום תכנות זה נחשב מסתורי; נגיש רק למעטים אשר הקדישו את השנים הנחוצות ללימוד אומנות ההימנעות מהמלכודות הידועות לשמצה של תחום זה. ואפילו אלו העוסקים בתחום עושים זאת בזהירות הנחוצה פן הקוד שלהם יהיה פתוח לניצול, התרסקויות, וסכנות פגמים. 
 
-Rust breaks down these barriers by eliminating the old pitfalls and providing a
-friendly, polished set of tools to help you along the way. Programmers who need
-to “dip down” into lower-level control can do so with Rust, without taking on
-the customary risk of crashes or security holes, and without having to learn
-the fine points of a fickle toolchain. Better yet, the language is designed to
-guide you naturally towards reliable code that is efficient in terms of speed
-and memory usage.
+ראסט שובר מכשולים אלו ע"י העלמת המלכודות הישנות וסיפוק מערכת כלים ידידותית ומהוקצעת כדי לעזור לאורך הדרך. מתכנתים שצריכים להתבונן למעמקי פרטי הסף יכולים לעשות זאת עם ראסט מבלי לשאת בעול הסכנות הרגילות של קריסות או חורי אבטחה, ומבלי להצטרך ללמוד את הנקודות העדינות של שרשרת כלים הפכפכה. יתרה מזו, השפה מעוצבת להנחות אתכם בטבעיות לקראת קוד אמין שהוא גם יעיל מבחינת זמן ריצה ושימוש בזיכרון. 
 
-Programmers who are already working with low-level code can use Rust to raise
-their ambitions. For example, introducing parallelism in Rust is a relatively
-low-risk operation: the compiler will catch the classical mistakes for you. And
-you can tackle more aggressive optimizations in your code with the confidence
-that you won’t accidentally introduce crashes or vulnerabilities.
+מתכנתים שכבר עוסקים בקוד ברמת סף יכולים להשתמש בראסט כדי להציב את רף הציפיות שלהם גבוהה יותר. למשל, הכנסת מקביליות בראסט היא פעולה די נטולת סיכון: הקומפיילר ילכוד את הטעויות הנפוצות בשבילכם. כך תוכלו אתם להתמקד באופטימיזציות יותר אגרסיביות בקוד שלכם בעודכם בטוחים שלא תצרו, בטעות, התרסקויות או פגיעויות. 
 
-But Rust isn’t limited to low-level systems programming. It’s expressive and
-ergonomic enough to make CLI apps, web servers, and many other kinds of code
-quite pleasant to write — you’ll find simple examples of both later in the
-book. Working with Rust allows you to build skills that transfer from one
-domain to another; you can learn Rust by writing a web app, then apply those
-same skills to target your Raspberry Pi.
+אבל ראסט אינה מוגבלת לתכנות ברמת סף בלבד. זו שפה בעלת יכולת ביטוי גבוהה וגמישות נוחה דייה על מנת לכתוב אפליקציות CLI, שרתי רשת, וסוגים רבים אחרים של קוד בצורה נעימה לכתיבה -- הדגמות פשוטות לאמירה זו תמצאו בהמשך הספר. שימוש בראסט מאפשר לבנות יכולות שעוברות בטבעיות בין תחומים; ניתן ללמוד ראסט תוך בניית אפליקציית רשת, ואז לכוון את היכולות שלכם אל Raspberry Pi.
 
-This book fully embraces the potential of Rust to empower its users. It’s a
-friendly and approachable text intended to help you level up not just your
-knowledge of Rust, but also your reach and confidence as a programmer in
-general. So dive in, get ready to learn—and welcome to the Rust community!
+ספר זה מאמץ במלואו את הפוטנציאל של ראסט להעצים את משתמשיו. זהו טקסט ידידותי ונגיש המיועד לעזור לקוראיו לשדרג לא רק ידע אלא גם את טווח הנגישות שלכם והביטחון שלכם כמתכנתים באופן כללי. אם כן, קפצו פנימה, התכוננו ללמוד, וברוכים הבאים לקהילת ראסט!
 
-— Nicholas Matsakis and Aaron Turon
+- ניקולאס מצאקיס ואהרון טורון

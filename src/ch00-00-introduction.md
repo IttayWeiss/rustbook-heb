@@ -1,11 +1,15 @@
-# Introduction
+# מבוא
 
-> Note: This edition of the book is the same as [The Rust Programming
-> Language][nsprust] available in print and ebook format from [No Starch
-> Press][nsp].
+> הערה: הנכם קוראים תרגום של הספר [The Rust Programming Language][nsprust]. 
+> מהדורת המקור זמינה בגרסה מודפסת ודיגיטלית בהוצאת [No Starch Press][nsp].
 
 [nsprust]: https://nostarch.com/rust
 [nsp]: https://nostarch.com/
+
+ברוכים הבאים לספר *שפת התכנות ראסט* שהינו ספר מבוא על ראסט. שפת התכנות ראסט מסייעת בכתיבת תוכנה מהירה ויותר אמינה. 
+בתחום של עיצוב שפות, יש התנגשות בין עקרונות של נוחות ברמה העילית לבין שליטה ברמה הנמוכה. ראסט קוראת תיגר על קונפליקט זה. באמצעות איזון של יכולת טכנית עצמתית וחווית פיתוח מעולה, ראסט מעניקה שליטה על פרטים ברמה הנמוכה (כגון שימוש בזיכרון) ללא הסרבול שבאופן מסורתי משוייך עם שליטה שכזו 
+
+
 
 Welcome to *The Rust Programming Language*, an introductory book about Rust.
 The Rust programming language helps you write faster, more reliable software.
@@ -15,10 +19,22 @@ technical capacity and a great developer experience, Rust gives you the option
 to control low-level details (such as memory usage) without all the hassle
 traditionally associated with such control.
 
+## למי ראסט מיועדת
+
+ראסט היא שפה אידאלית עבור קבוצות משתמשים שונות, וממגוון סיבות. הבה נתמקד בכמה מהקבוצות היותר חשובות.
+
 ## Who Rust Is For
 
 Rust is ideal for many people for a variety of reasons. Let’s look at a few of
 the most important groups.
+
+### קבוצות מפתחים
+
+ראסט מוכיחה את עצמה ככלי פרודוקטיבי לשיתוף פעולה בין קבוצות גדולות של מפתחים עם רמות שונות של ידע בפיתוח מערכות. קוד ברמת סף (low level code) נוטה לסבול מבאגים עדינים אשר ברוב השפות מתגלים רק באמצעות בדיקות מקיפות ובקרת קוד קפדנית המבוצעת ע"י מפתחים מנוסים. עם ראסט, הקומפיילר מתפקד כחומת מגן ע"י סירוב לקמפל קוד המכיל באגים חמקמקים שכאלו, כולל באגים הקשורים למקביליות. ע"י עבודה יחד עם הקומפיילר, יכול הצוות להשקיע את זמנו בהתמקדות בלוגיקה התפעולית של התוכנה במקום במרדף אחר באגים. 
+
+ראסט גם מביאה איתה כלי פיתוח עכשוויים לעולם תכנות המערכות:
+
+* קארגו (Cargo), 
 
 ### Teams of Developers
 
