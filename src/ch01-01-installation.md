@@ -1,145 +1,106 @@
-## Installation
+## התקנה
 
-The first step is to install Rust. We’ll download Rust through `rustup`, a
-command line tool for managing Rust versions and associated tools. You’ll need
-an internet connection for the download.
+השלב הראשון הוא להתקין את ראסט. את ראסט נוריד באמצעות ` ראסטאפ `, כלי שורת הפקודה לניהול גרסאות של ראסט ושל כלים נלווים. תצטרכו קישור אינטרנט כדי לבצע את ההורדה.
 
-> Note: If you prefer not to use `rustup` for some reason, please see the
-> [Other Rust Installation Methods page][otherinstall] for more options.
+> הערה: אם אתם מעדיפים לא להשתמש ב-`ראסטאפ ` מאיזו סיבה, אנא פנו לעמוד [Other Rust Installation Methods page][otherinstall]  לאפשרויות נוספות.
 
-The following steps install the latest stable version of the Rust compiler.
-Rust’s stability guarantees ensure that all the examples in the book that
-compile will continue to compile with newer Rust versions. The output might
-differ slightly between versions because Rust often improves error messages and
-warnings. In other words, any newer, stable version of Rust you install using
-these steps should work as expected with the content of this book.
+הצעדים הבאים מתקינים את הגרסה היציבה האחרונה של הקומפיילר של ראסט. בטחונות היציבות של ראסט מוודאים שכל הדוגמאות בספר אשר עוברות קומפילציה, ימשיכו לעבור קומפילציה גם על גרסאות חדשות יותר של ראסט. הקלט עלול להשתנות במעט בין גרסאות כיוון שלעיתים קרובות ראסט משפרת הודעות שגיאה ואזהרות. במילים אחרות, כל גרסה יציבה חדשה של ראסט שתתקינו בצעדים אלה צריכה לעבוד כמצופה עם תוכן הספר.
 
-> ### Command Line Notation
->
-> In this chapter and throughout the book, we’ll show some commands used in the
-> terminal. Lines that you should enter in a terminal all start with `$`. You
-> don’t need to type the `$` character; it’s the command line prompt shown to
-> indicate the start of each command. Lines that don’t start with `$` typically
-> show the output of the previous command. Additionally, PowerShell-specific
-> examples will use `>` rather than `$`.
+> ### נוטציה של שורת הפקודה
+> 
+> בפרק זה, ולכל אורך הספר, נשתמש בפקודות להרצה בטרמינל (terminal). שורות שעליכם להקליד בטרמינל מתחילות כולן עם הסימן ` <0>$ `. אינכם צריכים להקליד את הסימן `<0>$` עצמו; זהו סימון של הפרומפט של שורת הפקודה המוצג כדי לציין את תחילתה של כל פקודה. שורות שאינן מתחילות בסימול `<0>$` מראות, בדרך כלל, את הפלט שהתקבל מהפקודה הקודמת. בנוסף, דוגמאות ספציפיות ל-PowerShell ישתמשו בסימון `>` במקום בסימון `<0>>`.
 
-### Installing `rustup` on Linux or macOS
+### התקנת `ראסטאפ ` על Linux או macOS
 
-If you’re using Linux or macOS, open a terminal and enter the following command:
+אם אתם משתמשים ב-Linux או macOS, פתחו טרמינל והקלידו את הפקודה הבאה:
 
 ```console
 $ curl --proto '=https' --tlsv1.2 https://sh.rustup.rs -sSf | sh
 ```
 
-The command downloads a script and starts the installation of the `rustup`
-tool, which installs the latest stable version of Rust. You might be prompted
-for your password. If the install is successful, the following line will appear:
+הפקודה מורידה סקריפט (script) ומתחילה את ההתקנה של הכלי `ראסטאפ `, אשר מתקין את הגרסה האחרונה של ראסט. אתם עשויים להידרש להזין את הססמא שלכם. אם ההתקנה עברה בהצלחה, תקבלו את ההודעה הבאה:
 
 ```text
 Rust is installed now. Great!
 ```
 
-You will also need a *linker*, which is a program that Rust uses to join its
-compiled outputs into one file. It is likely you already have one. If you get
-linker errors, you should install a C compiler, which will typically include a
-linker. A C compiler is also useful because some common Rust packages depend on
-C code and will need a C compiler.
+אתם גם תצטרכו *לינקר *, תוכנה שראסט משתמש בה על מנת לאחד את הפלטים המקומפיילים לקובץ יחיד. סביר שכבר יש לכם את הדרוש. אם אתם מקבלים שגיאות לינקר, תצטרכו להתקין קומפיילר C, שבדרך כלל כולל לינקר. נוכחות של קומפיילר C נוחה גם מכיוון שחלק מחבילות ראסט הנפוצות תלויות בקוד C ויצטרכו קומפיילר C.
 
-On macOS, you can get a C compiler by running:
+על macOS תוכלו להתקין קומפיילר C ע"י הרצת הפקודה:
 
 ```console
 $ xcode-select --install
 ```
 
-Linux users should generally install GCC or Clang, according to their
-distribution’s documentation. For example, if you use Ubuntu, you can install
-the `build-essential` package.
+למשתמשי Linux מומלץ להתקין GCC או Clang, בהתאם לתיעוד ההפצה שלהם. למשל, אם אתם משתמשים ב-Ubuntu, תוכלו להתקין את חבילת ה-`build-essential`.
 
-### Installing `rustup` on Windows
+### התקנת `ראסטאפ ` על Windows
 
-On Windows, go to [https://www.rust-lang.org/tools/install][install] and follow
-the instructions for installing Rust. At some point in the installation, you’ll
-receive a message explaining that you’ll also need the MSVC build tools for
-Visual Studio 2013 or later.
+ב-Windows, לכו ל-[ https://www.rust-lang.org/tools/install ][install] ועכבו אחר ההוראות להתקנת ראסט. בשלב מסויים בהתקנה, תקבלו הודעת המסבירה שתצריך גם את כלי הבניה של MSVC עבור Visual Sutdio 2013, או מאוחר יותר.
 
-To acquire the build tools, you’ll need to install [Visual Studio
-2022][visualstudio]. When asked which workloads to install, include:
+כדי להשיג את כלי הבניה תצטרכו להתקין את [Visual Studio 2022 ][visualstudio]. כשתתבקשו לבחור איזה *** להתקין, תוודאו להכיל את:
 
-* “Desktop Development with C++”
-* The Windows 10 or 11 SDK
-* The English language pack component, along with any other language pack of
-  your choosing
+* Desktop Development עם C++
+* SDK של Windows 10 או Windows 11
+* חבילת השפה האנגלית, ביחד עם כל חבילת שפה אחרת לבחירתכם
 
-The rest of this book uses commands that work in both *cmd.exe* and PowerShell.
-If there are specific differences, we’ll explain which to use.
+שאר הספר משתמש בפקודות שעובדות גם ב-*cmd.exe* וגם ב-PowerShell. אם יש הבדלים ספציפיים, נבהיר במה להשתמש.
 
-### Troubleshooting
+### פתרון תקלות
 
-To check whether you have Rust installed correctly, open a shell and enter this
-line:
+כדי לבדוק אם התקנתם את ראסט בהצלחה, פתחו מעטפת (shell) והקלידו את השורה:
 
 ```console
 $ rustc --version
 ```
 
-You should see the version number, commit hash, and commit date for the latest
-stable version that has been released, in the following format:
+אתם אמורים לראות את מספר הגרסה, גיבוב הביצוע (commit hash), ותאריך הביצוע עבור הגרסה האחרונה שהופצה, בפורמט הבא:
 
 ```text
 rustc x.y.z (abcabcabc yyyy-mm-dd)
 ```
 
-If you see this information, you have installed Rust successfully! If you don’t
-see this information, check that Rust is in your `%PATH%` system variable as
-follows.
+אם אתם רואים מידע זה, סימן שהתקנתם בהצלחה את ראסט! אם אתם לא רואים את המידע, בדקו שראסט נמצא במשתנה המערכת `%PATH%`, כדלהלן.
 
-In Windows CMD, use:
+ב-Windows CMD, בצעו:
 
 ```console
 > echo %PATH%
 ```
 
-In PowerShell, use:
+ב-PowerShell, בצעו:
 
 ```powershell
 > echo $env:Path
 ```
 
-In Linux and macOS, use:
+ב-Linux וב-macOS, בצעו:
 
 ```console
 $ echo $PATH
 ```
 
-If that’s all correct and Rust still isn’t working, there are a number of
-places you can get help. Find out how to get in touch with other Rustaceans (a
-silly nickname we call ourselves) on [the community page][community].
+במידה וכל זה תקין אך ראסט עדיין אינו עובד, יש מספר מקומות בהם תוכלו לקבל עזרה. מצאו איך ליצור קשר עם רסטיונארים (כינוי חיבה משעשע שנתנו לעצמנו) [בדף הקהילה][community].
 
-### Updating and Uninstalling
+### עדכון והסרה
 
-Once Rust is installed via `rustup`, updating to a newly released version is
-easy. From your shell, run the following update script:
+במידה שראסט הותקן באמצעות `ראסטאפ`, עדכון לגרסת הפצה חדשה הוא דבר פשוט. מתוך המעטפת הריצו את סקריפט העדכון הבא:
 
 ```console
 $ rustup update
 ```
 
-To uninstall Rust and `rustup`, run the following uninstall script from your
-shell:
+כדי להסיר את התקנת ראסט וראסטאפ, הריצו את סקריפט ההסרה הבא מתוך המעטפת:
 
 ```console
-$ rustup self uninstall
+rustup self uninstall $
 ```
 
-### Local Documentation
+### תיעוד לוקאלי
 
-The installation of Rust also includes a local copy of the documentation so
-that you can read it offline. Run `rustup doc` to open the local documentation
-in your browser.
+התקנת ראסט מכילה גם עותק של התיעוד כדי שתוכלו לקרוא בוא במצב אופליין. הריצו `rustup doc` כל מנת לפתוח את התיעוד הלוקאלי בגלשן שלכם.
 
-Any time a type or function is provided by the standard library and you’re not
-sure what it does or how to use it, use the application programming interface
-(API) documentation to find out!
+כל פעם שטיפוס או פונקציה מגיעים מהספריה הסטנדארטית ואינכם בטוחים מה הם עושים או כיצד להשתמש בהם, השתמשו בתיעוד של ממשק תכנות היישומים (API) כדי לגלות!
 
 [otherinstall]: https://forge.rust-lang.org/infra/other-installation-methods.html
 [install]: https://www.rust-lang.org/tools/install

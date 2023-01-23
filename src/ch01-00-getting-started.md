@@ -1,8 +1,7 @@
-# Getting Started
+# מתחילים
 
-Let’s start your Rust journey! There’s a lot to learn, but every journey starts
-somewhere. In this chapter, we’ll discuss:
+הבה נתחיל את המסע לכיבוש ראסט! יש הרבה ללמוד, אך כל מסע מתחיל בנקודה כלשהיא. בפרק זה נדון בנושאים:
 
-* Installing Rust on Linux, macOS, and Windows
-* Writing a program that prints `Hello, world!`
-* Using `cargo`, Rust’s package manager and build system
+* התקנת ראסט על Linux, macOS, ו-Windows
+* כתיבת תכנית המדפיסה `Hello, world! `
+* שימוש ב-`קארגו ` (Cargo), מנהל החבילות ומערכת הבניה של ראסט
