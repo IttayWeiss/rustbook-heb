@@ -1,193 +1,90 @@
-# Introduction
+# הקדמה
 
-> Note: This edition of the book is the same as [The Rust Programming
-> Language][nsprust] available in print and ebook format from [No Starch
-> Press][nsp].
+> הערה: זהו תרגום של ספר המקור בגרסה הזהה לספר [The Rust Programming Language][nsprust] הזמינה בדפוס ובפורמט ebook בהוצאת [No Starch Press][nsp].
 
-[nsprust]: https://nostarch.com/rust
-[nsp]: https://nostarch.com/
+ברוכים הבאים לספר *שפת התכנות ראסט*, שהינו ספר מבוא לראסט. שפת התכנות ראסט מסייעת בכתיבת תוכנה מהירה ואמינה יותר. עקרונות תכנות ברמה עילית ושליטה ברמת סף (low-level control) בדרך כלל מובילים להתנגשויות בלתי ניתנון לגישור בתחום של עיצוב שפות תכנות. ראסט קוראת תיגר על קונפליקט זה. באמצעות איזון של יכולת טכנית עצמתית וחווית פיתוח מעולה מספקת ראסט אפשרות של שליטה בפרטי סף (כמו שימוש בזיכרון) ללא כל הטרחה המשוייכת באופן מסורתי עם שליטה שכזו.
 
-Welcome to *The Rust Programming Language*, an introductory book about Rust.
-The Rust programming language helps you write faster, more reliable software.
-High-level ergonomics and low-level control are often at odds in programming
-language design; Rust challenges that conflict. Through balancing powerful
-technical capacity and a great developer experience, Rust gives you the option
-to control low-level details (such as memory usage) without all the hassle
-traditionally associated with such control.
+## קהל היעד של ראסט
 
-## Who Rust Is For
+ראסט היא שפה אידאלית עבור קבוצות משתשמשים שונות, ומסיבות שונות. הבה נתמקד בכמה מהקבוצות היותר חשובות.
 
-Rust is ideal for many people for a variety of reasons. Let’s look at a few of
-the most important groups.
+### קבוצות מפתחים
 
-### Teams of Developers
+ראסט מוכיחה את עצמה ככלי פרודוקטיבי לשיתוף פעולה בין קבוצות גדולות של מפתחים המציגות רמות שונות של ידע בפיתוח מערכות. קוד ברמת סף הינו רגיש ביותר לבאגים עדינים שברוב שפות התכנות מתגלים רק באמצעות בדיקות מקיפות וסקירת קוד קפדנית ע"י מפתחים מנוסים. בראסט, הקומפיילר מתפקד כחומת מגן ע"י סירוב לקמפייל קוד המכיל באגים חמקמקים שכאלה, כולל באגים הקשורים למקביליות. דרך עבודה יחד עם הקומפיילר, יכול הצוות לבלות את זמנו בהתמקדות בלוגיקה התפעולית של התוכנית במקום בלרדוף אחר באגים.
 
-Rust is proving to be a productive tool for collaborating among large teams of
-developers with varying levels of systems programming knowledge. Low-level code
-is prone to various subtle bugs, which in most other languages can be caught
-only through extensive testing and careful code review by experienced
-developers. In Rust, the compiler plays a gatekeeper role by refusing to
-compile code with these elusive bugs, including concurrency bugs. By working
-alongside the compiler, the team can spend their time focusing on the program’s
-logic rather than chasing down bugs.
+ראסט גם מביא איתו כלי פיתוח עכשוויים לעולם פיתוח המערכות:
 
-Rust also brings contemporary developer tools to the systems programming world:
+* קארגו (Cargo), מנהל התלותות (dependency manager) וכלי הבניה (build tool) המופץ כחלק מראסט, הופך את פעולות ההוספה, קימפול, וניהול תלותות לתהליך פשוט וקונסיסטנטי על פני ראסט כמערכת אקולוגית שלמה.
+* כלי הפירמוט Rustfmt מוודא שיש אחידות בסגנון הכתיבה של כל המפתחים.
+* שרת הראסט (The Rust Server) מפעיל סביבת פיתוח אינטגרטיבית (IDE) ליישום השלמת קוד (code completion) והודאות שגיאה תלויות שורה (inline error messages).
 
-* Cargo, the included dependency manager and build tool, makes adding,
-  compiling, and managing dependencies painless and consistent across the Rust
-  ecosystem.
-* The Rustfmt formatting tool ensures a consistent coding style across
-  developers.
-* The Rust Language Server powers Integrated Development Environment (IDE)
-  integration for code completion and inline error messages.
+ע"י שימוש בכלים אלו, ובכלים אחרים ממערכת ראסט בכללותה, יכולים מפתחים להיות פרודוקטיביים בעודם כותבים קוד ברמת מערכות.
 
-By using these and other tools in the Rust ecosystem, developers can be
-productive while writing systems-level code.
+### סטודנטים
 
-### Students
+ראסט מתאימה לסטודנטים המעוניינים ללמוד אודות רעיונות הקשורים למערכות. תוך שימוש בראסט, הרבה משתמשים למדו על נושאים כמו פיתוח מערכות הפעלה. הקהילה סביב ראסט מאוד מסבירה פנים ושמחה לענות על שאלות של תלמידים. דרך יוזמות כמו הספר הזה, צוותי ראסט מעוניינים להפוך נושאים הקשורים למערכות לנגישים יותר עבור מספר גדול יותר של אנשים, ובמיוחד עבור אלו עבורם תכנות היא יכולת חדשה.
 
-Rust is for students and those who are interested in learning about systems
-concepts. Using Rust, many people have learned about topics like operating
-systems development. The community is very welcoming and happy to answer
-student questions. Through efforts such as this book, the Rust teams want to
-make systems concepts more accessible to more people, especially those new to
-programming.
+### חברות
 
-### Companies
+מאות חברות, גדולות כקטנות, משתמשות בראסט בפיתוח במגוון מטלות, כולל כלי פקודת שורה (CLI), שרותי רשת, כלי DevOps, מכשירים משובצים (embedded devices), ניתוח והמרה של אודיאו ווידאו, מטבעות מבוזרים, ביו-אינפורמטיקה, מנועי חיפוש, שימושי IoT (Internet of Things), לימוד מכונה, ואפילו חלקים נכבדים של הגלשן Firefox.
 
-Hundreds of companies, large and small, use Rust in production for a variety of
-tasks, including command line tools, web services, DevOps tooling, embedded
-devices, audio and video analysis and transcoding, cryptocurrencies,
-bioinformatics, search engines, Internet of Things applications, machine
-learning, and even major parts of the Firefox web browser.
+### מפתחי קוד פתוח
 
-### Open Source Developers
+ראסט מיועדת למי שמעוניינים לפתח את שפת התכנות ראסט, הקהילה סביבה, כלי מפתחים, וספריות. נשמח מאוד אם גם אתם תתרמו לפרוייקט שפת ראסט.
 
-Rust is for people who want to build the Rust programming language, community,
-developer tools, and libraries. We’d love to have you contribute to the Rust
-language.
+### משתמשים המעריכים מהירות ויציבות
 
-### People Who Value Speed and Stability
+ראסט מיועדת למי שמשתוקקים למהירות ויציבות בשפת התכנות שלהם. המהירות עליה אנו מדברים מתייחסת גם למהירות הריצה של קוד הכתוב בראסט וגם למהירות כתיבת הקוד עצמו. הבדיקות של הקומפיילר של ראסט מבטיחות יציבות באמצעות הוספת יכולות וארגון מחדש של הקוד (refactoring). זאת בניגוד לקוד קדמון (legacy code) שנוטה להיות שברירי למדי בשפות ללא בדיקות אלה, מה שמוביל מפתחים רבים לחשוש מביצוע שינויים. ע"י שאיפה לאבסטרקציות נטולות עלות ויכולות עיליות שעוברות קימפול לקוד סף במהירות המשתווה לקוד שנכתב ידנית, שואפת ראסט להפוך קוד בטוח לקוד שהוא גם קוד מהיר.
 
-Rust is for people who crave speed and stability in a language. By speed, we
-mean both how quickly Rust code can run and the speed at which Rust lets you
-write programs. The Rust compiler’s checks ensure stability through feature
-additions and refactoring. This is in contrast to the brittle legacy code in
-languages without these checks, which developers are often afraid to modify. By
-striving for zero-cost abstractions, higher-level features that compile to
-lower-level code as fast as code written manually, Rust endeavors to make safe
-code be fast code as well.
+השפה ראסט מקווה לתמוך במשתמשים רבים אחרים; אלה המוזכרים כאן מהווים כמה אחדים מהקבוצות היותר מושקעות בפרוייקט. באופן יותר רחב, השאיפה המרכזית של ראסט היא למגר את יחסי הגומלין השליליים שמתכנתים נאלצים לקבל מזה שנים בקו המתח שבין תכנון עילי לתכנות סף, וזאת ע"י יצירת סביבת פיתוח שמספקת בטיחות *בנוסף* לפרודוקטיביות, וכן מהירות *בנוסף* על נוחות ארגונומית. אתם מוזמנים להתנסות בראסט ולראות אם הבחירות קווי הבחירה של ראסט מתאימים לכם.
 
-The Rust language hopes to support many other users as well; those mentioned
-here are merely some of the biggest stakeholders. Overall, Rust’s greatest
-ambition is to eliminate the trade-offs that programmers have accepted for
-decades by providing safety *and* productivity, speed *and* ergonomics. Give
-Rust a try and see if its choices work for you.
+## למי מיועד ספר זה
 
-## Who This Book Is For
+ספר זה מניח שכבר כתבתם קוד בשפת תכנות אחרת אבל אינו עושה הנחנות לגבי איזו שפת תכנות זו. עשינו ניסיון להציג את החומר בצורה שתהיה נגישה לקהל קוראים בעל רקע משתנה בתכנות. אנחנו לא נשקיע זמן רב בלדסקס *מהו* תכנות או כיצד לחשוב על תכנות. אם אתם מבקרים טריים לחלוטין בעולם התכנות, קריאת ספר המכיל הקדמה ספציפית לתכנות ישרת אתכם יותר טוב מספר זה.
 
-This book assumes that you’ve written code in another programming language but
-doesn’t make any assumptions about which one. We’ve tried to make the material
-broadly accessible to those from a wide variety of programming backgrounds. We
-don’t spend a lot of time talking about what programming *is* or how to think
-about it. If you’re entirely new to programming, you would be better served by
-reading a book that specifically provides an introduction to programming.
+## כיצד להשתמש בספר זה
 
-## How to Use This Book
+באופן כללי, ספר זה מניח שאתם מתעתדים לקרוא אותו באופן סדרתי, מתחילתו עד סופו. פרקים מאוחרים יותר מסתמכים על מושגים מפרקים מוקדמים יותר, ופרקים מוקדמים עשויים לא לנבור לעומק הפרטים של נושא זה או אחר, ונושאים אלה ייבחנו מחדש בפרק מאוחר יותר.
 
-In general, this book assumes that you’re reading it in sequence from front to
-back. Later chapters build on concepts in earlier chapters, and earlier
-chapters might not delve into details on a particular topic but will revisit
-the topic in a later chapter.
+בספר זה תמצאו שני סוגי פרקים: פרקי מושגים ופרקי פרוייקטים. בפרקי מושגים תלמדו אספקט של ראסט. בפרקי פרוייקטים תבנו ותקבצו תכניות קטנות יחדיו, ותיישמו את שלמדתם עד הפרק הרלוונטי. פרקים 2, 12, ו-20 הם פרקי פרוייקטים; שאר הפרקים הם פרקי מושגים.
 
-You’ll find two kinds of chapters in this book: concept chapters and project
-chapters. In concept chapters, you’ll learn about an aspect of Rust. In project
-chapters, we’ll build small programs together, applying what you’ve learned so
-far. Chapters 2, 12, and 20 are project chapters; the rest are concept chapters.
+פרק 1 מסביר כיצד להתקין את ראסט, איך לכתוב תוכנית "Hello, world!", ואיך להשתמש בקארגו, מנהל החבילות וכלי הבניה של ראסט. פרק 2 מהווה הקדמה פרקטית לכתיבת תוכנית בראסט, בו תבנו משחק ניחוש מספר. בפרק הזה נחסה מושגים ברמה עילית, ובפרקים מאוחרים יותר נספק פרטים נוספים. אם אתם מעוניינים ללכלך את הידיים מייד, פרק 2 הוא המקום לפנות אליו. פרק 3 מכסה תכונות של ראסט שדומות לאלו של שפות תכנות אחרות, ובפרק 4 תלמדו על מערכת הבעלות של ראסט. אם אתם למדנים קפדניים במיוחד ומעדיפים ללמוד כל פרט לפני שאתם עוברים הלאה, אתם מוזמנים לדלק על פרק 2 ולפנות ישר לפרק 3, ולחזור לפרק 2 כאשר אתם מוכנים לעבוד על פרוייקט המיישם את הפרטים שתלמדו.
 
-Chapter 1 explains how to install Rust, how to write a “Hello, world!” program,
-and how to use Cargo, Rust’s package manager and build tool. Chapter 2 is a
-hands-on introduction to writing a program in Rust, having you build up a
-number guessing game. Here we cover concepts at a high level, and later
-chapters will provide additional detail. If you want to get your hands dirty
-right away, Chapter 2 is the place for that. Chapter 3 covers Rust features
-that are similar to those of other programming languages, and in Chapter 4
-you’ll learn about Rust’s ownership system. If you’re a particularly meticulous
-learner who prefers to learn every detail before moving on to the next, you
-might want to skip Chapter 2 and go straight to Chapter 3, returning to Chapter
-2 when you’d like to work on a project applying the details you’ve learned.
+פרק 5 נסוב סביב מבנים ומתודות, ופרק 6 מכסה אנומרציות (enums), תבניות `התאמה` (match expressions), ותבנית שליטת הזרימה `if let`. אתם תשתמשו במבנים ואינומרציות בבניית טיפוסים משלכם בראסט.
 
-Chapter 5 discusses structs and methods, and Chapter 6 covers enums, `match`
-expressions, and the `if let` control flow construct. You’ll use structs and
-enums to make custom types in Rust.
+בפרק 7 תלמדו על מערכת המודולים של ראסט ואודות חוקי הפרטיות לארגון קוד, וה-API הפומבי שלה. פרק 8 דן בכמה מבני נתונים קיבוציים (collection data structures) נפוצים המסופקים ע"י הספריה הסטנדרטית, כמו ווקטורים, מחרוזות, ומיפויי גיבוב (hash maps). פרק 9 מציג את הפילוסופיה והטכניקה של ראסט לטיפול בשגיאות.
 
-In Chapter 7, you’ll learn about Rust’s module system and about privacy rules
-for organizing your code and its public Application Programming Interface
-(API). Chapter 8 discusses some common collection data structures that the
-standard library provides, such as vectors, strings, and hash maps. Chapter 9
-explores Rust’s error-handling philosophy and techniques.
+פרק 10 נובר לעומק של ג'נריקס (generics), תכונות (traits), ופז"ם (lifetime), אשר נותנים לכם את הכח להגדיר קוד מותאם ריבוי טיפוסים. פרק 11 נוגע לבדיקות (testing), נושא שאפילו בנוכחות מנגנוני הבטיחות של ראסט הוא הכרחי על מנת להבטיח את נכונות הלוגיקה התפעולית של תוכניותכם. בפרק 12 נבנה יישום משלנו לתת-קבוצה של היכולות של `grep`, כלי שורת הפקודה לחיפוש בטקסט בתוך קבצים. לשם כך, נשתמש במושגים רבים מאלו שנדונו בפרקים הקודמים.
 
-Chapter 10 digs into generics, traits, and lifetimes, which give you the power
-to define code that applies to multiple types. Chapter 11 is all about testing,
-which even with Rust’s safety guarantees is necessary to ensure your program’s
-logic is correct. In Chapter 12, we’ll build our own implementation of a subset
-of functionality from the `grep` command line tool that searches for text
-within files. For this, we’ll use many of the concepts we discussed in the
-previous chapters.
+פרק 13 עוסק בסגורים (closures) ובעוקבים (iterators): תכונות של ראסט המגיעות מעולם שפות התכנות הפונקציונאליות. בפרק 14 נתבונן יותר לעומק בקארגו וניגע בעקרונות המומלצים לשיתוף ספריות עם מפתחים אחרים. פרק 15 מדבר על מצביעים חכמים (smart pointers) שהספריה הסטנדרטית מספקת ובתכונות שמאפשרות את תפקודם.
 
-Chapter 13 explores closures and iterators: features of Rust that come from
-functional programming languages. In Chapter 14, we’ll examine Cargo in more
-depth and talk about best practices for sharing your libraries with others.
-Chapter 15 discusses smart pointers that the standard library provides and the
-traits that enable their functionality.
+בפרק 16 נעבור על כמה מודלים של תכנות מקבילי ונדבר על כיצד ראסט מאפשר תכנות עם ריבוי מסלולים (multiple threads) ללא פחד. פרק 17 מתבונן על הדומה והשונה שבין אידיאומות ראסט (Rust idioms) לעקרונות תכנות מוכוון אובייקטים (object-oriented programming) שעשויים להיות מוכרים לכם.
 
-In Chapter 16, we’ll walk through different models of concurrent programming
-and talk about how Rust helps you to program in multiple threads fearlessly.
-Chapter 17 looks at how Rust idioms compare to object-oriented programming
-principles you might be familiar with.
+פרק 18 מהווה מקור הפניה עבור דוגמאות והתאמת דוגמא (patterns and pattern matching), שהן דרכים עוצמתיות לביטוי רעיונות על פני תוכנות ראסט. פרק 19 מכיל קולאז' של נושאים מתקדמים, כולל ראסט לא בטיחותי, מאקרואים, ועוד אודות פז"ם, תכונות, טיפוסים, פונקציות, וסגורים.
 
-Chapter 18 is a reference on patterns and pattern matching, which are powerful
-ways of expressing ideas throughout Rust programs. Chapter 19 contains a
-smorgasbord of advanced topics of interest, including unsafe Rust, macros, and
-more about lifetimes, traits, types, functions, and closures.
+בפרק 20 נעבוד על פרוייקט בו ניישם שרת רשת רב-מסלולי ברמת סף!
 
-In Chapter 20, we’ll complete a project in which we’ll implement a low-level
-multithreaded web server!
+לבסוף, בכמה נספחים תמצאו מידע שימושי על השפה בפורמט הפניות. נספח א' מכסה את המילות השמורות של ראסט, נספח ב' מכסה את האופרטורים והסימונים של ראסט, נספח ג' מכסה תכונות נגזרות הנמצאות בספריה הסטנדרטית, נספח ד' מכסה כמה כלי פיתוח שימושיים, ונספח ה' מסביר על מהדורות ראסט השונות. בנספח ו' תוכלו למצוא תרגומים של הספר, ובנספח ז' נגלה איך ראסט נבנה ומהו ראסט לילי (nightly Rust).
 
-Finally, some appendices contain useful information about the language in a
-more reference-like format. Appendix A covers Rust’s keywords, Appendix B
-covers Rust’s operators and symbols, Appendix C covers derivable traits
-provided by the standard library, Appendix D covers some useful development
-tools, and Appendix E explains Rust editions. In Appendix F, you can find
-translations of the book, and in Appendix G we’ll cover how Rust is made and
-what nightly Rust is.
-
-There is no wrong way to read this book: if you want to skip ahead, go for it!
-You might have to jump back to earlier chapters if you experience any
-confusion. But do whatever works for you.
+אין דרך שגויה לקרוא את הספר הזה: אם אתם רוצים לקפוץ קדימה, לכו על זה! אתם עלולים להצטרך לקפוץ בחזרה לפרקים מוקדמים יותר במידה ואתם נתקלים בבלבול. אבל, עשו את מה שעובד עבורכם.
 
 <span id="ferris"></span>
 
-An important part of the process of learning Rust is learning how to read the
-error messages the compiler displays: these will guide you toward working code.
-As such, we’ll provide many examples that don’t compile along with the error
-message the compiler will show you in each situation. Know that if you enter
-and run a random example, it may not compile! Make sure you read the
-surrounding text to see whether the example you’re trying to run is meant to
-error. Ferris will also help you distinguish code that isn’t meant to work:
+חלק חשוב בתהליך למידת ראסט הוא לימוד כיצד לקרוא את הודעות השגיאה שהקומפיילר מציג: אלה ינחו אתכם לעבר קוד שעובד. לכן, נספק דוגמאות רבות שאינן עוברות קומפילציה ביחד עם הודעות השגיאה מהקומפיילר. זכרו שאם אתם מקלידים את הקוד של דוגמא אקראית, יכול להיות שהיא לא תעבור קומפילציה! וודאו שאתם קוראים את הטקסט מסביב לדוגמא על מנת לראות האם הדוגמא בה אתם מתעניינים אמורה להדגים שגיאה. פריס (Ferris) יעזור לכם להבחין בין קוד שלא אמור לעבוד:
 
-| Ferris                                                                                                           | Meaning                                          |
-|------------------------------------------------------------------------------------------------------------------|--------------------------------------------------|
-| <img src="img/ferris/does_not_compile.svg" class="ferris-explain" alt="Ferris with a question mark"/>            | This code does not compile!                      |
-| <img src="img/ferris/panics.svg" class="ferris-explain" alt="Ferris throwing up their hands"/>                   | This code panics!                                |
-| <img src="img/ferris/not_desired_behavior.svg" class="ferris-explain" alt="Ferris with one claw up, shrugging"/> | This code does not produce the desired behavior. |
+| פריס                                                                                                                               | משמעות                           |
+| ---------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- |
+| <img src="img/ferris/does_not_compile.svg" class="ferris-explain" alt="Ferris with a question mark" />            | קוד זה לא עובר קומפילציה!        |
+| <img src="img/ferris/panics.svg" class="ferris-explain" alt="Ferris throwing up their hands" />                   | קוד זה נכנס לפאניקה!             |
+| <img src="img/ferris/not_desired_behavior.svg" class="ferris-explain" alt="Ferris with one claw up, shrugging" /> | קוד זה לא מבצע את הפעולה הרצויה. |
 
-In most situations, we’ll lead you to the correct version of any code that
-doesn’t compile.
+ברוב המקרים ננחה אתכם לכיוון הגרסה הנכונה של כל קוד שאינו עובר קומפילציה.
 
-## Source Code
+## קוד מקור
 
-The source files from which this book is generated can be found on
-[GitHub][book].
+קבצי המקור מהם ספר זה הופק נמצאים ב-[שים מקום נכון פה][book].
+
+[nsprust]: https://nostarch.com/rust
+[nsp]: https://nostarch.com/
 
 [book]: https://github.com/rust-lang/book/tree/main/src
