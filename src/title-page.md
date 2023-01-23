@@ -1,26 +1,18 @@
-# The Rust Programming Language
+# שפת התכנות ראסט
 
-*by Steve Klabnik and Carol Nichols, with contributions from the Rust Community*
+*נכתב באנגלית ע"י סטיב קלאבניק וקארול ניקולס, בהשתתפות קהילת ראסט*
 
-This version of the text assumes you’re using Rust 1.65 (released 2022-11-03)
-or later. See the [“Installation” section of Chapter 1][install]<!-- ignore -->
-to install or update Rust.
+גרסה זו של הטקסט מניחה שימוש בגרסה 1.65 של ראסט (אשר יצאה לאור בתאריך 03-11-2022), או גירסאות מאוחרות יותר. פנו אל [הסעיף "התקנה" בפרק 1 ][install]<!-- ignore -->
+כדי להתקין או לעדכן את ראסט.
 
-The HTML format is available online at
-[https://doc.rust-lang.org/stable/book/](https://doc.rust-lang.org/stable/book/)
-and offline with installations of Rust made with `rustup`; run `rustup docs
---book` to open.
+פורמט ה-HTML של ספר המקור זמין אונליין ב-[https://doc.rust-lang.org/stable/book](https://doc.rust-lang.org/stable/book/) ואופליין באמצעות התקנות ראסט שבוצעו דרך `ראסטאפ`; הריצו `rustup docs --book` כדי לפתוח את הספר.
 
-Several community [translations] are also available.
+בנוסף על תרגום זה שאתם קוראים, כמה [תרגומים][] אחרים זמינים גם הם.
 
-This text is available in [paperback and ebook format from No Starch
-Press][nsprust].
+הטקסט המקורי זמין [בכריכה רכה ובפורמט ebook בהוצאת No Starch Press][nsprust].
+
+> **מעוניינים בחווית לימוד יותר אינטראקטיבית? נסו גרסה שונה של ספר המקור הכוללת: מבחנים, הארות, תצוגות, ועוד**: <https://rust-book.cs.brown.edu>
 
 [install]: ch01-01-installation.html
-[editions]: appendix-05-editions.html
 [nsprust]: https://nostarch.com/rust
-[translations]: appendix-06-translation.html
-
-> **🚨 Want a more interactive learning experience? Try out a different version
-> of the Rust Book, featuring: quizzes, highlighting, visualizations, and
-> more**: <https://rust-book.cs.brown.edu>
+[תרגומים]: appendix-06-translation.html
