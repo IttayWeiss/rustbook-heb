@@ -1,217 +1,140 @@
-# שלום עולם
+## שלום עולם!
 
-עכשיו כשראסט מותקן, הגיע הזמן לכתוב את תוכנית הראסט הראשונה. באופן מסורתי, כאשר לומדים שפת תכנות חדשה, מקובל לכתוב תוכנית קצרה אשר מדפיסה את הטקסט `!Hello, World` על המסך, וכך נעשה עכשיו. 
+כעת, משראסט מותכן, הגיע הזמן לכתוב את תוכנית הראסט הראשונה שלכם. מקובל, כאשר לומדים שפת תכנות חדשה, לכתוב תוכנית קטנה המדפיסה את הטקסט `Hello, world!` על המסך, וכך נעשה מייד!
 
-‏## Hello, World!
-
-‏Now that you’ve installed Rust, it’s time to write your first Rust program.
-‏It’s traditional when learning a new language to write a little program that
-‏prints the text `Hello, world!` to the screen, so we’ll do the same here!
-
-> הערה: ספר זה מניח הכרות בסיסית עם ה ***. לראסט אין דרישות ספציפיות בקשר ***
-
-‏> Note: This book assumes basic familiarity with the command line. Rust makes
-‏> no specific demands about your editing or tooling or where your code lives, so
-‏> if you prefer to use an integrated development environment (IDE) instead of
-‏> the command line, feel free to use your favorite IDE. Many IDEs now have some
-‏> degree of Rust support; check the IDE’s documentation for details. The Rust
-‏> team has been focusing on enabling great IDE support via `rust-analyzer`. See
-‏> [Appendix D][devtools]<!-- ignore --> for more details.
+> הערה: ספר זה מניח הכרות בסיסית עם שורת הפקודה. לראסט אין דרישות בקשר לעורך הקצבים, או כלי הפיתוח, או היכן הקוד שלכם נמצא. לכן, אם אתם מעדיפים להשתמש בסביבית פיתוח אינטגרטיבית (IDE) במקום בשורת הפקודה, הרגישו חופשיים לעשות זאת. לסביבות IDE רבות יש כבר תמיכה מסויימת בראסט; בדקו את תיעוד ה-IDE שלכם בקשר לפרטים. צוות ראסט התמקד בלאפשר תמיכת מעולה ב-IDE באמצעות `rust-analyzer`. ראו [נספח ד'][devtools]<!-- ignore --> לפרטים נוספים.
 
 ### יצירת תיקיית פרוייקט
 
-נתחיל ביצירת תיקייה לאכסון הקוד. לראסט לא חשוב היכן נמצא הקוד, אבל עבור התרגילים
-והפרוייקטים בספר זה מומלץ ליצור תיקיית פרוייקטים בתיקייה המרכזית שלכם ולשמור את
-כל הפרוייקטים שם. 
+התחילו ביצירת תיקיית לאכסון קוד הראסט שלכם. עבור ראסט אין זה משנה היכן הקוד שלכם נמצא, אבל עבור התרגילים והפרוייקטים בספר זה, מומלץ ליצור תיקיה בשם *projects* בתיקייה הבית שלכם, ולשמור את כל הפרוייקטים שם.
 
-‏### Creating a Project Directory
+פתחו טרמינל והקלידו את הפקודות הבאות כדי ליצור את התיקייה *projects* ותיקייה עבור הפרוייקט "hello, world!" בתוך תיקיית הפרוייקטים.
 
-‏You’ll start by making a directory to store your Rust code. It doesn’t matter
-‏to Rust where your code lives, but for the exercises and projects in this book,
-‏we suggest making a *projects* directory in your home directory and keeping all
-‏your projects there.
+בסביבות Linux, macOS, ו-PowerShell על Windows, הקלידו:
 
-פתחו טרמינל והקלידו את הפקודות הבאות על מנת ליצור תיקיית *פרוייקטים* ותיקייה עבור הפרוייקט "שלום עולם" בתוך תיקיית הפרוייקטים. 
-
-‏Open a terminal and enter the following commands to make a *projects* directory
-‏and a directory for the “Hello, world!” project within the *projects* directory.
-
-בסביבות Linux, MacOS, או PowerShell on Windows, הקלידו:
-
-‏For Linux, macOS, and PowerShell on Windows, enter this:
-
-‏```console
-‏$ mkdir ~/projects
-‏$ cd ~/projects
-‏$ mkdir hello_world
-‏$ cd hello_world
+```console
+$ mkdir ~/projects
+$ cd ~/projects
+$ mkdir hello_world
+$ cd hello_world
 ```
 
-‏For Windows CMD, enter this:
+עבור Windows CMD הקלידו:
 
-‏```cmd
-‏> mkdir "%USERPROFILE%\projects"
-‏> cd /d "%USERPROFILE%\projects"
-‏> mkdir hello_world
-‏> cd hello_world
+```cmd
+> mkdir "%USERPROFILE%\projects"
+> cd /d "%USERPROFILE%\projects"
+> mkdir hello_world
+> cd hello_world
 ```
 
-‏### Writing and Running a Rust Program
+### כתיבת והרצת תוכנית ראסט
 
-‏Next, make a new source file and call it *main.rs*. Rust files always end with
-‏the *.rs* extension. If you’re using more than one word in your filename, the
-‏convention is to use an underscore to separate them. For example, use
-‏*hello_world.rs* rather than *helloworld.rs*.
+עכשיו, צרו קובץ מקור חדש בשם *main.rs*. קבצי ראסט תמיד מסתיימים בסיומת *.rs*. אם אתם משתמשים ביותר ממילה אחת בשם הקובץ, הקונבנציה היא להשתמש במקף תחתי כדי להפריד בין המילים. למשל, מקובל לכתוב *hello_world.rs* ולא *helloworld.rs*.
 
-‏Now open the *main.rs* file you just created and enter the code in Listing 1-1.
+כעת, פתחו את הקובץ *main.rs* שיצרתם והקלידו לתוכו את הקוד מרשימה 1-1.
 
-‏<span class="filename">Filename: main.rs</span>
+<span class="filename">Filename: main.rs</span>
 
-‏```rust
-‏fn main() {
-‏    println!("Hello, world!");
+```rust
+fn main() {
+    println!("Hello, world!");
 }
 ```
 
-‏<span class="caption">Listing 1-1: A program that prints `Hello, world!`</span>
+<span class="caption">רשימה 1-1: תוכנית המדפיסה `Hello, world!`</span>
 
-‏Save the file and go back to your terminal window in the
-‏*~/projects/hello_world* directory. On Linux or macOS, enter the following
-‏commands to compile and run the file:
+שמרו את הקובץ וחזרו בחלון הטרמינל לתיקייה *~/projects/hello_world*. על Linux או macOS, הקלידו את הפקודות הבאות בכדי לקמפל ולהריץ את הקובץ:
 
-‏```console
-‏$ rustc main.rs
-‏$ ./main
-‏Hello, world!
+```console
+$ rustc main.rs
+$ ./main
+Hello, world!
 ```
 
-‏On Windows, enter the command `.\main.exe` instead of `./main`:
+על Windows, הקלידו את הפקודה `./main.exe` במקום `./main`:
 
-‏```powershell
-‏> rustc main.rs
-‏> .\main.exe
-‏Hello, world!
+```powershell
+> rustc main.rs
+> .\main.exe
+Hello, world!
 ```
 
-‏Regardless of your operating system, the string `Hello, world!` should print to
-‏the terminal. If you don’t see this output, refer back to the
-‏[“Troubleshooting”][troubleshooting]<!-- ignore --> part of the Installation
-‏section for ways to get help.
+ללא תלות במערכת ההפעלה שלכם, המחרוזת `Hello, world!` אמורה להופיע בטרמינל. אם אתם לא רואים את הקלט, פנו חזרה לסעיף ["פתירת בעיות"][troubleshooting]<!-- ignore --> מהחלק על התקנת ראסט כדי לקבל עזרה.
 
-‏If `Hello, world!` did print, congratulations! You’ve officially written a Rust
-‏program. That makes you a Rust programmer—welcome!
+אם `Hello, world!` כן נכתב, כל הכבוד! כתבתם את תכנית הראסט הראשונה שלכם. בכך הפכתם למתכנתי ראסט--ברוכים הבאים!
 
-‏### Anatomy of a Rust Program
+### אנטומיה של תכנית ראסט
 
-‏Let’s review this “Hello, world!” program in detail. Here’s the first piece of
-‏the puzzle:
+הבה נסקור את תכנית ה-"Hello, world!" ביתר פירוט. הינה פיסת הפזל הראשונה:
 
-‏```rust
-‏fn main() {
+```rust
+fn main() {
 
 }
 ```
 
-‏These lines define a function named `main`. The `main` function is special: it
-‏is always the first code that runs in every executable Rust program. Here, the
-‏first line declares a function named `main` that has no parameters and returns
-‏nothing. If there were parameters, they would go inside the parentheses `()`.
+שורות אלה מגדירות פונקציה בשם `main`. `main` היא פונקציה מיוחדת: זה תמיד פיסת הקוד הראשונה שרצה בכל קובץ הרצה של תוכנת ראסט. כאן, השורה הראשונה מצהירה על פונקציה בשם `main` שאין לה פרמטרים ושאינה מחזירה כלום. במידה והיו פרמטרים, הם היו מופיעים בין הסוגריים `()`.
 
-‏The function body is wrapped in `{}`. Rust requires curly brackets around all
-‏function bodies. It’s good style to place the opening curly bracket on the same
-‏line as the function declaration, adding one space in between.
+גוף הפונקציה מוקף ב`{}`. ראסט דורשת סוגריים מסולסלים סביב הגוף של פונקציות. זהו סגנון אכותי למקם את הסוגר המסולסל הפותח באותה שורה בה מוצהרת הפונקציה, עם רווח יחיד באמצע.
 
-‏> Note: If you want to stick to a standard style across Rust projects, you can
-‏> use an automatic formatter tool called `rustfmt` to format your code in a
-‏> particular style (more on `rustfmt` in
-‏> [Appendix D][devtools]<!-- ignore -->). The Rust team has included this tool
-‏> with the standard Rust distribution, as `rustc` is, so it should already be
-‏> installed on your computer!
+> אם אתם מעוניינים לשמור על סגנון סטנדרטי על פני פרוייקטי הראסט שלכם, אז אתם יכולים להשתמש במפרמט אוטומטי שנקרא `rustfmt` כדי לעצב את הקוד שלכם בסגנון מסויים (עוד על `rustfmt` תמצאו ב-[נספח ד'][devtools]<!-- ignore -->). צוות הראסט הוסיף כלי זה עם ההפצה הסטנדטית של ראסט, בדיוק כמו `rustc`, כך שהוא כבר צריך להיות מותקן על המחשב שלכם!
 
-‏The body of the `main` function holds the following code:
+גוף הפונקציה `main` מכילה את הקוד הבא:
 
-‏```rust
-‏    println!("Hello, world!");
+```rust
+    println!("Hello, world!");
 ```
 
-‏This line does all the work in this little program: it prints text to the
-‏screen. There are four important details to notice here.
+שורה זו עושה את כל העבודה בתכנית זעירה זו: היא מדפיסה טקסט על המסך. יש כאן ארבעה פרטים חשובים לציין.
 
-‏First, Rust style is to indent with four spaces, not a tab.
+ראשית, הסגנון בראסט הוא לאנדנט (indent) עם ארבעה רווחים, לא עם טאב.
 
-‏Second, `println!` calls a Rust macro. If it had called a function instead, it
-‏would be entered as `println` (without the `!`). We’ll discuss Rust macros in
-‏more detail in Chapter 19. For now, you just need to know that using a `!`
-‏means that you’re calling a macro instead of a normal function and that macros
-‏don’t always follow the same rules as functions.
+שנית, `println!` קורא למאקרו של ראסט. אם זו הייתה קריאה לפונקציה, הקוד היה נכתב `println` (ללא הסימן `!`). אנו נדון במקרואים של בראסט בפירוט בפרק 19. לבנתיים, כל שאתם צריכים לדעת הוא ששימוש ב-`!` משמעו שאתם קוראים למאקרו ולא לפונקציה רגילה, ושמקרואים לא תמיד מתנהגים לפי אותם הכללים התקפים לפונקציות.
 
-‏Third, you see the `"Hello, world!"` string. We pass this string as an argument
-‏to `println!`, and the string is printed to the screen.
+שלישית, התבוננו במחרוזת `"Hello, world!"`. מחרוזת זו מועברת כארגיומנט ל-`println!`, והמחרוזת מודפסת על המסך.
 
-‏Fourth, we end the line with a semicolon (`;`), which indicates that this
-‏expression is over and the next one is ready to begin. Most lines of Rust code
-‏end with a semicolon.
+הנקודה הרביעית היא הנקודה-פסיק (`;`) בסוף השורה, אשר מציינת שביטוי זה הסתיים והבא אחריו מוכן להתחיל. רוב שורות הקוד בראסט מסתיימות בנקודה-פסיק.
 
-‏### Compiling and Running Are Separate Steps
+### קמפול והרצה הם צעדים נפרדים
 
-‏You’ve just run a newly created program, so let’s examine each step in the
-‏process.
+זה עתה הרצתם תוכנית חדשה, אז הבה נבחן כל צעד בתהליך.
 
-‏Before running a Rust program, you must compile it using the Rust compiler by
-‏entering the `rustc` command and passing it the name of your source file, like
-‏this:
+לפני הרצת תכנית ראסט, יש לקמפל אותה באמצעות קומפיילר ראסט באמצעות הפקודה `rustc` והעברת שם קובץ המקור, כך:
 
-‏```console
-‏$ rustc main.rs
+```console
+$ rustc main.rs
 ```
 
-‏If you have a C or C++ background, you’ll notice that this is similar to `gcc`
-‏or `clang`. After compiling successfully, Rust outputs a binary executable.
+אם יש לכם רקע ב-C או C++, וודאי תשימו לב לדמיון ל-`gcc` או `clang`. לאחר קומפילציה מוצלחת תפיק ראסט קובץ הרצה בינארי.
 
-‏On Linux, macOS, and PowerShell on Windows, you can see the executable by
-‏entering the `ls` command in your shell:
+על Linux, macOS, ו-PowerShell על Windows, תוכלו לראות את קובץ ההרצה ע"י הקלדת הפקודה `ls` במעטפת שלכם:
 
-‏```console
-‏$ ls
-‏main  main.rs
+```console
+$ ls
+main  main.rs
 ```
 
-‏On Linux and macOS, you’ll see two files. With PowerShell on Windows, you’ll
-‏see the same three files that you would see using CMD. With CMD on Windows, you
-‏would enter the following:
+על Linux ו-macOS תראו שני קבצים. על PowerShell על Windows תראו את אותם שלושה קבצים שתראו על CMD. על CMD על Windows תכתבו:
 
-‏```cmd
-‏> dir /B %= the /B option says to only show the file names =%
-‏main.exe
-‏main.pdb
-‏main.rs
+```cmd
+> dir /B %= the /B option says to only show the file names =%
+main.exe
+main.pdb
+main.rs
 ```
 
-‏This shows the source code file with the *.rs* extension, the executable file
-‏(*main.exe* on Windows, but *main* on all other platforms), and, when using
-‏Windows, a file containing debugging information with the *.pdb* extension.
-‏From here, you run the *main* or *main.exe* file, like this:
+זה מראה את קובץ קוד המקור עם התוספת *.rs*, קובץ ההרצה (*main.exe* על Windows, אבל *main* על פלטפורמות אחרות), וגם, כאשר משתמשים ב-Windows, קובץ המכיל מידע לניפוי שגיאות עם תוספת *.pdb*. ומרגע זה, מריצים את קובץ ה-*main* או main.exe</em>, כך:
 
-‏```console
-‏$ ./main # or .\main.exe on Windows
+```console
+$ ./main # or .\main.exe on Windows
 ```
 
-‏If your *main.rs* is your “Hello, world!” program, this line prints `Hello,
-‏world!` to your terminal.
+במידה ו-*main.rs* זה תכנית ה-"Hello, world!" שלכם, שורה זו תדפיס `Hello, world!` בטרמינל.
 
-‏If you’re more familiar with a dynamic language, such as Ruby, Python, or
-‏JavaScript, you might not be used to compiling and running a program as
-‏separate steps. Rust is an *ahead-of-time compiled* language, meaning you can
-‏compile a program and give the executable to someone else, and they can run it
-‏even without having Rust installed. If you give someone a *.rb*, *.py*, or
-‏*.js* file, they need to have a Ruby, Python, or JavaScript implementation
-‏installed (respectively). But in those languages, you only need one command to
-‏compile and run your program. Everything is a trade-off in language design.
+אם אתם מרגישים יותר בנוח עם שפה דינאמית, כמו Ruby, Python, או JavaScript, אתם עשויים שלא להכיר את הקימפול וההרצה כתהליכים נפרדים. ראסט היא שפת ********, משמע שניתן לקמפל תוכנית ולתת את קובץ ההרצה למישהו, והם יכולים אז להריץ את הקובץ אפילו מבלי להתקין ראסט. אם תתנו למישהו קובץ מסוג *.rb*, *.py*, או *.js*, אז הם חייבים שתהיה להם התקנה של Ruby, Python, או JavaScript (בהתאמה). אבל בשפות אלה, מספיקה פקודה אחת בלבד כדי להריץ את התוכנית. הכל הוא תן-וקח כשזה מגיע לתכנון שפות.
 
-‏Just compiling with `rustc` is fine for simple programs, but as your project
-‏grows, you’ll want to manage all the options and make it easy to share your
-‏code. Next, we’ll introduce you to the Cargo tool, which will help you write
-‏real-world Rust programs.
+קמפול בלבד באמצעות `rustc` זה טוב ויפה עבור תוכנות פשוטות, אבל ככל שהפרוייקט שלכם גדל, כך תרצו לנהל את כל האופציות ולהקל לשתף את הקוד שלכם. בשלב הבא נכיר לכם את הכלי קארגו, אשר יסייע לכם בכתיבת תוכנת ראסט אמיתיות.
 
-‏[troubleshooting]: ch01-01-installation.html#troubleshooting
-‏[devtools]: appendix-04-useful-development-tools.md
+[troubleshooting]: ch01-01-installation.html#troubleshooting
+[devtools]: appendix-04-useful-development-tools.md
