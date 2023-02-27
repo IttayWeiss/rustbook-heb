@@ -1,23 +1,11 @@
-# Common Programming Concepts
+# עקרונות תכנות נפוצים
 
-This chapter covers concepts that appear in almost every programming language
-and how they work in Rust. Many programming languages have much in common at
-their core. None of the concepts presented in this chapter are unique to Rust,
-but we’ll discuss them in the context of Rust and explain the conventions
-around using these concepts.
+פרק זה עוסק במושגים שמופיעים כמעט בכל שפת תכנות, ומציג אותם כפי שהם מופיעים בראסט. לשפות תכנות רבות יש הרבה תכונות יסודיות משותפות. אף אחת מהתכונות המוצגות בפרק זה יחודיות לראסט, אבל אנו נדון בהן בהקשר של ראסט ונסביר את הקונבנציות סביב השימוש במושגים אלה.
 
-Specifically, you’ll learn about variables, basic types, functions, comments,
-and control flow. These foundations will be in every Rust program, and learning
-them early will give you a strong core to start from.
+באופן ספציפי, תלמדו אודות משתנים, טיפוסים בסיסיים, פונקציות, הערות, ובקרת זרימה. יסודות אלה ימצאו בכל תכנית ראסט ולכן לימוד מוקדם שלהם יקנה לכם יסודות איתנים להמשך הדרך.
 
-> #### Keywords
->
-> The Rust language has a set of *keywords* that are reserved for use by the
-> language only, much as in other languages. Keep in mind that you cannot use
-> these words as names of variables or functions. Most of the keywords have
-> special meanings, and you’ll be using them to do various tasks in your Rust
-> programs; a few have no current functionality associated with them but have
-> been reserved for functionality that might be added to Rust in the future. You
-> can find a list of the keywords in [Appendix A][appendix_a]<!-- ignore -->.
+> #### מילות מפתח
+> 
+> לשפת התכנות ראסט יש אוסף של </em>מילות מפתח* השמורות לשימוש השפה בלבד, בדומה לשפות אחרות. זכרו שלא ניתן להשתמש במילים אלו כשמות למשתים או לפונקציות. לרוב מילות המפתח יש משמעות מיוחדת, ונעשה בהם שימוש כדי לבצע פעולות מגוונות בתכניות ראסט; לאחדות מהמילים לא מקושרות לשום פונקציונאליות, אלא הן פשוט שמורות לפונקציונאליות אפשרית עתידית. רשימה של מילות המפתח תוכלו למצאו [בנספח א'][appendix_a]<!-- ignore -->.</p> </blockquote>
 
 [appendix_a]: appendix-01-keywords.md

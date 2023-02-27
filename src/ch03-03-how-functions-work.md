@@ -1,13 +1,8 @@
-## Functions
+## פונקציות
 
-Functions are prevalent in Rust code. You’ve already seen one of the most
-important functions in the language: the `main` function, which is the entry
-point of many programs. You’ve also seen the `fn` keyword, which allows you to
-declare new functions.
+פונקציות הן מבנה שכיח בראסט. אתם כבר ראיתם את אחת הפונקציות החשובות ביותר בשפה: הפונקציה `main`, שהיא נקודת הפתיחה של תוכניות רבות. כמו כן, ראיתם את מילת המפתח `fn`, שמאפשרת להכריז על פונקציות.
 
-Rust code uses *snake case* as the conventional style for function and variable
-names, in which all letters are lowercase and underscores separate words.
-Here’s a program that contains an example function definition:
+הקונבציה בכתיבת קוד בראסט היא להשתמש בסגנון *snake case* עבור שמות של פונקציות ומשתנים, ז"א שימוש באותיות קטנות והפרדת מילים ע"י מקף תחתון. הינה תכנית המכילה דוגמא להגדרת פונקציה:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -15,40 +10,23 @@ Here’s a program that contains an example function definition:
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-16-functions/src/main.rs}}
 ```
 
-We define a function in Rust by entering `fn` followed by a function name and a
-set of parentheses. The curly brackets tell the compiler where the function
-body begins and ends.
+אנו מגדירים פונקציות בראסט ע"י כתיבת `fn` ואז את שם הפונקציה וסוגריים. הסוגרים המסולסלים אומרים לקומפיילר היכן מתחיל גוף הפונקציה והיכן הוא מסתיים.
 
-We can call any function we’ve defined by entering its name followed by a set
-of parentheses. Because `another_function` is defined in the program, it can be
-called from inside the `main` function. Note that we defined `another_function`
-*after* the `main` function in the source code; we could have defined it before
-as well. Rust doesn’t care where you define your functions, only that they’re
-defined somewhere in a scope that can be seen by the caller.
+ניתן לקרוא לכל פונקציה שהגדרנו ע"י הקלדת השם שלה ולאחריו סוגריים. כיוון שהפונקציה `another_function` מוגדרת בתכנית, ניתן לקרוא לה מתוך הפונקציה `main`. שימו לב שהגדרנו את `another_function` *אחרי* הפונקציה `main` בקובץ המקור; יכולנו להגדיר את הפונקציה גם לפני. לראסט לא אכפת איפה אתם מגדירים את הפונקציות, רק שהן מוגדרות במתחם שהקורא לפונקציה יכול לראות.
 
-Let’s start a new binary project named *functions* to explore functions
-further. Place the `another_function` example in *src/main.rs* and run it. You
-should see the following output:
+הבה נתחיל פרוייקט חדש בשם *functions* כדי להתנסות עם פונקציות קצת יותר. מקמו את הפונקציה לדוגמא `another_function` בקובץ *src/main.rs* והריצו אותו. אתם צריכים לראות את הפלט הבא:
 
 ```console
 {{#include ../listings/ch03-common-programming-concepts/no-listing-16-functions/output.txt}}
 ```
 
-The lines execute in the order in which they appear in the `main` function.
-First the “Hello, world!” message prints, and then `another_function` is called
-and its message is printed.
+השורות מתבצעות בסדר הוא הן מופיעות בפונקציה `main`. קודם מודפסת ההודעה “Hello, world!”, ואח"כ נקראת הפונקציה `another_function` וההודעה שלה מודפסת.
 
-### Parameters
+### פרמטרים
 
-We can define functions to have *parameters*, which are special variables that
-are part of a function’s signature. When a function has parameters, you can
-provide it with concrete values for those parameters. Technically, the concrete
-values are called *arguments*, but in casual conversation, people tend to use
-the words *parameter* and *argument* interchangeably for either the variables
-in a function’s definition or the concrete values passed in when you call a
-function.
+ניתן להגדיר פונקציות עם פרמטרים, דהיינו משתנים מיוחדים שמהווים חלק מחותם הפונקציה (function signature). כאשר לפונקציה יש פרמטרים, ניתן לספק לפונקציה ערכים קונקרטים עבור פרמטרים אלה. מבחינה טכנית, הערכים הקונקרטים נקראים *ארגיומנטים* אבל, בשיח לא פורמלי, משתמשים במילים *פרמטר* ו-*ארגיומנט* לחילופין כאשר הכוונה היא או למשתנים בגדרת הפונקציה או לערכים המועברים אל הפונקציה כאשר קוראים לה.
 
-In this version of `another_function` we add a parameter:
+בגרסה זו של `another_function` אנו מוסיפים פרמטר:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -56,25 +34,17 @@ In this version of `another_function` we add a parameter:
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-17-functions-with-parameters/src/main.rs}}
 ```
 
-Try running this program; you should get the following output:
+נסו להריץ את התוכנית; אתם צריכים לקבל את הפלט:
 
 ```console
 {{#include ../listings/ch03-common-programming-concepts/no-listing-17-functions-with-parameters/output.txt}}
 ```
 
-The declaration of `another_function` has one parameter named `x`. The type of
-`x` is specified as `i32`. When we pass `5` in to `another_function`, the
-`println!` macro puts `5` where the pair of curly brackets containing `x` was
-in the format string.
+הכרזת הפונקציה `another_function` כוללת פרמטר אחד הנקרא `x`. הטיפוס של `x` מוגדל להיות `i32`. כאשר אנו מעבירים את הערך `5` לפונקציה `another_function`, המאקרו `println!` משתמש בערך `5` במקום בו הסוגרים המסולסלים מכילים `x` במחרוזת הפירמוט.
 
-In function signatures, you *must* declare the type of each parameter. This is
-a deliberate decision in Rust’s design: requiring type annotations in function
-definitions means the compiler almost never needs you to use them elsewhere in
-the code to figure out what type you mean. The compiler is also able to give
-more helpful error messages if it knows what types the function expects.
+בחותם הפונקציה יש להכריז על הטיפוס של כל אחד מהפרמטרים. זו בחירה מכוונת בתכנון של ראסט: הדרישה לביאור טיפוסים בהגדרות של פונקציות משמעה שהקומפיילר כמעט אף-פעם לא צריך שאתם ת***. בנוסף, כך הקומפיילר גם יכול לספק הודעות שגיאה מועילות יותר, כי הוא יודע לאילו טיפוסים הפונקציה מצפה.
 
-When defining multiple parameters, separate the parameter declarations with
-commas, like this:
+כאשר מגדירים פרמטרים מרובים, יש להפריד את הכרזות הפרמטרים עם פסיקים, כך:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -82,39 +52,25 @@ commas, like this:
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-18-functions-with-multiple-parameters/src/main.rs}}
 ```
 
-This example creates a function named `print_labeled_measurement` with two
-parameters. The first parameter is named `value` and is an `i32`. The second is
-named `unit_label` and is type `char`. The function then prints text containing
-both the `value` and the `unit_label`.
+דוגמא זו יוצרת פונקציה בשם `print_labeled_measurement` עם שני פרמטרים. הפרמטר הראשון נקרא `value` והוא מטיפוס `i32`. שם הפרמטר השני הוא `unit_label` והוא מטיפוס `char`. הפונקציה מדפיסה טקסט המכיל גם את `value` וגם את `unit_label`.
 
-Let’s try running this code. Replace the program currently in your *functions*
-project’s *src/main.rs* file with the preceding example and run it using `cargo
+הבה ננסה להריץ את הקוד. החליפו את התכנית שכרגע נמצאת בפרוייקט בקובץ *src/main.rs* בפרוייקט *functions* עם הקוד מהדוגמא הקודמת והריצו אותו באמצעות `cargo
 run`:
 
 ```console
 {{#include ../listings/ch03-common-programming-concepts/no-listing-18-functions-with-multiple-parameters/output.txt}}
 ```
 
-Because we called the function with `5` as the value for `value` and `'h'` as
-the value for `unit_label`, the program output contains those values.
+בגלל שקראנו לפונקציה עם `5` עבור הערך `value` ועם `'h'` עבור הערך `unit_label`, פלט התכנית יכיל את שני הערכים האלה.
 
-### Statements and Expressions
+### פקודות וביטויים
 
-Function bodies are made up of a series of statements optionally ending in an
-expression. So far, the functions we’ve covered haven’t included an ending
-expression, but you have seen an expression as part of a statement. Because
-Rust is an expression-based language, this is an important distinction to
-understand. Other languages don’t have the same distinctions, so let’s look at
-what statements and expressions are and how their differences affect the bodies
-of functions.
+גוף הפונקציה מורכב מסדרה של פקודות, והוא יכול להסתיים בביטוי. עד כה הפונקציות שראינו לא כללו ביטוי סיום, אבל כן ראיתם ביטוי כחלק מפקודה. כיוון שראסט היא שפה מבוססת ביטויים, חשוב להבין הבחנה זו. בשפות אחרות אין הפרדה כזאת ברור, אז הבה נתבונן במהן פקודות ומהם ביטויים, וכיצד ההבדלים בינהם משפיעים על גוף הפונקציות.
 
-* **Statements** are instructions that perform some action and do not return
-  a value.
-* **Expressions** evaluate to a resultant value. Let’s look at some examples.
+* **פקודות** (statements) הן הוראות שמבצעות פעולה כלשהיא ולא מחזירות ערך.
+* **ביטויים** (expressions), לאומת זאת, מוערכים לתוצאה. הינה כמה דוגמאות.
 
-We’ve actually already used statements and expressions. Creating a variable and
-assigning a value to it with the `let` keyword is a statement. In Listing 3-1,
-`let y = 6;` is a statement.
+למעשה כבר השתמשנו בפקודות ובביטויים. יצירת משתנה והשמה של ערך למשתנה באמצעות מילת המפתח `let` היא פקודה. ברשימה 3-1, השורה `let y = 6;` היא פקודה.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -122,13 +78,11 @@ assigning a value to it with the `let` keyword is a statement. In Listing 3-1,
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/listing-03-01/src/main.rs}}
 ```
 
-<span class="caption">Listing 3-1: A `main` function declaration containing one statement</span>
+<span class="caption">רשימה 3-1: הגדרת פונקציית `main` הכוללת פקודה אחת</span>
 
-Function definitions are also statements; the entire preceding example is a
-statement in itself.
+הגדרות של פונקציות גם הן פקודות; כל הדוגמא הקודמת היא עצמה פקודה.
 
-Statements do not return values. Therefore, you can’t assign a `let` statement
-to another variable, as the following code tries to do; you’ll get an error:
+פקודות אינן מחזירות ערכים. לכן לא ניתן לבצע השמה של פקודת `let` למשתנה אחר, כפי שהקוד הבא מנסה לעשות; מה שיגרום לשגיאה:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -136,25 +90,15 @@ to another variable, as the following code tries to do; you’ll get an error:
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-19-statements-vs-expressions/src/main.rs}}
 ```
 
-When you run this program, the error you’ll get looks like this:
+אם תנסו להריץ תכנית זו, השגיאה שתקבלו תראה כך:
 
 ```console
 {{#include ../listings/ch03-common-programming-concepts/no-listing-19-statements-vs-expressions/output.txt}}
 ```
 
-The `let y = 6` statement does not return a value, so there isn’t anything for
-`x` to bind to. This is different from what happens in other languages, such as
-C and Ruby, where the assignment returns the value of the assignment. In those
-languages, you can write `x = y = 6` and have both `x` and `y` have the value
-`6`; that is not the case in Rust.
+הפקודה `let y = 6` לא מחזירה ערך, ולכן אין שום דבר אליו `x` יכול להיקשר. תופעה זו שונה ממה שקורה בשפות אחרות, כגון C ו-Ruby, שבהם פקודות השמה מחזירות את הערך של ההשמה. בשפות אלה ניתן לכתוב `x = y = 6` ולגרום לכך שגם `x` וגם `y` יקושרו לערך `6`; זה לא המצב בראסט.
 
-Expressions evaluate to a value and make up most of the rest of the code that
-you’ll write in Rust. Consider a math operation, such as `5 + 6`, which is an
-expression that evaluates to the value `11`. Expressions can be part of
-statements: in Listing 3-1, the `6` in the statement `let y = 6;` is an
-expression that evaluates to the value `6`. Calling a function is an
-expression. Calling a macro is an expression. A new scope block created with
-curly brackets is an expression, for example:
+ביטויים עוברים הערכה לתוצאה והם מהווים את רוב הקוד שתכתבו בראסט. חשבו למשל על פעולה מתמטית, כמו `5 + 6`, שהוא ביטוי המוערך לתוצאה `11`. ביטויים יכולים להיות חלק מפקודות: ברשימה 3-1, `6` בפקודה `let y = 6;` הוא ביטוי שמוערך לתוצאה `6`. קריאה לפונקציה היא ביטוי. קריאה למאקרו היא ביטוי. בלוק מתחם חדש שנוצר ע"י סוגריים מסולסלים הוא ביטוי, למשל:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -162,7 +106,7 @@ curly brackets is an expression, for example:
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-20-blocks-are-expressions/src/main.rs}}
 ```
 
-This expression:
+הביטוי הבא:
 
 ```rust,ignore
 {
@@ -171,23 +115,11 @@ This expression:
 }
 ```
 
-is a block that, in this case, evaluates to `4`. That value gets bound to `y`
-as part of the `let` statement. Note that the `x + 1` line doesn’t have a
-semicolon at the end, which is unlike most of the lines you’ve seen so far.
-Expressions do not include ending semicolons. If you add a semicolon to the end
-of an expression, you turn it into a statement, and it will then not return a
-value. Keep this in mind as you explore function return values and expressions
-next.
+הוא בלוק אשר, במקרה זה, מוערך לתוצאה `4`. הערך הזה נקשר למשתנה `y` כחלק מהפקודה `let`. שימו לב שבשורה `x + 1` חסר סימן הנקודה-פסיק בסופה, בשונה מרוב השורות שראיתם עד כה. ביטויים לא מסתיימים בנקודה-פסיק. הוספת נקודה-פסיק בסוף ביטוי הופכת אותו לפקודה, ולכן הוא לא יחזיר שום ערך. זכרו זאת כשאתם מתוודעים לערכים המוחזרים מפונקציות ולביטויים בהמשך.
 
-### Functions with Return Values
+### פונקציות המחזירות ערך
 
-Functions can return values to the code that calls them. We don’t name return
-values, but we must declare their type after an arrow (`->`). In Rust, the
-return value of the function is synonymous with the value of the final
-expression in the block of the body of a function. You can return early from a
-function by using the `return` keyword and specifying a value, but most
-functions return the last expression implicitly. Here’s an example of a
-function that returns a value:
+פונקציות יכולות להחזיר ערכים לקוד שקרא להן. אין צורך לתת שם לערך המוחזר, אבל חייבים להכריז על טיפוס הערך המחוזר אחרי סימן של חץ (`->`). בראסט, הערך שפונקציה מחזירה הוא הערך התוצאה הסופית בהערכת הביטוי האחרון בגוף הפונקציה. ניתן להחזיר ערך מוקדם יותר ע"י שימוש במילת המפתח `return` וציון מפורש של הערך להחזרה, אבל רוב הפונקציות מחזירות את הביטוי האחרון. הינה דוגמא לפונקציה שמחזירה ערך:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -195,30 +127,21 @@ function that returns a value:
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-21-function-return-values/src/main.rs}}
 ```
 
-There are no function calls, macros, or even `let` statements in the `five`
-function—just the number `5` by itself. That’s a perfectly valid function in
-Rust. Note that the function’s return type is specified too, as `-> i32`. Try
-running this code; the output should look like this:
+אין לא קריאות לפונקציות, לא מקרואים, ואפילו לא פקודות `let` בפונקציה `five` -- רק את המספר `5` לבדו. זוהי פונקציה לגיטימית לחלוטין בראסט. שימו לב שטיפוס הערך המוחזר של הפונקציה כן מוגדר, כ- `-> i32`. נסו להריץ את הקוד הזה; הפלט צריך להראות כך:
 
 ```console
 {{#include ../listings/ch03-common-programming-concepts/no-listing-21-function-return-values/output.txt}}
 ```
 
-The `5` in `five` is the function’s return value, which is why the return type
-is `i32`. Let’s examine this in more detail. There are two important bits:
-first, the line `let x = five();` shows that we’re using the return value of a
-function to initialize a variable. Because the function `five` returns a `5`,
-that line is the same as the following:
+המספר `5` בפונקציה `five` הוא הערך המוחזר של הפונקציה, מה שמסביר מדוע טיפוס הערך המוחזר הוא `i32`. הבה נבחן זאת ביתר פירוט. יש שני חלקים חשובים: ראשית, השורה `let x = five();` מראה שניתן להשתמש בערך המוחזר של פונקציה כדי לאתחל משתנה. היות והפונקציה `five` מחזירה `5`, שורה זו שקולה לשורה הבאה:
 
 ```rust
 let x = 5;
 ```
 
-Second, the `five` function has no parameters and defines the type of the
-return value, but the body of the function is a lonely `5` with no semicolon
-because it’s an expression whose value we want to return.
+שנית, לפונקציה `five` אין פרמטרים ו *** read first sentnce? אבל גוף הפונקציה מורכב מ- `5` בודד ללא נקודה-פסיק בגלל שזה ביטוי שאת ערכו אנחנו רוצים להחזיר.
 
-Let’s look at another example:
+הבה נתבונן בדוגמא נוספת:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -226,9 +149,7 @@ Let’s look at another example:
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-22-function-parameter-and-return/src/main.rs}}
 ```
 
-Running this code will print `The value of x is: 6`. But if we place a
-semicolon at the end of the line containing `x + 1`, changing it from an
-expression to a statement, we’ll get an error:
+הרצת קוד זה תדפיס `The value of x is: 6`. אבל אם נמקם נקודה-פסיק בסוף השורה המכילה את `x + 1`, ובכך נשנה אותה מביטוי לפקודה, נקבל שגיאה:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -236,16 +157,10 @@ expression to a statement, we’ll get an error:
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-23-statements-dont-return-values/src/main.rs}}
 ```
 
-Compiling this code produces an error, as follows:
+ניסיון לקמפייל את הקוד תוביל לשגיאה הבאה:
 
 ```console
 {{#include ../listings/ch03-common-programming-concepts/no-listing-23-statements-dont-return-values/output.txt}}
 ```
 
-The main error message, `mismatched types`, reveals the core issue with this
-code. The definition of the function `plus_one` says that it will return an
-`i32`, but statements don’t evaluate to a value, which is expressed by `()`,
-the unit type. Therefore, nothing is returned, which contradicts the function
-definition and results in an error. In this output, Rust provides a message to
-possibly help rectify this issue: it suggests removing the semicolon, which
-would fix the error.
+הודעת השגיאה המרכזית, `mismatched types`, חושפת את לב הבעיה עם הקוד הזה. The definition of the function `plus_one` says that it will return an `i32`, but statements don’t evaluate to a value, which is expressed by `()`, the unit type. Therefore, nothing is returned, which contradicts the function definition and results in an error. In this output, Rust provides a message to possibly help rectify this issue: it suggests removing the semicolon, which would fix the error.
