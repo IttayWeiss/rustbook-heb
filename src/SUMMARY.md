@@ -2,7 +2,7 @@
 
 [שפת התכנות ראסט](title-page.md)
 [הקדמה](foreword.md)
-[Introduction](ch00-00-introduction.md)
+[מבוא](ch00-00-introduction.md)
 
 ## Getting started
 
