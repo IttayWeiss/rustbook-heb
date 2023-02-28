@@ -1,0 +1,16 @@
+Rust ראסט
+Cargo קארגו
+enum מבחר
+hash map מיפוי גיבוב
+generics ג'נריקס
+trait תכונה
+lifetime פז"ם
+closure סגור
+iterator איטרטור
+smart pointer מצביע חכם
+multiple threads ריבוי פתילים
+Rust idioms אידיאומות ראסט
+Object-oriented programming תכנות מוכוון אובייקטים
+keyword מילת מפתח
+nightly Rust ראסט לילית
+Ferris פריס
