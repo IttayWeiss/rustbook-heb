@@ -24,3 +24,19 @@ Rustaceans ראסטיונרים
 dependencies תלותות
 crate מכולה
 path מסלול
+argument ארגומנט
+scope מתחם
+prelude פרליוד
+parameter פרמטר
+immutable מנוע-שינוי
+mutable בר-שינוי
+instance מופע
+module מודול
+reference הפניה
+result מענה
+variant ווריאנט
+match התאמה
+arm זרוע
+type טיפוס
+shadowing העפלה
+
