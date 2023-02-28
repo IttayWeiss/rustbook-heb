@@ -1,4 +1,4 @@
-# הקדמה
+# מבוא
 
 > הערה: זהו תרגום של ספר המקור בגרסה הזהה לספר [The Rust Programming Language][nsprust] הזמינה בדפוס ובפורמט ebook בהוצאת [No Starch Press][nsp].
 
