@@ -17,3 +17,5 @@ Ferris פריס
 compiler קומפיילר
 linker מקשר
 מעטפת shell 
+to indent לאנדנט
+macro מאקרו
