@@ -15,7 +15,12 @@ keyword מילת מפתח
 nightly Rust ראסט לילית
 Ferris פריס
 compiler קומפיילר
+to compile לקמפל
 linker מקשר
 מעטפת shell 
 to indent לאנדנט
 macro מאקרו
+Rustaceans ראסטיונרים
+dependencies תלותות
+crate מכולה
+path מסלול
