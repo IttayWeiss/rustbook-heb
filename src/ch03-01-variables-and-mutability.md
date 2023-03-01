@@ -1,19 +1,10 @@
-## Variables and Mutability
+## משתנים וברות-שינוי
 
-As mentioned in the [“Storing Values with
-Variables”][storing-values-with-variables]<!-- ignore --> section, by default,
-variables are immutable. This is one of many nudges Rust gives you to write
-your code in a way that takes advantage of the safety and easy concurrency that
-Rust offers. However, you still have the option to make your variables mutable.
-Let’s explore how and why Rust encourages you to favor immutability and why
-sometimes you might want to opt out.
+כפי שהוזכר בסעיף ["אכסון ערכים למשתנים"][storing-values-with-variables]<!-- ignore -->, ברירת המחדל היא שמשתנים אינם ברי שינוי. זהו מנגנון אחד מיני רבים המתוכננים כדי לדרבן אתכם לכתוב קוד בצורה שמנצלת את הבטיחות ונוחות המקביליות שראסט מציעה. אבל, עדיין יש לכם את האפשרות לגרום למשתנים שלכם להיות ברי-שינוי. הבה נבין כיצד ומדוע ראסט מעודדת אתכם להעדיף חוסר ברות-שינוי ומדוע, לעיתים, יתכן ותרצו להתעקש על ברות-שינוי.
 
-When a variable is immutable, once a value is bound to a name, you can’t change
-that value. To illustrate this, generate a new project called *variables* in
-your *projects* directory by using `cargo new variables`.
+כאשר משתנה אינו בר-שינוי, מרגע שערך נקשר לשם המשתנה לא ניתן לשנות את הערך. כדי להדגים זאת, צרו פרוייקט חדש בשם *variables* בתיקיית הפרוייקטים שלכם ע"י הרצת `cargo new variables`.
 
-Then, in your new *variables* directory, open *src/main.rs* and replace its
-code with the following code, which won’t compile just yet:
+ואז, בתיקייה החדשה *variables*, פתחו את הקובץ *src/main.rs* והחליפו את הקוד שבו בקוד הבא, אשר לא יעבור קומפילציה בשלב זה:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -21,40 +12,21 @@ code with the following code, which won’t compile just yet:
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-01-variables-are-immutable/src/main.rs}}
 ```
 
-Save and run the program using `cargo run`. You should receive an error message
-regarding an immutability error, as shown in this output:
+בצעו שמירה והריצו את התכנית ע"י `cargo run`. אתם צריכים לקבל הודעת שגיאה בדבר העדר ברות-שינוי, כפי שמוצג בקלט:
 
 ```console
 {{#include ../listings/ch03-common-programming-concepts/no-listing-01-variables-are-immutable/output.txt}}
 ```
 
-This example shows how the compiler helps you find errors in your programs.
-Compiler errors can be frustrating, but really they only mean your program
-isn’t safely doing what you want it to do yet; they do *not* mean that you’re
-not a good programmer! Experienced Rustaceans still get compiler errors.
+דוגמא זו מראה כיצד הקומפיילר מסייע במציאת טעויות בתכניות שלכם. שגיאות קומפילציה יכולות להיות מתישות, אבל הן שם כדי להתריע שהתכנית שלכם עדיין לא מבצעת בבטיחות את מה שאתם רוצים שהיא תבצע; השגיאות *אינן* אומרות שאינכם מתכנתים טובים! גם ראסטיונרים מנוסים מקבלים שגיאות קומפילציה.
 
-You received the error message `` cannot assign twice to immutable variable `x`
-`` because you tried to assign a second value to the immutable `x` variable.
+קיבלתם את הודעת השגיאה `` cannot assign twice to immutable variable `x` `` מכיוון שניסיתם לקשור ערך שני למשתנה `x`, אבל `x` אינו בר-שינוי.
 
-It’s important that we get compile-time errors when we attempt to change a
-value that’s designated as immutable because this very situation can lead to
-bugs. If one part of our code operates on the assumption that a value will
-never change and another part of our code changes that value, it’s possible
-that the first part of the code won’t do what it was designed to do. The cause
-of this kind of bug can be difficult to track down after the fact, especially
-when the second piece of code changes the value only *sometimes*. The Rust
-compiler guarantees that when you state that a value won’t change, it really
-won’t change, so you don’t have to keep track of it yourself. Your code is thus
-easier to reason through.
+יש חשיבות לקבלת שגיאות קומפילציה כשאנו מנסים לשנות ערך שאינו בר-שינוי כיוון שעצם הניסיון יכול להוביל לבאגים. אם חלק מסוים בקוד שלנו פועל תחת ההנחה שערך כלשהו לעולם לא ישתנה וחלק אחר בקוד משנה את הערך הזה, אז הקוד בחלק הראשון עלול לא לעשות את מה שהוא תוכנן לעשות. הגורם לסוג זה של באגים יכול להיות קשה לאיתור לאחר מעשה, במיוחד במידה ופיסת הקוד השניה משנה את הערך האמור רק *לפעמים*. הקומפיילר של ראסט מבטיח שאם מציינים שערך לא ישתנה, אז הוא באמת לא ישתנה, וכך נחסך ממכם הצורך לעקוב אחר זאת בעצמכם. כך מתקבל קוד נוח יותר להבנה ולניתוח.
 
-But mutability can be very useful, and can make code more convenient to write.
-Although variables are immutable by default, you can make them mutable by
-adding `mut` in front of the variable name as you did in [Chapter
-2][storing-values-with-variables]<!-- ignore -->. Adding `mut` also conveys
-intent to future readers of the code by indicating that other parts of the code
-will be changing this variable’s value.
+אבל, ברות-שינוי יכולה להיות מאוד שימושית ועשויה לתרום לקלות הכתיבה של קוד. למרות שברירת המחדל היא שמשתנים הם לא ברי-שינוי, ניתן להפוך אותם לברי-שינוי ע"י הוספת `mut` לפני שם המשתנה, כפי שעשיתם [בפרק 2][storing-values-with-variables]<!-- ignore -->. הוספה של `mut` גם מבהירה לקוראים עתידיים של הקוד את הכוונה שחלקים אחרים של הקוד ישנו את ערך המשתנה.
 
-For example, let’s change *src/main.rs* to the following:
+למשל, הבה נשנה את תוכן הקובץ *src/main.rs* כך:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -62,74 +34,39 @@ For example, let’s change *src/main.rs* to the following:
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-02-adding-mut/src/main.rs}}
 ```
 
-When we run the program now, we get this:
+אם נריץ את התכנית עכשיו, אז נקבל:
 
 ```console
 {{#include ../listings/ch03-common-programming-concepts/no-listing-02-adding-mut/output.txt}}
 ```
 
-We’re allowed to change the value bound to `x` from `5` to `6` when `mut` is
-used. Ultimately, deciding whether to use mutability or not is up to you and
-depends on what you think is clearest in that particular situation.
+מותר לנו לשנות את הערך הקשור ל-`x` מ-`5` ל-`6` כאשר נעשה שימוש ב-`mut`. בסופו של דבר, ההחלטה אם כן או לא להשתמש בברות-שינוי היא בידכם ותלויה במה שלהבנתכם יהיה נהיר ביותר בסיטואציה הנתונה.
 
-### Constants
+### קבועים
 
-Like immutable variables, *constants* are values that are bound to a name and
-are not allowed to change, but there are a few differences between constants
-and variables.
+*קבועים*, בדומה למשתנים שאינם ברי-שינוי, הם ערכים הקשורים לשם ואסור לשנות אותם. אבל יש כמה הבדלים בין קבועים למשתנים.
 
-First, you aren’t allowed to use `mut` with constants. Constants aren’t just
-immutable by default—they’re always immutable. You declare constants using the
-`const` keyword instead of the `let` keyword, and the type of the value *must*
-be annotated. We’ll cover types and type annotations in the next section,
-[“Data Types,”][data-types]<!-- ignore -->, so don’t worry about the details
-right now. Just know that you must always annotate the type.
+ראשית, לא ניתן להשתמש ב-`mut` עם קבועים. קבועים הם יותר רק מנועי-שינוי כברירת מחדל -- הם אף פעם לא יכולים להיות ברי-שינוי. מגדירים קבועים ע"י שימוש במילת המפתח `const` במקום במילת המפתח `let`, והטיפוס של הערך *חייב* להיות מבואר. אנו נדון בטיפוסים ובביאור טיפוס בסעיף הבא, [טיפוסי דאטה][data-types]<!-- ignore -->, כך שכרגע אין צורך לדאוג לגבי הפרטים. רק זכרו שתמיד חייבים לבאר את הטיפוס.
 
-Constants can be declared in any scope, including the global scope, which makes
-them useful for values that many parts of code need to know about.
+אפשר להכריז על קבועים בכל מתחם, כולל המתחם הגלובאלי, דבר ההופך אותם לשימושיים עבור ערכים אליהם חלקים רבים בקוד צריכים גישה.
 
-The last difference is that constants may be set only to a constant expression,
-not the result of a value that could only be computed at runtime.
+ההבדל האחרון הוא שקבועים יכולים לקבל אך ורק ביטויים קבועים, ובשום פנים לא תוצאה של ערך שערכו ניתן לחישוב רק בזמן הריצה.
 
-Here’s an example of a constant declaration:
+הינה דוגמא להכרזה של קבוע:
 
 ```rust
 const THREE_HOURS_IN_SECONDS: u32 = 60 * 60 * 3;
 ```
 
-The constant’s name is `THREE_HOURS_IN_SECONDS` and its value is set to the
-result of multiplying 60 (the number of seconds in a minute) by 60 (the number
-of minutes in an hour) by 3 (the number of hours we want to count in this
-program). Rust’s naming convention for constants is to use all uppercase with
-underscores between words. The compiler is able to evaluate a limited set of
-operations at compile time, which lets us choose to write out this value in a
-way that’s easier to understand and verify, rather than setting this constant
-to the value 10,800. See the [Rust Reference’s section on constant
-evaluation][const-eval] for more information on what operations can be used
-when declaring constants.
+שם הקבוע הוא `THREE_HOURS_IN_SECONDS` וערכו הוא התוצאה של הכפלת המספר 60 (מספר השניות בדקה) במספר 60 (מספר הדקות בשעה) במספר 3 (מספר השעות שאנו רוצים למדוד בתוכנית). הקונבנציה לנתינת שמות לקבועים בראסט משתמשת באותיות גדולות ומקפים תחתונים בין מילים. הקומפיילר יכול להעריך בזמן הקומפילציה אוסף מצומצם של פעולות. זה מאפשר לנו לבחור לכתוב את הערך בדרך קלה להבנה ולווידוא, במקום לקשור את הקבוע לערך 10,800. ראו [Rust Reference’s section on constant evaluation][const-eval] למידע נוסף בדבר הפעולות המותרות לשימוש בזמן הכרזה על קבועים.
 
-Constants are valid for the entire time a program runs, within the scope in
-which they were declared. This property makes constants useful for values in
-your application domain that multiple parts of the program might need to know
-about, such as the maximum number of points any player of a game is allowed to
-earn, or the speed of light.
+קבועים תקפים לאורך זמן הריצה של התכנית, במתחם בו הם הוכרזו. תכונה זו הופכת קבועים לשימושיים עבור ערכים באפליקציה שלכם שחלקים רבים של התוכנית צריכים, למשל המספר המקסימלי של נקודות ששחקן במשחק יכול לצבור, או מהירות האור.
 
-Naming hardcoded values used throughout your program as constants is useful in
-conveying the meaning of that value to future maintainers of the code. It also
-helps to have only one place in your code you would need to change if the
-hardcoded value needed to be updated in the future.
+הכרזה על ערכים מקובעים, שבהם משתמשים במהלך התכנית, כקבועים מסייעת בהעברת המשמעות של הערך למתחזקים עתידיים של הקוד. זה גם עוזר שיש רק מקום אחד בקוד שצריך לשנות במידה והערכים המקובעים יעברו עדכון בעתיד.
 
-### Shadowing
+### עיפול
 
-As you saw in the guessing game tutorial in [Chapter
-2][comparing-the-guess-to-the-secret-number]<!-- ignore -->, you can declare a
-new variable with the same name as a previous variable. Rustaceans say that the
-first variable is *shadowed* by the second, which means that the second
-variable is what the compiler will see when you use the name of the variable.
-In effect, the second variable overshadows the first, taking any uses of the
-variable name to itself until either it itself is shadowed or the scope ends.
-We can shadow a variable by using the same variable’s name and repeating the
-use of the `let` keyword as follows:
+כפי שראיתם בהדרכה של משחק ניחוש המספר [בפרק 2]()<!-- ignore -->, ניתן להכריז על משתנה חדש עם אותו שם כמו משתנה קודם. ראסטיונרים אומרים שהמשתנה הראשון *מועפל* (shadowed) ע"י השני, מה שאומר שהמשתנה השני הוא זה שהקומפיילר יראה כאשר תשתמשו בשם של המשתמש. למעשה, המשתנה השני מעפיל על הראשון ולוקח את כל השימושים בשם המשתמש לעצמו, עד שהוא עצמו יועפל ע"י משתנה אחר, או שיצא מחוץ למתחחם. ניתן להעפיל משתנה ע"י שימוש בשם של המשתנה הקיים ביחד עם מילת המפתח `let`, למשל כך:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -137,52 +74,33 @@ use of the `let` keyword as follows:
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-03-shadowing/src/main.rs}}
 ```
 
-This program first binds `x` to a value of `5`. Then it creates a new variable
-`x` by repeating `let x =`, taking the original value and adding `1` so the
-value of `x` is then `6`. Then, within an inner scope created with the curly
-brackets, the third `let` statement also shadows `x` and creates a new
-variable, multiplying the previous value by `2` to give `x` a value of `12`.
-When that scope is over, the inner shadowing ends and `x` returns to being `6`.
-When we run this program, it will output the following:
+תכנית זאת קודם מקשרת את `x` לערך `5`. אז היא יוצרת את המשתנה החדש `x` ע"י שימוש חוזר ב- `let x =`, לוקחת את הערך המקורי ומוסיפה לו `1`, כך שהערך של `x` הוא `6`. אח"כ, בתוך מתחם פנימי שנוצר ע"י הסוגרים המסולסלים, פקודת ה- `let` השלישית מעפילה גם היא על `x` ויוצרת משתנה חדש וכופלת את הערך הקודם ב- `2` כדי לתת ל- `x` את הערך `12`. כאשר מתחם זה מגיע לסופו, ההעפלה הפנימית מסתיימת והמשתנה `x` חוזר להיות `6`. כאשר מריצים את התכנית מקבלים את הפלט הבא:
 
 ```console
 {{#include ../listings/ch03-common-programming-concepts/no-listing-03-shadowing/output.txt}}
 ```
 
-Shadowing is different from marking a variable as `mut` because we’ll get a
-compile-time error if we accidentally try to reassign to this variable without
-using the `let` keyword. By using `let`, we can perform a few transformations
-on a value but have the variable be immutable after those transformations have
-been completed.
+עיפול אינו שקול להכרזה על משתנה כ-`mut` כי אם ננסה בטעות לשנות את הערך ללא שימוש במילת המפתח `let `, נקבל שגיאת קומפילציה. ע"י שימוש ב-`let` ניתן לבצע מספר טרנספורמציות על ערך מסוים ולקבל, לאחר שהטרנספורמציות הושלמו, ערך שאינו בר-שינוי.
 
-The other difference between `mut` and shadowing is that because we’re
-effectively creating a new variable when we use the `let` keyword again, we can
-change the type of the value but reuse the same name. For example, say our
-program asks a user to show how many spaces they want between some text by
-inputting space characters, and then we want to store that input as a number:
+הבדל נוסף בין `mut` לעיפול הוא שמשום שאנחנו למעשה יוצרים משתנה חדש כשאנחנו משתמשים במילת המפתח `let` פעם נוספת, יש באפשרותינו לשנות את טיפוס הערך תוך שימור שם המשתנה. למשל, נניח שהתכנית שלנו מבקשת מהמשתמש לתאר כמה תווי רווח צריכים להיות בין טקסט כלשהו ע"י הקלדת תווי רווח, ואז אנחנו רוצים לשמור את הקלט כמספר:
 
 ```rust
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-04-shadowing-can-change-types/src/main.rs:here}}
 ```
 
-The first `spaces` variable is a string type and the second `spaces` variable
-is a number type. Shadowing thus spares us from having to come up with
-different names, such as `spaces_str` and `spaces_num`; instead, we can reuse
-the simpler `spaces` name. However, if we try to use `mut` for this, as shown
-here, we’ll get a compile-time error:
+המשתנה `spaces` הראשון הוא מטיפוס מחרוזת והמשתנה `spaces` השני הוא מטיפוס מספר. עיפול חוסך מאיתנו את הצורך להמציא שמות שונים, כגון `spaces_str` ו-`spaces_num`; במקום זאת ניתן פשוט לעשות שימוש חוזר בשם `spaces`. אולם, אם ננסה להשתמש ב-`mut`, כמוצג כאן, נקבל שגיאת קומפילציה:
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch03-common-programming-concepts/no-listing-05-mut-cant-change-types/src/main.rs:here}}
 ```
 
-The error says we’re not allowed to mutate a variable’s type:
+השגיאה אומרת שאסור לנו לשנות את טיפוס המשתנה:
 
 ```console
 {{#include ../listings/ch03-common-programming-concepts/no-listing-05-mut-cant-change-types/output.txt}}
 ```
 
-Now that we’ve explored how variables work, let’s look at more data types they
-can have.
+עכשיו משראינו כיצד משתנים מתנהגים, הבה נביט על כמה טיפוסי דאטה נוספים שהם יכולים לקבל.
 
 [comparing-the-guess-to-the-secret-number]:
 ch02-00-guessing-game-tutorial.html#comparing-the-guess-to-the-secret-number

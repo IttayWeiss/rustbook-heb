@@ -41,4 +41,6 @@ type טיפוס
 shadowing העפלה
 annotation ביאור
 loop לולאה
+global גלובאלי
+local לוקאלי
 
