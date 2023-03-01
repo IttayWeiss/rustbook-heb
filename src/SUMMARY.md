@@ -11,7 +11,7 @@
     - [שלום עולם!](ch01-02-hello-world.md)
     - [שלום קארגו!](ch01-03-hello-cargo.md)
 
-- [Programming a Guessing Game](ch02-00-guessing-game-tutorial.md)
+- [תכנות משחק ניחוש מספר](ch02-00-guessing-game-tutorial.md)
 
 - [Common Programming Concepts](ch03-00-common-programming-concepts.md)
     - [Variables and Mutability](ch03-01-variables-and-mutability.md)

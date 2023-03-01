@@ -420,7 +420,7 @@ anchor or snip comments
 
 יסוד השגיאה מציין שישנם *טיפוסים לא-מותאמים* (mismatched types). לראסט יש מערכת טיפוסים סטטית חזקה. אולם, היא גם מבצעת הסקת טיפוס. כשכתבנו `let mut guess = String::new()`, ראסט הצליחה להסיק ש- `guess` צריך להיות מטיפוס `String` והיא לא הכריחה אותנו לכתוב זאת מפורשות. המשתנה `secret_number`, לאומת זאת, הוא מטיפוס מספר. יש כמה טיפוסי מספר של ראסט שיכולים לאכסן מספר בין 1 ל-100: `i32`, מספר בן 32-ביטים, `u32`, מספר לא מסומן בן 32-ביטים, `i64`, מספר בן 64-ביטים, ואחרים. ללא ציון מפורש, ברירת המחדל של ראסט היא `i32`. לכן, בהעדר הוספת מידע לגבי הטיפוס בצורה שתאפשר לראסט להסיק טיפוס אחר, הטיפוס של `secret_number` הוא `i32`. הסיבה לשגיאה היא שראסט לא יכולה להשוות בין טיפוסים של מחרוזת ומספר.
 
-בסופו של דבר, אנו רוצים להפוך את המחרוזת שהתכנית קראה כקלט מטיפוס מחרוזת לטיפוס מספרי מתאים כדי שנוכל להשוות אותו נומרית למספר הסודי. אנו עושים כך ע"י הוספת השורה הבאה לגוף הפונקציה `main`:
+בסופו של דבר, אנו רוצים להפוך את המחרוזת שהתכנית קראה כקלט מטיפוס מחרוזת לטיפוס מספרי מתאים כדי שנוכל להשוות אותו נומרית למספר הסודי. אנו עושים זאת כך הוספת השורה הבאה לגוף הפונקציה `main`:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -434,17 +434,17 @@ anchor or snip comments
 let guess: u32 = guess.trim().parse().expect("Please type a number!");
 ```
 
-יצרנו משתנה בשם `guess`. אבל רגע אחד, האם אין כבר בתכנית משתנה בשם `guess`? כן, אבל ראסט מאפשרת לנו להעפיל (to shadow) על הערך הקודם של `guess` באמצעות ערך חדש. *Shadowing* lets us reuse the `guess` variable name rather than forcing us to create two unique variables, such as `guess_str` and `guess`, for example. We’ll cover this in more detail in [Chapter 3][shadowing]<!-- ignore -->אבל לבינתיים, דעו שבתכונה זו משתמשים רבות כאשר רוצים להפוך משתנה מטיפוס אחד לאחר.
+יצרנו משתנה בשם `guess`. אבל רגע אחד, האם אין כבר בתכנית משתנה בשם `guess`? כן, אבל ראסט מאפשרת לנו להעפיל (to shadow) על הערך הקודם של `guess` באמצעות ערך חדש. העפלה מאפשרת לבצע שימוש חוזר בשם המשתנה `guess` במקום להצטרך ליצור שני משתנים, כמו `guess_str` ו-`guess` למשל. אנו נדון בכך ביתר פירוט [בפרק 3][shadowing].<!-- ignore --> לבינתיים, דעו שבתכונה זו משתמשים פעמים רבות כאשר רוצים להפוך משתנה מטיפוס אחד לאחר.
 
-אנו קושרים משתנה חדש*** זה לביטוי `guess.trim().parse()`. המשתנה `guess` בביטוי מתייחס למשתנה `guess` המקורי שמכיל את הקלט כמחרוזת. המתודה `trim` על מופע של `String` מקצצת את כל סימני הריווח בתחילתה וסופה של המחרוזת. אנו חייבים לעשות זאת כדי להיות מסוגלים להשוות את המחרוזת למשתנה מהטיפוס `u32`, שיכול להכיל רק ערכים נומריים. המשתמש חייב ללחוץ <span class="keystroke">enter</span> כדי לספק את `read_line` ולהקליד את הניחוש, ודבר זה מוסיף תו שורה-חדשה למחרוזת. למשל, אם המשתמש מקליד <span class="keystroke">5</span> ואז לוחץ <span
+אנו קושרים משתנה חדש זה לביטוי `guess.trim().parse()`. המשתנה `guess` בביטוי מתייחס למשתנה `guess` המקורי שמכיל את הקלט כמחרוזת. המתודה `trim` על מופע של `String` מקצצת את כל סימני הריווח בתחילתה וסופה של המחרוזת. אנו חייבים לעשות זאת כדי להיות מסוגלים להשוות את המחרוזת למשתנה מהטיפוס `u32`, שיכול להכיל רק ערכים נומריים. המשתמש חייב ללחוץ <span class="keystroke">enter</span> כדי לספק את `read_line` ולהקליד את הניחוש, ודבר זה מוסיף תו שורה-חדשה למחרוזת. למשל, אם המשתמש מקליד <span class="keystroke">5</span> ואז לוחץ <span
 class="keystroke">enter</span>, המחרוזת ב-`guess` תראה כך: `5\n`. התו `\n` מייצג "שורה-חדשה" (על Windows, לחיצה על <span
-class="keystroke">enter</span> גורמת ל-carriage return בנסוף לשורה-חדשה.`\r\n`.) המתודה `trim` מקצצת גם את `\n` וגם את `\r\n`, והתוצאה היא `5`.***.
+class="keystroke">enter</span> גורמת ל-carriage return בנוסף לשורה-חדשה.`\r\n`.) המתודה `trim` מקצצת גם את `\n` וגם את `\r\n`, והתוצאה היא `5`.
 
-[המתודה `parse` על מחרוזות][parse]<!-- ignore --> ממירה מחרוזת לטיפוס אחר. במקרה שלנו אנו משתמשים בה כדי להמיר ממחרוזת למספר. עלינו לאמר לראסט בדיוק איזה טיפוס מספר אנו רוצים, ואנו עושים כך באמצעות `let guess: u32`. סימן הנקודותיים (`:`) אחרי `guess` מאותת לראסט שאנחנו מספקים טיפוס מפורש עבור המשתנה. לראסט יש כמה טיפוסים מובנים; הטיפוס `u32` בו אנו משתמשים כאן הוא מספר שלם לא מסומן, בן 32-ביטים. זה ברירת מחדל טובה עבור מספר חיובי קטן. אודות טיפוסי מספרים אחרים תלמדו [בפרק 3][integers]<!-- ignore -->.
+[המתודה `parse` על מחרוזות][parse]<!-- ignore --> ממירה מחרוזת לטיפוס אחר. במקרה שלנו אנו משתמשים בה כדי להמיר ממחרוזת למספר. עלינו לאמר לראסט בדיוק איזה טיפוס מספר אנו רוצים, ואנו עושים זאת באמצעות `let guess: u32`. סימן הנקודותיים (`:`) אחרי `guess` אומר לראסט שאנחנו מבארים במפורש את הטיפוס של המשתנה. לראסט יש כמה טיפוסים מובנים; הטיפוס `u32` בו אנו משתמשים כאן הוא מספר שלם לא מסומן, בן 32-ביטים. זו ברירת מחדל טובה עבור מספר חיובי קטן. אודות טיפוסי מספרים אחרים תלמדו [בפרק 3][integers]<!-- ignore -->.
 
 בנוסף, השימוש ב-`u32` בתכנית פשוטה זו וההשוואה עם `secret_number` גורמים לראסט להסיק ש-`secret_number` אמור להיות `u32` גם כן. על כן, כעת, ההשוואה תתבצע בין שני ערכים מאותו טיפוס!
 
-המתודה `parse` יכולה לפעול רק על תווים שיכולים לעבור המרה למספרים, ולכן יכולה בקלות ליצור שגיאות. אם, למשל, המחרוזת כוללת `A👍%`, אז אין דרך להמיר זאת למספר. כיוון שהמתודה יכולה להיכשל, `parse` מחזירה ערך מטיפוס `Result`, בדומה לדרך פעולה המתודה `read_line` (כפי שדובר לעיל בסעיף [“Handling Potential Failure with `Result`”](#handling-potential-failure-with-result))<!-- ignore-->). אנו נטפל ב- `Result` באותה דרך, שוב ע"י שימוש במתודה `expect`. אם `parse` תחזיר את הווריאנט `Err` של `Result` בגלל שהיא לא יכלה ליצור מספר מהמחרוזת, אז הקריאה ל- `expect` תגרום למשחק לקרוס ולהדפיס את ההודעה המסופקת. אם `parse` יכולה להמיר בהצלחה את המחרוזת למספר, אז היא תחזיר את הווריאנט `Ok` של `Result`, והקריאה ל- `expect` תחזיר את המספר המבוקש מתוך הערך `Ok`.
+המתודה `parse` יכולה לפעול רק על תווים שיכולים לעבור המרה למספרים, ולכן יכולה בקלות ליצור שגיאות. אם, למשל, המחרוזת כוללת `A👍%`, אז אין דרך להמיר זאת למספר. כיוון שהמתודה יכולה להיכשל, `parse` מחזירה ערך מטיפוס `Result`, בדומה לדרך פעולה המתודה `read_line` (כפי שדובר לעיל בסעיף [“Handling Potential Failure with `Result`”](#handling-potential-failure-with-result)<!-- ignore-->). אנו נטפל ב- `Result` באותה דרך, שוב ע"י שימוש במתודה `expect`. אם `parse` תחזיר את הווריאנט `Err` של `Result` בגלל שהיא לא יכלה ליצור מספר מהמחרוזת, אז הקריאה ל- `expect` תגרום למשחק לקרוס ולהדפיס את ההודעה המסופקת. אם `parse` יכולה להמיר בהצלחה את המחרוזת למספר, אז היא תחזיר את הווריאנט `Ok` של `Result`, והקריאה ל- `expect` תחזיר את המספר המבוקש מתוך הערך `Ok`.
 
 כעת, הבה נריץ את התוכנית:
 
@@ -483,7 +483,7 @@ Too big!
 
 כפי שאתם רואים, הכנסנו ללולאה את כל הקוד מההודעה להקליד ניחוש והלאה. וודאו לאנדנט כל אחת מהשורות שבתוך הלולאה ארבעה רווחים קדימה, והריצו את התוכנית. כעת התוכנית תבקש ניחוש נוסף לנצח, וזה מציג לנו בעיה חדשה. נראה שאין למשתמש דרך לצאת מהתכנית!
 
-המשתמש תמיד יכול להכריח את התוכנית לעצור ע"י שימוש בקיצור המקלדת <span class="keystroke">ctrl-c</span>. אבל יש דרך אחרת לצאת מהמפלצת שאינה יודעת שובע, כפי שהוסבר בדיון על `parse` ב-[“Comparing the Guess to the Secret Number”](#comparing-the-guess-to-the-secret-number)<!--
+המשתמש תמיד יכול להכריח את התוכנית לעצור ע"י שימוש בקיצור המקלדת <span class="keystroke">ctrl-c</span>. אבל יש דרך אחרת לצאת מממפלצת זו שאינה יודעת שובע, כפי שהוסבר בדיון על `parse` ב-[“Comparing the Guess to the Secret Number”](#comparing-the-guess-to-the-secret-number)<!--
 ignore -->: אם המשתמש יקליד דבר מה שאינו מספר, התכנית תקרוס. ניתן לנצל זאת כדי לאפשר למשתמש לצאת, כך:
 
 <!-- manual-regeneration
@@ -524,7 +524,7 @@ note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 ### יציאה לאחר ניחוש מדוייק
 
-הבה נתכנת את המשחק לעצור כשהמשתמש מנצח ע"י הוספת פקודת `break`:
+הבה נתכנת את המשחק לעצור כשהמשתמש מנצח ע"י, הוספת פקודת `break`:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -536,7 +536,7 @@ note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 ### טיפול בקלט שגוי
 
-על מנת להוסיף ולעדן את התנהגות המשחק, במקום לתת לתכנית לקרוס במידה והמשתמש מקליד קלט שאינו מספר, הבה נגרום למשחק להתעלם מקלט שאינו מספר כדי שהמשתמש יוכל להמשיך לנחש. נוכל לעשות זאת ע"י שינוי השורה שבה `guess` מומר מטיפוס `String` ל-`u32`, כפי שמוצג שרשימה 2-5.
+על מנת להוסיף ולעדן את התנהגות המשחק, במקום לתת לתכנית לקרוס במידה והמשתמש מקליד קלט שאינו מספר, הבה נגרום למשחק להתעלם מקלט שאינו מספר כדי שהמשתמש יוכל להמשיך לנחש. נוכל לעשות זאת ע"י שינוי השורה שבה `guess` מומר מטיפוס `String` ל-`u32`, כפי שמוצג ברשימה 2-5.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -549,9 +549,9 @@ note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 
 אנו עוברים מקריאה ל- `expect` לשימוש בביטוי `match` כדי לשנות מהתרסקות בעקבות שגיאה, לטיפול בשגיאה. זכרו ש-`parse` מחזירה ערך מטיפוס `Result` וש- `Result` הוא בחירה עם הווריאנטים `Ok` ו-`Err`. אנחנו משתמשים כאן בביטוי `match`, כפי שעשינו בתוצאת ה- `Ordering` של המתודה `cmp`.
 
-אם `parse` מצליחה להמיר בהצלחה את המחרוזת למספר, אז היא תחזיר ערך `Ok` שמכיל את המספר המומר. ערך ה- `Ok` הזה יותאם לדפוס של הזרוע הראשונה וביטוי ה- `match` פשוט יחזיר את הערך `num` אשר `parse` הפיקה ושמה בתוך ערך ה-`Ok`. מספר זה ימצא את דרכו בדיוק למקום בו אנו רוצים אותו, דהיינו המשתנה החדש `guess` שאנו יוצרים.
+אם `parse` מצליחה להמיר בהצלחה את המחרוזת למספר, אז היא תחזיר ערך `Ok` שמכיל את המספר המומר. ערך ה-`Ok` הזה יותאם לדפוס של הזרוע הראשונה וביטוי ה- `match` פשוט יחזיר את הערך `num` אשר `parse` הפיקה ושמה בתוך ערך ה-`Ok`. מספר זה ימצא את דרכו בדיוק למקום בו אנו רוצים אותו, דהיינו המשתנה החדש `guess` שאנו יוצרים.
 
-במידה ו-`parse` *אינה* מצליחה להפוך את המחרוזת למספר, היא תחזיר ערך `Err` שמכיל מידע נוסף אודות הבעיה. ערך ה- `Err` לא מותאם לדפוס ה- `Ok(num)` בזרוע הראשונה של ה- `match`, אבל הוא כן מותאם לדפוס `Err(_)` בזרוע השניה. המקף התחתון, `_`, מתפקד כערך תופס כללי; בדוגמא זו אנו מציינים שאנחנו רוצים להתאים את כל ערכי ה-`Err`, ללא תלות במידע הנוסף שבתוכם. בצורה זו התכנית תבצע את הזרוע הקוד בזרוע השניה, ז"א `continue`, אשר מורה לתכנית לעבור לאיטרציה הבאה של הלולאה ולבקש ניחוש נוסף. כך, למעשה, התכנית מתעלמת מכל השגיאות ש- `parse` עלולה להיתקל בהן!
+במידה ו-`parse` *אינה* מצליחה להפוך את המחרוזת למספר, היא תחזיר ערך `Err` שמכיל מידע נוסף אודות הבעיה. ערך ה- `Err` לא מותאם לדפוס ה- `Ok(num)` בזרוע הראשונה של ה- `match`, אבל הוא כן מותאם לדפוס `Err(_)` בזרוע השניה. המקף התחתון, `_`, מתפקד כערך תופס כללי; בדוגמא זו אנו מציינים שאנחנו רוצים להתאים את כל ערכי ה-`Err`, ללא תלות במידע הנוסף שבתוכם. בצורה זו התכנית תבצע את הקוד בזרוע השניה, ז"א `continue`, אשר מורה לתכנית לעבור לאיטרציה הבאה של הלולאה ולבקש ניחוש נוסף. כך, למעשה, התכנית מתעלמת מכל השגיאות ש- `parse` עלולה להיתקל בהן!
 
 עכשיו כל האלמנטים בתכנית אמורים לעבוד כצפוי. הבה נבדוק זאת:
 
@@ -601,7 +601,7 @@ You win!
 
 ## סיכום
 
-פרוייקט זה היה דרך מעשית להפגיש אתכם עם כמה וכמה עקרונות של ראסט: `let`, `match`, פונקציות, שימוש במכולות חיצוניות, ועוד. בפרקים הבאים תלמדו עוד פרטים על מושגים אלה. פרק 3 מכסה מושגים שנמצאים במרבית שפות התכנות, כמו משתנים, טיפוסי נתונים, ופונקציות, ומראה כיצד להשתמש בהם בראסט. פרק 4 סוקר את מושג הבעלות, תכונה המבדילה את ראסט משפות אחרות. פרק 5 עוסק בתחביר של מבנים (structs) ומתודתות (methods), ופרק 6 מסביר איך עובדים מבחרים.
+פרוייקט זה היה דרך מעשית להפגיש אתכם עם כמה וכמה עקרונות של ראסט: `let`, `match`, פונקציות, שימוש במכולות חיצוניות, ועוד. בפרקים הבאים תלמדו עוד פרטים על מושגים אלה. פרק 3 מכסה מושגים שנמצאים במרבית שפות התכנות, כמו משתנים, טיפוסי נתונים, ופונקציות, ומראה כיצד להשתמש בהם בראסט. פרק 4 סוקר את מושג הבעלות, תכונה המבדילה את ראסט משפות אחרות. פרק 5 עוסק בתחביר של מבנים (structs) ומתודות (methods), ופרק 6 מסביר איך עובדים מבחרים.
 
 [prelude]: ../std/prelude/index.html
 [variables-and-mutability]: ch03-01-variables-and-mutability.html#variables-and-mutability

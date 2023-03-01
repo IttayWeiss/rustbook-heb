@@ -39,4 +39,6 @@ match התאמה
 arm זרוע
 type טיפוס
 shadowing העפלה
+annotation ביאור
+loop לולאה
 
