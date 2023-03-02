@@ -15,10 +15,10 @@
 
 - [עקרונות תכנות נפוצים](ch03-00-common-programming-concepts.md)
     - [משתנים וברות-שינוי](ch03-01-variables-and-mutability.md)
-    - [Data Types](ch03-02-data-types.md)
-    - [Functions](ch03-03-how-functions-work.md)
-    - [Comments](ch03-04-comments.md)
-    - [Control Flow](ch03-05-control-flow.md)
+    - [טיפוסי דאטה](ch03-02-data-types.md)
+    - [פונקציות](ch03-03-how-functions-work.md)
+    - [הערות](ch03-04-comments.md)
+    - [בקרת זרימה](ch03-05-control-flow.md)
 
 - [Understanding Ownership](ch04-00-understanding-ownership.md)
     - [What is Ownership?](ch04-01-what-is-ownership.md)
