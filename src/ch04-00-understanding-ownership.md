@@ -1,7 +1,2 @@
-# Understanding Ownership
-
-Ownership is Rust’s most unique feature and has deep implications for the rest
-of the language. It enables Rust to make memory safety guarantees without
-needing a garbage collector, so it’s important to understand how ownership
-works. In this chapter, we’ll talk about ownership as well as several related
-features: borrowing, slices, and how Rust lays data out in memory.
+# הבנת מושג הבעלות
+מושג הבעלות הוא תכונה ייחודית של ראסט ויש לו השלכות עמוקות על כל השפה. הוא מאפשר לראסט לספק ערובות לבטיחות השימוש בזיכרון ללא צורך מאסף אשפה (garbage collector), ולכן חשוב להבין את עקרונות הבעלות ודרך העבודה עם המושג בראסט. בפרק זה נדבר על בעלות וכן על כמה תכונות נלוות: השאלה, חיתוכים, וכיצד ראסט מארגנת דאטה בזיכרון.

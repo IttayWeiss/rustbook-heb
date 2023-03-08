@@ -58,3 +58,20 @@ vector ווקטור
 function signature חותם פונקציה
 statement פקודה
 expression ביטוי
+ownership בעלות
+borrowing השאלה
+slice חיתוך
+owner בעל
+value is dropped ערך נעזב
+literal מפורש
+to namespace למקם
+module מודול
+lifetime פז"מ
+double free שחרור כפול
+move הזזה
+clone שיבוט
+trait תכונה
+data race מרוץ דאטה
+dangling reference הפניה משתלשלת
+deref coercion כפיתת דירף
+garbage collector מאסף אשפה

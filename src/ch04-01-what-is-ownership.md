@@ -1,272 +1,133 @@
-## What Is Ownership?
+## מהי בעלות?
 
-*Ownership* is a set of rules that govern how a Rust program manages memory.
-All programs have to manage the way they use a computer’s memory while running.
-Some languages have garbage collection that regularly looks for no-longer-used
-memory as the program runs; in other languages, the programmer must explicitly
-allocate and free the memory. Rust uses a third approach: memory is managed
-through a system of ownership with a set of rules that the compiler checks. If
-any of the rules are violated, the program won’t compile. None of the features
-of ownership will slow down your program while it’s running.
+*בעלות* (ownership) זה מקבץ כללים שקובעים איך תכניות ראסט מתנהלות עם הזיכרון. כל תכנית מחשב צריכה להתנהל מול זיכרון המחשב בזמן הריצה. לשפות מסויימות יש מאסף אשפה שבאופן תדיר מחפש פיסות זיכרון שכבר לא בשימוש בזמן שהתכנית רצה; בשפות אחרות זהו המתכנת שצריך להקצות ולשחרר זיכרון באופן מפורש. ראסט מיישמת גישה שלישית: הזיכרון מנוהל באמצעות מערכת של בעלות שנתונה ע"י מקבץ כללים שהקומפיילר יכול לוודא. אם אחד מהכללים מופר, אז התכנית לא תעבור קומפילציה. אף אחת מהתכונות של בעלות לא מאטה את זמן הריצה של התכנית.
 
-Because ownership is a new concept for many programmers, it does take some time
-to get used to. The good news is that the more experienced you become with Rust
-and the rules of the ownership system, the easier you’ll find it to naturally
-develop code that is safe and efficient. Keep at it!
+בגלל שבעלות היא מושג חדש עבור מתכנתים רבים, לוקח זמן מה כדי להתרגל אליו. החדשות הטובות הן שככל שהמיומנות שלכם בראסט ובכללי מערכת הבעלות תגדל, יהיה לכם קל יותר לפתח בטבעיות קוד שהוא גם בטוח וגם יעיל. כל שעליכם לעשות הוא להתמיד!
 
-When you understand ownership, you’ll have a solid foundation for understanding
-the features that make Rust unique. In this chapter, you’ll learn ownership by
-working through some examples that focus on a very common data structure:
-strings.
+התמעת מושג הבעלות תהווה עבורכם יסוד איתן להבנת תכונות של ראסט שמייחדות אותה ביחס לשפות אחרות. בפרק זה תלמדו על בעלות באמצעות כמה דוגמאות המתמקדות בטיפוס דאטה מאוד נפוץ: המחרוזת.
 
-> ### The Stack and the Heap
->
-> Many programming languages don’t require you to think about the stack and the
-> heap very often. But in a systems programming language like Rust, whether a
-> value is on the stack or the heap affects how the language behaves and why
-> you have to make certain decisions. Parts of ownership will be described in
-> relation to the stack and the heap later in this chapter, so here is a brief
-> explanation in preparation.
->
-> Both the stack and the heap are parts of memory available to your code to use
-> at runtime, but they are structured in different ways. The stack stores
-> values in the order it gets them and removes the values in the opposite
-> order. This is referred to as *last in, first out*. Think of a stack of
-> plates: when you add more plates, you put them on top of the pile, and when
-> you need a plate, you take one off the top. Adding or removing plates from
-> the middle or bottom wouldn’t work as well! Adding data is called *pushing
-> onto the stack*, and removing data is called *popping off the stack*. All
-> data stored on the stack must have a known, fixed size. Data with an unknown
-> size at compile time or a size that might change must be stored on the heap
-> instead.
->
-> The heap is less organized: when you put data on the heap, you request a
-> certain amount of space. The memory allocator finds an empty spot in the heap
-> that is big enough, marks it as being in use, and returns a *pointer*, which
-> is the address of that location. This process is called *allocating on the
-> heap* and is sometimes abbreviated as just *allocating* (pushing values onto
-> the stack is not considered allocating). Because the pointer to the heap is a
-> known, fixed size, you can store the pointer on the stack, but when you want
-> the actual data, you must follow the pointer. Think of being seated at a
-> restaurant. When you enter, you state the number of people in your group, and
-> the host finds an empty table that fits everyone and leads you there. If
-> someone in your group comes late, they can ask where you’ve been seated to
-> find you.
->
-> Pushing to the stack is faster than allocating on the heap because the
-> allocator never has to search for a place to store new data; that location is
-> always at the top of the stack. Comparatively, allocating space on the heap
-> requires more work because the allocator must first find a big enough space
-> to hold the data and then perform bookkeeping to prepare for the next
-> allocation.
->
-> Accessing data in the heap is slower than accessing data on the stack because
-> you have to follow a pointer to get there. Contemporary processors are faster
-> if they jump around less in memory. Continuing the analogy, consider a server
-> at a restaurant taking orders from many tables. It’s most efficient to get
-> all the orders at one table before moving on to the next table. Taking an
-> order from table A, then an order from table B, then one from A again, and
-> then one from B again would be a much slower process. By the same token, a
-> processor can do its job better if it works on data that’s close to other
-> data (as it is on the stack) rather than farther away (as it can be on the
-> heap).
->
-> When your code calls a function, the values passed into the function
-> (including, potentially, pointers to data on the heap) and the function’s
-> local variables get pushed onto the stack. When the function is over, those
-> values get popped off the stack.
->
-> Keeping track of what parts of code are using what data on the heap,
-> minimizing the amount of duplicate data on the heap, and cleaning up unused
-> data on the heap so you don’t run out of space are all problems that ownership
-> addresses. Once you understand ownership, you won’t need to think about the
-> stack and the heap very often, but knowing that the main purpose of ownership
-> is to manage heap data can help explain why it works the way it does.
+> ### המחסנית והערימה
+> 
+> שפות תכנות רבות לא דורשות ממכם, לרוב, לחשוב על המחסנית והערימה. אבל, בשפת תכנות מערכות, כמו ראסט, אם ערך מאוכסן על המחסנית או בערימה משפיע על הדרך בה השפה מתנהגת ולכן חשוב לקבלת החלטות כמתכנת. חלקים מהנושא של בעלות יידונו בהקשר של המחסנית והערימה מאוחר יותר בפרק זה, לכן כאן, כהכנה, ניתן רק הסבר קצר.
+> 
+> גם המחסנית וגם הערימה מהוות חלק מהזיכרון הזמין לשימוש הקוד שלכם בזמן הריצה, אבל הן מאורגנות בדרכים שונות. המחסנית מאכסנת ערכים בסדר בה הם מועברים אליה, ומוציאה ערכים בסדר ההפוך. לגישת אכסון זו קוראים *נכנס אחרון, יוצא ראשון*. חשבו על מחסנית של אקדח: הכדורים שנדחפו אחרונים למחסנית יהיו אלו שיצאו ראשונים כאשר מרוקנים את המחסנית. הוספת והוצאת כדורים מאמצע או מתחתית המחסנית אינה אפשרית! הוספת דאטה נקראת *דחיפה למחסנית*, והוצאת דאטה נקראת *הקפצה מהמחסנית*. כל פיסת דאטה המאוכסנת על המחסנית חייבת להיות בעלת גודל ידוע ומקובע. דאטה שגודלו לא ידוע בזמן הריצה, או שגודלו יכול להשתנות, חייב להיות מוגדר בערימה.
+> 
+> הערימה היא מבנה פחות מאורגן: כאשר מוסיפים דאטה לערימה, מתבצעת בקשה לכמות מסוימת של מקום. ספק הזיכרון מוצא מקום ריק בערימה שהוא גדול דיו, מסמן אותו שהוא בשימוש, ומחזיר מצביע (*pointer*), שהוא הכתובת של המיקום בזיכרון. תהליך זה נקרא *הקצאה בערימה* (allocating on the heap) ולפעמים מקצרים ופשוט אומרים *הקצאה* (דחיפת ערכים למחסנית אינה נחשבת הקצאה). בגלל שהמצביע לערימה הוא בעל גודל ידוע וקבוע, ניתן לאכסן את המצביע על המחסנית, אבל כאשר רוצים לגשת אל הדאטה עצמו, חייבים לעקוב אחר המצביע. חשבו על הושבה במסעדה. כאשר אתם נכנסים, אתם מציינים את מספר הסועדים בקבוצה שלכם, ואז המארחים שלכם מוצאים שולחן ריק עם מספיק כיסאות, ולוקחים אתכם אליו. אם מישהו מהקבוצה שלכם מגיע באיחור, הם יכולים לשאול איפה השולחן שהקצו לכם, ולהצטרף.
+> 
+> דחיפה למחסנית היא פעולה מהירה יותר מהקצאה בערימה משום שאין צורך לחפש מקום אכסון לדאטה חדש; המיקום הוא תמיד בראש המחסנית. להשוואה, הקצאת מקום בערימה דורשת יותר עבודה כי צריך קודם למצוא איזור גדול מספיק בזיכרון כדי להחזיק את כל הדאטה, ולבצע עבודת רישום (bookkeeping) כדי להתכונן להקצאה הבאה.
+> 
+> גישה לדאטה בערימה איטי יותר מגישה לדאטה במחסנית משום שצריך לעקוב אחר מצביע כדי להגיע לדאטה. תהליכים מודרניים מהירים יותר ככל שהם צריכים לקפוץ פחות בזיכרון. אם נמשיך את האנלוגיה, חשבו על מלצר במסעדה שלוקח הזמנות משולחנות רבים. הדרך היעילה לעשות זאת היא לקחת את כל ההזמנות משולחן אחד לפני שעוברים לשולחן הבא. לקיחת הזמנה משולחן א', ואז משולחן ב', אז שוב מ-א', ואח"כ שוב מ-ב' תאט את התהליך. באופן דומה, תהליך יכול לבצע את עבודתו ביעילות רבה יותר אם הדאטה שהוא עובד איתו מרוכז כולו בקרבת מקום (כמו שקורה במחסנית) מאשר אם הדאטה נמצא במקומות מרוחקים (כפי שיכול לקרות בערימה).
+> 
+> כאשר הקוד שלכם קורה לפונקציה, הערכים המועברים לפונקציה (כולל, פוטנציאלית, מצביעים לדאטה על המחסנית) והמשתנים הלוקאלים של הפונקציה נדחפים למחסנית. כאשר הפונקציה מסתיימת, ערכים אלו מוקפצים אל מחוץ למחסנית.
+> 
+> המעקב אחר אלו חלקים של הקוד משתמשים בדאטה בערימה, מינימיזציה של כמות כפילות הדאטה בערימה, ושחרור של דאטה בערימה שלא בשימוש כדי שהזיכרון לא יגמר, הן כולן בעיות אליהן עקרון הבעלות מתייחס. ברגע שתבינו את יסודות הבעלות, לא תצטרכו לחשוב על המחסנית והערימה יותר מידי. ההבנה שהתפקיד המרכזי של בעלות הוא לנהל דאטה בערימה יכולה לסייע להסביר מדוע היא עובדת כמו שהיא עובדת.
 
-### Ownership Rules
+### כללי בעלות
 
-First, let’s take a look at the ownership rules. Keep these rules in mind as we
-work through the examples that illustrate them:
+ראשית, הבה נתבונן בכללי הבעלות. זכרו כללים אלה בעודנו עוברים על הדוגמאות המדגימות אותם:
 
-* Each value in Rust has an *owner*.
-* There can only be one owner at a time.
-* When the owner goes out of scope, the value will be dropped.
+* לכל ערך ברסט יש בעל (owner).
+* לכל ערך יש בדיוק בעל אחד בכל זמן נתון.
+* כאשר הבעל יוצא מחוץ למתחם, הערך נעזב (dropped).
 
-### Variable Scope
+### המתחם של משתנה
 
-Now that we’re past basic Rust syntax, we won’t include all the `fn main() {`
-code in examples, so if you’re following along, make sure to put the following
-examples inside a `main` function manually. As a result, our examples will be a
-bit more concise, letting us focus on the actual details rather than
-boilerplate code.
+כעת משיסודות התחביר של ראסט מאחורנו, לא נטרח לכתוב קוד כמו `fn main() {` בדוגמאות. לכן, בהנחה שאתם עוקבים ברצינות, וודאו למקם את הקוד בדוגמאות הבאות בתוך פונקציית `main`. כתוצאה מכך, הדוגמאות שלנו יהיה קצת יותר קצרות, מה שיאפשר לנו לנו להתמקד בפרטים המעניינים ולא בקוד סתמי (boilerplate code).
 
-As a first example of ownership, we’ll look at the *scope* of some variables. A
-scope is the range within a program for which an item is valid. Take the
-following variable:
+כדוגמא ראשונה לבעלות, נסתכל על *המתחם* של משתנים. המתחם הוא הטווח בתוך התוכנית בו אלמנט תקף. קחו למשל את המשתנה הבא:</p>
 
 ```rust
 let s = "hello";
 ```
 
-The variable `s` refers to a string literal, where the value of the string is
-hardcoded into the text of our program. The variable is valid from the point at
-which it’s declared until the end of the current *scope*. Listing 4-1 shows a
-program with comments annotating where the variable `s` would be valid.
+המשתנה `s` מתייחס למחרוזת מפורשת, וערך המחרוזת מובנה לתוך הטקסט של התכנית. המשתנה תקף מהנקודה בה הוא מוכרז עד לסוף *המתחם* הנוכחי. רשימה 4-1 מראה תכנית עם הערות המבארות היכן המשתנה `s` יהיה תקף.
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-01/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 4-1: A variable and the scope in which it is
-valid</span>
 
-In other words, there are two important points in time here:
+<span class="caption">רשימה 4-1: משתנה והמתחם בו הוא תקף</span>
 
-* When `s` comes *into* scope, it is valid.
-* It remains valid until it goes *out of* scope.
+במילים אחרות, יש פה שתי נקודות חשובות בזמן:
 
-At this point, the relationship between scopes and when variables are valid is
-similar to that in other programming languages. Now we’ll build on top of this
-understanding by introducing the `String` type.
+* מתי ש-`s` *נכנס* למתחם, ואז הוא תקף.
+* הוא נשאר תקף עד שהוא *יוצא* מהמתחם.
 
-### The `String` Type
+בנקודה זאת הקשר בין מתחמים למתי משתנים הם זמינים דומה לזה שבשפות תכנות אחרות. כעת נבנה על הבנה זו ונציג את הטיפוס `String`.
 
-To illustrate the rules of ownership, we need a data type that is more complex
-than those we covered in the [“Data Types”][data-types]<!-- ignore --> section
-of Chapter 3. The types covered previously are of a known size, can be stored
-on the stack and popped off the stack when their scope is over, and can be
-quickly and trivially copied to make a new, independent instance if another
-part of code needs to use the same value in a different scope. But we want to
-look at data that is stored on the heap and explore how Rust knows when to
-clean up that data, and the `String` type is a great example.
+### הטיפוס `String`
 
-We’ll concentrate on the parts of `String` that relate to ownership. These
-aspects also apply to other complex data types, whether they are provided by
-the standard library or created by you. We’ll discuss `String` in more depth in
-[Chapter 8][ch8]<!-- ignore -->.
+על מנת להדגים את כללי הבעלות אנו זקוקים לטיפוס דאטה יותר מורכב מאלו שפגשנו בסעיף ["טיפוסי דאטה"][data-types]<!-- ignore --> בפרק 3. הטיפוסים שכבר כיסינו הם בגודל ידוע, ניתנים לאכסון על המחסנית, ולכן ניתן להקפיץ אותם מחוץ למחסנית כאשר הם מגיעים לסוף המתחם שלכם, והם ניתנים להעתקה בקלות ובמהירות כדי ליצור מופעים חדשים ובלתי תלויים במידה וחלק אחר בקוד צריך להשתמש באותו ערך במתחם אחר. אבל אנחנו רוצים להתבונן בדאטה שמאוכסן בערימה ולראות כיצד ראסט יודעת מתי לשחרר הקצאות. הטיפוס `String` הוא דוגמא מצויינת בדיוק בשביל זה.
 
-We’ve already seen string literals, where a string value is hardcoded into our
-program. String literals are convenient, but they aren’t suitable for every
-situation in which we may want to use text. One reason is that they’re
-immutable. Another is that not every string value can be known when we write
-our code: for example, what if we want to take user input and store it? For
-these situations, Rust has a second string type, `String`. This type manages
-data allocated on the heap and as such is able to store an amount of text that
-is unknown to us at compile time. You can create a `String` from a string
-literal using the `from` function, like so:
+אנו נתרכז בחלקים של `String` שקשורים לבעלות. אספקטים אלה תקפים גם לטיפוסי דאטה מורכבים אחרים, בין אם הם מסופקים ע"י הספריה הסטנדרטית ובין אם אתם יצרתם אותם. אנו נדון ב- `String` יותר לעומק ב-[פרק 8][ch8]<!-- ignore -->.
+
+במחרוזות מפורשות כבר נתקלנו, דהיינו כאשר הערך למחרוזת מקודד כחלק מהתכנית. מחרוזות מפורשות הן נוחות, אבל הן לא מתאימות לכל מצב בו נרצה להשתמש בטקסט. סיבה אחת לכך היא שהן מנועות-שינוי. סיבה אחרת היא שלא תמיד ניתן לדעת את הערך למחרוזת בזמן כתיבת התכנית: למשל, מה אם אנו רוצים לקבל קלט מהמשתמש? למצבים אלה לראסט יש טיפוס מחרוזת שני: `String`. טיפוס זה מנהל דאטה בערימה ולכן מסוגל לאכסן כמות של טקסט שאינה ידוע בזמן הקומפילציה. ניתן ליצור מופע של הטיפוס `String` ממחרוזת מפורשת ע"י שימוש בפונקציה `from`, כך:
 
 ```rust
 let s = String::from("hello");
 ```
 
-The double colon `::` operator allows us to namespace this particular `from`
-function under the `String` type rather than using some sort of name like
-`string_from`. We’ll discuss this syntax more in the [“Method
-Syntax”][method-syntax]<!-- ignore --> section of Chapter 5, and when we talk
-about namespacing with modules in [“Paths for Referring to an Item in the
-Module Tree”][paths-module-tree]<!-- ignore --> in Chapter 7.
+אופרטור הנקודותיים הכפולות `::` מאפשר לנו למקם את ה- `from` הספציפי הזה תחת הטיפוס `String` במקום להשתמש באיזשהו שם כמו `string_from`. אנו נדון עוד בתחביר זה בסעיף ["תחביר מתודות"][method-syntax]<!-- ignore --> בפרק 5, וכאשר נדבר על מיקומים (namepsacing) עם מודולים ב["מסלולים להפניה לאלמנט בעץ המודולים"][paths-module-tree]<!-- ignore --> בפרק 7.
 
-This kind of string *can* be mutated:
+סוג זה של מחרוזת *כן* ניתן לשינוי:
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-01-can-mutate-string/src/main.rs:here}}
 ```
 
-So, what’s the difference here? Why can `String` be mutated but literals
-cannot? The difference is in how these two types deal with memory.
+אז, מה השוני כאן? מדוע ניתן לשנות משתנה מטיפוס `String` בעוד שערכים מפורשים לא ניתנים לשינוי? ההבדל נעוץ בדרך בה שני טיפוסים אלה מתנהלים מול הזיכרון.
 
-### Memory and Allocation
+### זיכרון והקצאות
 
-In the case of a string literal, we know the contents at compile time, so the
-text is hardcoded directly into the final executable. This is why string
-literals are fast and efficient. But these properties only come from the string
-literal’s immutability. Unfortunately, we can’t put a blob of memory into the
-binary for each piece of text whose size is unknown at compile time and whose
-size might change while running the program.
+במקרה של מחרוזת מפורשת, תוכן המחרוזת ידוע בזמן הקומפילציה, ולכן הטקסט מקודד ישירות לתוך קובץ ההרצה הסופי. זו הסיבה שמחרוזות מפורשות הן מהירות ויעילות. אבל מקור תכונות אלה נעוץ בכך שמחרוזות מפורשות הן מנועות-שינוי. לרוע המזל, לא ניתן לשים חתיכה של הזיכרון לתוך הקובץ הבינארי עבור כל פיסת טקסט שגודלה לא ידוע בזמן הקומפילציה ושגודלה יכול להשתנות במהלך ריצת התכנית.
 
-With the `String` type, in order to support a mutable, growable piece of text,
-we need to allocate an amount of memory on the heap, unknown at compile time,
-to hold the contents. This means:
+עובר משתנים מטיפוס `String`, על מנת לתמוך בברות-שינוי ובפיסות טקסט שגודלן יכול להשתנות, עלינו להקצות כמות זיכרון בערימה שאינה ידועה בזמן הקומפילציה, על מנת לאכסן את התוכן. משמעות הדבר היא כי:
 
-* The memory must be requested from the memory allocator at runtime.
-* We need a way of returning this memory to the allocator when we’re done with
-  our `String`.
+* צריך לבקש את הזיכרון בזמן הריצה.
+* צריך לשחרר את הזיכרון כשאנחנו כבר לא צריכים את תוכן ה- `String`.
 
-That first part is done by us: when we call `String::from`, its implementation
-requests the memory it needs. This is pretty much universal in programming
-languages.
+לחלק הראשון אנחנו אחראים: כאשר אנחנו קוראים למתודה `String::from`, היישום שלה מבקש את הזיכרון הנחוץ. גישה זו היא די אוניברסלית בקרב שפות תכנות.
 
-However, the second part is different. In languages with a *garbage collector
-(GC)*, the GC keeps track of and cleans up memory that isn’t being used
-anymore, and we don’t need to think about it. In most languages without a GC,
-it’s our responsibility to identify when memory is no longer being used and to
-call code to explicitly free it, just as we did to request it. Doing this
-correctly has historically been a difficult programming problem. If we forget,
-we’ll waste memory. If we do it too early, we’ll have an invalid variable. If
-we do it twice, that’s a bug too. We need to pair exactly one `allocate` with
-exactly one `free`.
+אולם, החלק השני שונה. בשפות עם *מאסף אשפה* (garbage collector), מאסף האשפה עוקב אחר כל ההקצאות ומנקה זיכרון שכבר לא בשימוש, ואנחנו לא צריכים לחשוב על כך כלל. ברוב השפות ללא מאסף אשפה, זוהי האחריות שלנו לזהות מתי זיכרון כבר לא בשימוש ולקרוא לקוד לשחרור הזיכרון באופן מפורש, בדיוק כפי שעושים כשמבקשים להקצות זיכרון. ביצוע נכון של פעולות אלה היווה, באופן היסטורי, בעיית תכנות סבוכה. אם שוכחים לשחרר זיכרון, זה בזבוז. אם משחררים זיכרון מוקדם מידי, נקבל משתנה לא תקני. אם משחררים הקצאה פעמיים, זה גם באג. יש צורך לזווג בדיוק `allocate` אחד עם כל `free`, ולהיפך.
 
-Rust takes a different path: the memory is automatically returned once the
-variable that owns it goes out of scope. Here’s a version of our scope example
-from Listing 4-1 using a `String` instead of a string literal:
+ראסט נוקטת בגישה שונה: ברגע שמשתנה יוצא מחוץ למתחם שלו, הזיכרון שבבעלותו משוחרר. הינה גרסה של דוגמת המתחם מרשימה 4-1 תוך שימוש ב-`String` במקום במחרוזת מפורשת:
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-02-string-scope/src/main.rs:here}}
 ```
 
-There is a natural point at which we can return the memory our `String` needs
-to the allocator: when `s` goes out of scope. When a variable goes out of
-scope, Rust calls a special function for us. This function is called
-[`drop`][drop]<!-- ignore -->, and it’s where the author of `String` can put
-the code to return the memory. Rust calls `drop` automatically at the closing
-curly bracket.
+יש נקודה טבעית בה ניתן לשחרר את הזיכרון שה-`String` צורך: כאשר `s` יוצא מהמתחם. כאשר משתנה יוצא מהתמחם, ראסט קוראת עבורנו לפונקציה מיוחדת. פונקציה זו נקראת [`drop`][drop]<!-- ignore -->, וזה המקום בו הכותב של הטיפוס `String` יכול לכתוב את הקוד שמבצע את שחרור הזיכרון. ראסט קוראת ל- `drop` באופן אוטומטי בזמן סגירת הסוגר המסולסל.
 
-> Note: In C++, this pattern of deallocating resources at the end of an item’s
-> lifetime is sometimes called *Resource Acquisition Is Initialization (RAII)*.
-> The `drop` function in Rust will be familiar to you if you’ve used RAII
-> patterns.
+> שימו לב: ב-++C, דפוס זה של שחרור משאבים בסוף הפז"מ (lifetime) של אלמנטים נקרא לעיתים *Resource Acquisition Is Initialization (RAII)*. הפונקציה `drop` בראסט תהיה מוכרת לכם אם אתם מכירים דפוסי RAII.
 
-This pattern has a profound impact on the way Rust code is written. It may seem
-simple right now, but the behavior of code can be unexpected in more
-complicated situations when we want to have multiple variables use the data
-we’ve allocated on the heap. Let’s explore some of those situations now.
+לדפוס זה יש השפעה עמוקה על דרך כתיבת קוד בראסט. זה אולי נראה פשוט כעת, אבל ההתנהגות של קוד יכולה להיות בלתי צפויה במקרים סבוכים יותר כאשר משתמשים בכמה משתנים שמתנהלים מול זיכרון המוקצה בערימה. הבה נתנסה בכמה מצבים כאלה עכשיו.
 
 <!-- Old heading. Do not remove or links may break. -->
 <a id="ways-variables-and-data-interact-move"></a>
 
-#### Variables and Data Interacting with Move
+#### אינטראקציה בין משתנים ודאטה באמצעות הזזה
 
-Multiple variables can interact with the same data in different ways in Rust.
-Let’s look at an example using an integer in Listing 4-2.
+יותר ממשתנה אחד יכול לבוא במגע עם אותו דאטה בדרכים שונות בראסט. הבה נראה דוגמא המשתמשת במשתנה מטיפוס מספר שלם ברשימה 4-2.
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-02/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 4-2: Assigning the integer value of variable `x`
-to `y`</span>
 
-We can probably guess what this is doing: “bind the value `5` to `x`; then make
-a copy of the value in `x` and bind it to `y`.” We now have two variables, `x`
-and `y`, and both equal `5`. This is indeed what is happening, because integers
-are simple values with a known, fixed size, and these two `5` values are pushed
-onto the stack.
+<span class="caption">רשימה 4-2: השמת הערך השלם של המשתנה `x` ל-`y`</span>
 
-Now let’s look at the `String` version:
+אנחנו יכולים לנחש מה קורה כאן: "קשור את הערך `5` ל-`x`; ואז צור עותק של הערך ב- `x` וקשור אותו ל- `y`." עכשיו יש לנו שני משתנים, `x` ו-`y`, ושניהם שווים ל-`5`. זה אכן מה שקורה, כיוון ששלמים הם ערכים פשוטים בעלי גודל ידוע וקבוע, כך ששני ה-`5`-ים האלה נדחפים לתוך המחסנית.
+
+הבה נתבונן כעת בגרסה עם הטיפוס `String`:
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-03-string-move/src/main.rs:here}}
 ```
 
-This looks very similar, so we might assume that the way it works would be the
-same: that is, the second line would make a copy of the value in `s1` and bind
-it to `s2`. But this isn’t quite what happens.
+הקוד נראה מאוד דומה, לכן ניתן לצפות שהוא יתנהג בצורה דומה: ז"א שהשורה השניה תיצור עותק של הערך ב- `s1` ותקשור אותו ל-`s2`. אבל פה זה לא מה שקורה.
 
-Take a look at Figure 4-1 to see what is happening to `String` under the
-covers. A `String` is made up of three parts, shown on the left: a pointer to
-the memory that holds the contents of the string, a length, and a capacity.
-This group of data is stored on the stack. On the right is the memory on the
-heap that holds the contents.
+התבוננו בתמונה 4-1 כדי להבין מה קורה ל- `String` במעמקי הזיכרון. מופע של `String` מורכב משלושה חלקים, אותם רואים משמאל: מצביע לזיכרון בו מאוכסן תוכן המחרוזת, אורך המחרוזת, וקיבולת המחרוזת. קבוצת הערכים האלה מאוכסנת במחסנית. מימין מוצג הזיכרון בערימה אשר מאכסן את התוכן.
 
 <img alt="Two tables: the first table contains the representation of s1 on the
 stack, consisting of its length (5), capacity (5), and a pointer to the first
@@ -274,69 +135,41 @@ value in the second table. The second table contains the representation of the
 string data on the heap, byte by byte." src="img/trpl04-01.svg" class="center"
 style="width: 50%;" />
 
-<span class="caption">Figure 4-1: Representation in memory of a `String`
-holding the value `"hello"` bound to `s1`</span>
+<span class="caption">תמונה 4-1: הצגה בזיכרון של `String` המחזיק בערך `"hello"` ומקושר ל-`s1`</span>
 
-The length is how much memory, in bytes, the contents of the `String` are
-currently using. The capacity is the total amount of memory, in bytes, that the
-`String` has received from the allocator. The difference between length and
-capacity matters, but not in this context, so for now, it’s fine to ignore the
-capacity.
+האורך מאכסן את כמות הזיכרון, בבייטים, שתוכן ה-`String` תופס כרגע. הקיבולת מאכסנת את סך כל הזיכרון, בבייטים, שהוקצה ל-`String` בזיכרון. ההבדל בין האורך לקיבולת חשוב, אבל לא בקונטקסט הנוכחי. לכן, לבינתיים, זה בסדר להתעלם מהקיבולת.
 
-When we assign `s1` to `s2`, the `String` data is copied, meaning we copy the
-pointer, the length, and the capacity that are on the stack. We do not copy the
-data on the heap that the pointer refers to. In other words, the data
-representation in memory looks like Figure 4-2.
+כאשר אנו מבצעים השמה של `s1` ל-`s2`, הדאטה של ה-`String` מועתק, ז"א שאנו מעתיקים את המידע שנמצא במחסנית: המצביע, האורך, והקיבולת. אנחנו לא מעתיקים את הדאטה בערימה שאליו המצביע מצביע. במילים אחרות, ייצוג הדאטה בזיכרון נראה כמו בתמונה 4-2.
 
 <img alt="Three tables: tables s1 and s2 representing those strings on the
 stack, respectively, and both pointing to the same string data on the heap."
 src="img/trpl04-02.svg" class="center" style="width: 50%;" />
 
-<span class="caption">Figure 4-2: Representation in memory of the variable `s2`
-that has a copy of the pointer, length, and capacity of `s1`</span>
+<span class="caption">תמונה 4-2: ייצוג בזיכרון של המשתנה `s2` שמכיל עותק של המצביע, האורך, והקיבולת של `s1`</span>
 
-The representation does *not* look like Figure 4-3, which is what memory would
-look like if Rust instead copied the heap data as well. If Rust did this, the
-operation `s2 = s1` could be very expensive in terms of runtime performance if
-the data on the heap were large.
+הייצוג *אינו* נראה כמו בתמונה 4-3, המראה כיצד הזיכרון היה נראה אילו ראסט היתה מעתיקה, בנוסף, את הדאטה מהערימה. לו ראסט היתה עושה כך, אז הפעולה `s2 = s1` היתה יכולה להיות יקרה מבחינת ביצועי זמן-ריצה במידה והדאטה בערימה היה גדול.
 
 <img alt="Four tables: two tables representing the stack data for s1 and s2,
 and each points to its own copy of string data on the heap."
 src="img/trpl04-03.svg" class="center" style="width: 50%;" />
 
-<span class="caption">Figure 4-3: Another possibility for what `s2 = s1` might
-do if Rust copied the heap data as well</span>
+<span class="caption">תמונה 4-3: אפשרות אחרת למשמעות ההשמה `s2 = s1` אם ראסט היתה מעתיקה דאטה מהערימה בנוסף לדאטה במחסנית</span>
 
-Earlier, we said that when a variable goes out of scope, Rust automatically
-calls the `drop` function and cleans up the heap memory for that variable. But
-Figure 4-2 shows both data pointers pointing to the same location. This is a
-problem: when `s2` and `s1` go out of scope, they will both try to free the
-same memory. This is known as a *double free* error and is one of the memory
-safety bugs we mentioned previously. Freeing memory twice can lead to memory
-corruption, which can potentially lead to security vulnerabilities.
+מוקדם יותר, ראינו שכשמשתנה יוצא מהמתחם, ראסט אוטומטית קוראת לפונקציה `drop` אשר מנקה את הזיכרון בערימה המשוייך למשתנה. אבל תמונה 4-2 מראה ששני המצביעים מצביעים לאותו מקום. זו בעיה: כאשר `s2` ו- `s1` יוצאים מהמתחם, שניהם ינסו לשחרר את אותו מקום בזיכרון. בעיה זו נקראת בעיית *שחרור כפול* (double free) שהיא אחד מהבאגים הקשורים לבטיחות הקצאות זיכרון אותם הזכרנו בעבר. שחרור זיכרון פעמיים עלול להוביל להשחתת זיכרון, דבר שיכול להוביל לפגיעויות אבטחה.
 
-To ensure memory safety, after the line `let s2 = s1;`, Rust considers `s1` as
-no longer valid. Therefore, Rust doesn’t need to free anything when `s1` goes
-out of scope. Check out what happens when you try to use `s1` after `s2` is
-created; it won’t work:
+כדי להבטיח בטיחות של הזיכרון, לאחר השורה `let s2 = s1;`, ראסט מחשיבה את `s1` כלא תקף. לכן, ראסט לא צריכה לשחרר שום דבר כאשר `s1` יוצא מהמתחם. בדקו מה קורה אם תנסו להשתמש ב- `s1` אחרי ש-`s2` נוצר; זה לא יעבוד:
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-04-cant-use-after-move/src/main.rs:here}}
 ```
 
-You’ll get an error like this because Rust prevents you from using the
-invalidated reference:
+תקבלו הודעת שגיאה כמו ההודעה הבאה, כיוון שראסט מונעת ממכם מלהשתמש בהפניה הלא תקינה:
 
 ```console
 {{#include ../listings/ch04-understanding-ownership/no-listing-04-cant-use-after-move/output.txt}}
 ```
 
-If you’ve heard the terms *shallow copy* and *deep copy* while working with
-other languages, the concept of copying the pointer, length, and capacity
-without copying the data probably sounds like making a shallow copy. But
-because Rust also invalidates the first variable, instead of being called a
-shallow copy, it’s known as a *move*. In this example, we would say that `s1`
-was *moved* into `s2`. So, what actually happens is shown in Figure 4-4.
+אם שמעתם על המושגים *העתקה רדודה* או *העתקה עמוקה* מעבודתכם בשפות אחרות, אז העיקרון של העתקת המצביע, האורך, והקיבולת ללא העתקת הדאטה, וודאי נשמע לכם כמו העתקה רדודה. אבל, בגלל שראסט גם מבטלת את המשתנה הראשון, במקום המונח העתקה רדודה, המינוח בראסט הוא *הזזה*. בדוגמא זו נאמר ש-`s1` *הוזז* ל-`s2`. וכך, מה שבאמת מתרחש מוצג בתמונה 4-4.
 
 <img alt="Three tables: tables s1 and s2 representing those strings on the
 stack, respectively, and both pointing to the same string data on the heap.
@@ -344,90 +177,56 @@ Table s1 is grayed out be-cause s1 is no longer valid; only s2 can be used to
 access the heap data." src="img/trpl04-04.svg" class="center" style="width:
 50%;" />
 
-<span class="caption">Figure 4-4: Representation in memory after `s1` has been
-invalidated</span>
+<span class="caption">תמונה 4-4: ייצוג בזיכרון לאחר ש-`s1` בוטל</span>
 
-That solves our problem! With only `s2` valid, when it goes out of scope it
-alone will free the memory, and we’re done.
+זה פותר את הבעיה שלנו! משרק `s2` פעיל, כאשר הוא ייצה מהמתחם הוא, ורק הוא, יבצע שחרור של הזיכרון, וסיימנו.
 
-In addition, there’s a design choice that’s implied by this: Rust will never
-automatically create “deep” copies of your data. Therefore, any *automatic*
-copying can be assumed to be inexpensive in terms of runtime performance.
+מהאמור לעיל נובעת בחירה תכנונית: ראסט לעולם לא תיצור באופן אוטומטי עותקים "עמוקים" של הדאטה שלכם. לכן, ניתן להניח שכל העתקה *אוטומטית* היא זולה מבחינת ביצועי זמן-ריצה.
 
 <!-- Old heading. Do not remove or links may break. -->
 <a id="ways-variables-and-data-interact-clone"></a>
 
-#### Variables and Data Interacting with Clone
+#### אינטראקציה בין משתנים ודאטה באמצעות שיבוט
 
-If we *do* want to deeply copy the heap data of the `String`, not just the
-stack data, we can use a common method called `clone`. We’ll discuss method
-syntax in Chapter 5, but because methods are a common feature in many
-programming languages, you’ve probably seen them before.
+במידה ואנחנו *כן* מעוניינים ליצור עותק עמוק ע"י העתקת הדאטה המקושר למופע של `String` מהערימה, ולא רק מהמחסנית, נוכל להשתמש במתודה נפוצה הנקראת `clone`. נדון בתחביר של מתודות בפרק 5, אבל כיוון שמתודות הן מושג נפוץ בשפות תכנות רבות, סביר להניח שכבר נתקלתם בהן.
 
-Here’s an example of the `clone` method in action:
+הינה דוגמא למתודה `clone` בפעולה:
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-05-clone/src/main.rs:here}}
 ```
 
-This works just fine and explicitly produces the behavior shown in Figure 4-3,
-where the heap data *does* get copied.
+זה עובד מצוין ויוצר מפורשות את ההתנהגות המוצגת בתמונה 4-3, כאשר הדאטה בערימה *כן* הועתק.
 
-When you see a call to `clone`, you know that some arbitrary code is being
-executed and that code may be expensive. It’s a visual indicator that something
-different is going on.
+כאשר רואים קריאה ל- `clone`, משמעות הדבר היא שקוד מסויים מבצע פעולה שעלולה להיות יקרה. כך הקריאה המפורשת הזו משמשת העדות וויזואלית לכך שדבר מה מתרחש. 
 
-#### Stack-Only Data: Copy
+#### דאטה שכולו במחסנית: העתקה
 
-There’s another wrinkle we haven’t talked about yet. This code using
-integers—part of which was shown in Listing 4-2—works and is valid:
+ישנה עוד בעיה קטנה שעוד לא דיברנו עליה. הקוד הבא משתמש בשלמים -- וחלקו הוצג ברשימה 4-2 -- והוא עובד ותקין:
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-06-copy/src/main.rs:here}}
 ```
 
-But this code seems to contradict what we just learned: we don’t have a call to
-`clone`, but `x` is still valid and wasn’t moved into `y`.
+אבל נראה שהקוד הזה סותר את מה שזה עתה למדנו: אנחנו לא קוראים ל-`clone`, ובכל זאת `x` עדיין תקף ולא הוזז ל-`y`.
 
-The reason is that types such as integers that have a known size at compile
-time are stored entirely on the stack, so copies of the actual values are quick
-to make. That means there’s no reason we would want to prevent `x` from being
-valid after we create the variable `y`. In other words, there’s no difference
-between deep and shallow copying here, so calling `clone` wouldn’t do anything
-different from the usual shallow copying, and we can leave it out.
+הסיבה היא שטיפוסים כמו שלמים, שהם בעלי גודל ידוע בזמן הקומפילציה, מאוכסנים רק במחסנית. לכן העתקת הערכים עצמם נעשית במהירות. זאת אומרת שאין סיבה שנרצה למנוע מ-`x` מלהשאר תקף לאחר יצירת המשתנה `y`. במילים אחרות, אין הבדל בין העתקה עמוקה לרדודה במקרה זה, ולכן קריאה ל- `clone` לא תעשה שום דבר שונה בהשוואה להעתקה רדודה, ולכן אין בה צורך.
 
-Rust has a special annotation called the `Copy` trait that we can place on
-types that are stored on the stack, as integers are (we’ll talk more about
-traits in [Chapter 10][traits]<!-- ignore -->). If a type implements the `Copy`
-trait, variables that use it do not move, but rather are trivially copied,
-making them still valid after assignment to another variable.
+לראסט יש ביאור מיוחד הנקרא תכונת ה- `Copy` שניתנת לשימוש עם טיפוסים המאוכסנים במחסנית, כמו שלמים (נדון עוד בתכונות [בפרק 10][traits]<!-- ignore -->). אם טיפוס מיישם את התכונה `Copy`, אז משתנים שמשתמשים בו לא מוזזים, אלא מועתקים באופן טריוויאלי, וכך אם נשארים תקפים גם לאחר השמה למשתנה אחר.
 
-Rust won’t let us annotate a type with `Copy` if the type, or any of its parts,
-has implemented the `Drop` trait. If the type needs something special to happen
-when the value goes out of scope and we add the `Copy` annotation to that type,
-we’ll get a compile-time error. To learn about how to add the `Copy` annotation
-to your type to implement the trait, see [“Derivable
-Traits”][derivable-traits]<!-- ignore --> in Appendix C.
+ראסט לא תאפשר לנו לבאר טיפוס באמצעות `Copy` במידה והטיפוס, או כל חלק ממנו, יישם את התכונה `Drop`. אם הטיפוס דורש שמשהו מיוחד יקרה כאשר הערך יוצא מהמתחם ובכל זאת נוסיף ביאור `Copy` לטיפוס, אז נקבל שגיאת זמן קומפילציה. כדי ללמוד איך להוסיף ביאור `Copy` לטיפוסים משלכם כדי ליישם את התכונה, פנו ל-["תכונות נגזרות"][derivable-traits]<!-- ignore --> בנספח ג'.
 
-So, what types implement the `Copy` trait? You can check the documentation for
-the given type to be sure, but as a general rule, any group of simple scalar
-values can implement `Copy`, and nothing that requires allocation or is some
-form of resource can implement `Copy`. Here are some of the types that
-implement `Copy`:
+אם כן, אלו טיפוסים מיישמים את התכונה `Copy`? תמיד תוכלו לבדוק את התיעוד עבור הטיפוס הנדון כדי להיות בטוחים, אבל באופן כללי, כל קבוצה של ערכים סקאלרים פשוטים יכולים ליישם את `Copy`, ואף טיפוס שדורש הקצאה או שהוא איזה סוג של משאב לא יכול ליישם את `Copy`. הינה כמה טיפוסים שמיישמים את `Copy`:
 
-* All the integer types, such as `u32`.
-* The Boolean type, `bool`, with values `true` and `false`.
-* All the floating-point types, such as `f64`.
-* The character type, `char`.
-* Tuples, if they only contain types that also implement `Copy`. For example,
-  `(i32, i32)` implements `Copy`, but `(i32, String)` does not.
+* כל טיפוסי השלמים, כמו `u32`.
+* הטיפוס הבוליאני `bool`, בעל הערכים `true` ו- `false`.
+* כל טיפוסי הנקודה הצפה, כמו `f64`.
+* טיפוס התו `char`.
+* רצפים, במידה והם רק מכילים טיפוסים שבעצמם מיישמים את `Copy`. למשל, `(i32, i32)` מיישם את `Copy`, אבל `(i32, String)` לא.
 
-### Ownership and Functions
+### בעלות ופונקציות
 
-The mechanics of passing a value to a function are similar to those when
-assigning a value to a variable. Passing a variable to a function will move or
-copy, just as assignment does. Listing 4-3 has an example with some annotations
-showing where variables go into and out of scope.
+הפרטים הטכניים של העברת ערך לפונקציה דומים לאלה של השמת ערך למשתנה. העברת משתנה לפונקציה תגרום להזזה או להעתקה, בדיוק כמו בהשמה. ברשימה 4-3 יש דוגמא עם כמה ביאורים המראים היכן משתנים נכנסים ויוצאים מהמתחם.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -435,19 +234,14 @@ showing where variables go into and out of scope.
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-03/src/main.rs}}
 ```
 
-<span class="caption">Listing 4-3: Functions with ownership and scope
-annotated</span>
 
-If we tried to use `s` after the call to `takes_ownership`, Rust would throw a
-compile-time error. These static checks protect us from mistakes. Try adding
-code to `main` that uses `s` and `x` to see where you can use them and where
-the ownership rules prevent you from doing so.
+<span class="caption">רשימה 4-3: פונקציות בתוספת ביאורי בעלות ומתחם</span>
 
-### Return Values and Scope
+אם היינו מנסים להשתמש ב- `s` אחרי הקריאה ל- `takes_ownership`, ראסט היתה נותנת לנו שגיאת זמן קומפילציה. בדיקות סטטיות אלה מגינות עלינו מטעויות. נסו להוסיף קוד ל-`main` שמשתמש ב- `s` וב-`x` כדי לראות איפה אתם יכולים להשתמש בהם והיכן כללי הבעלות מונעים ממכם לעשות זאת.
 
-Returning values can also transfer ownership. Listing 4-4 shows an example of a
-function that returns some value, with similar annotations as those in Listing
-4-3.
+### ערכים חוזרים ומתחמים
+
+החזרת ערכים יכולה גם להעביר בעלות. רשימה 4-4 מראה דוגמא של פונקציה שמחזירה ערך, בתוספת ביאורים דומים לאלה שברשימה 4-3.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -455,21 +249,14 @@ function that returns some value, with similar annotations as those in Listing
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-04/src/main.rs}}
 ```
 
-<span class="caption">Listing 4-4: Transferring ownership of return
-values</span>
 
-The ownership of a variable follows the same pattern every time: assigning a
-value to another variable moves it. When a variable that includes data on the
-heap goes out of scope, the value will be cleaned up by `drop` unless ownership
-of the data has been moved to another variable.
+<span class="caption">רשימה 4-4: העברת בעלות של ערכים מוחזרים</span>
 
-While this works, taking ownership and then returning ownership with every
-function is a bit tedious. What if we want to let a function use a value but
-not take ownership? It’s quite annoying that anything we pass in also needs to
-be passed back if we want to use it again, in addition to any data resulting
-from the body of the function that we might want to return as well.
+הבעלות של משתנה עוקבת תמיד אחר אותה חוקיות: השמת ערך למשתנה אחר מזיזה אותו. כאשר משתנה שכולל דאטה בערימה יוצא מהמתחם, הערך ישוחרר ע"י `drop` אלא אם כן הבעלות על הדאטה הועברה למשתנה אחר.
 
-Rust does let us return multiple values using a tuple, as shown in Listing 4-5.
+בעוד שזה עובד היטב, לקיחת בעלות והחזרתה עם כל פונקציה היא דבר קצת מייגע. מה אם נרצה לאפשר לפונקציה להשתמש בערך אבל לא לקחת עליו בעלות? זה די מציק שכל מה שאנחנו מעבירים לפונקציה צריך להיות גם מוחזר, באם אנחנו רוצים להשתמש בו שוב, בנוסף לכל פיסת דאטה כתוצאה מקוד בגוף הפונקציה שייתכן שאנחנו גם רוצים להחזיר.
+
+ראסט מאפשרת לנו להחזיר יותר מערך אחד תוך שימוש ברצף, כפי שרואים ברשימה 4-5.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -477,11 +264,9 @@ Rust does let us return multiple values using a tuple, as shown in Listing 4-5.
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-05/src/main.rs}}
 ```
 
-<span class="caption">Listing 4-5: Returning ownership of parameters</span>
+<span class="caption">רשימה 4-5: החזרת בעלות של פרמטרים</span>
 
-But this is too much ceremony and a lot of work for a concept that should be
-common. Luckily for us, Rust has a feature for using a value without
-transferring ownership, called *references*.
+אבל זה קצת יותר מידי מסורבל, ודי הרבה עבודה, בשביל מושג שצריך להיות נפוץ. למרבה המזל, ראסט מספקת את היכולת להשתמש במשתנה ללא העברת בעלות. יכולת זאת מסופקת באמצעות *הפניות* (references).
 
 [data-types]: ch03-02-data-types.html#data-types
 [ch8]: ch08-02-strings.html
