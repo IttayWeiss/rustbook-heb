@@ -73,5 +73,6 @@ clone שיבוט
 trait תכונה
 data race מרוץ דאטה
 dangling reference הפניה משתלשלת
-deref coercion כפיתת דירף
+deref דה-הפניה
+deref coercion כפיית דה-הפניה
 garbage collector מאסף אשפה

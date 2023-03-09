@@ -1,16 +1,8 @@
-## References and Borrowing
+## הפניות והשאלות
 
-The issue with the tuple code in Listing 4-5 is that we have to return the
-`String` to the calling function so we can still use the `String` after the
-call to `calculate_length`, because the `String` was moved into
-`calculate_length`. Instead, we can provide a reference to the `String` value.
-A *reference* is like a pointer in that it’s an address we can follow to access
-the data stored at that address; that data is owned by some other variable.
-Unlike a pointer, a reference is guaranteed to point to a valid value of a
-particular type for the life of that reference.
+עצם העניין שבשימוש ברצף בקוד שברשימה 4-5 הוא שאנחנו צריכים להחזיר את ה-`String` לפונקציה הקוראת כדי שנוכל להמשיך להשתמש ב- `String` אחרי הקריאה ל- `calculate_length`, בגלל שה-`String` הוזזה ל-`calculate_length`. במקום זאת, ניתן לספק הפניה לערך של ה- `String`. *הפניה* היא קצת כמו מצביע בכך שהיא כתובת בזיכרון אליה אנחנו יכולים לגשת כדי לקרוא את הדאטה בכתובת; הדאטה נמצא בבעלות של משתנה אחר. בניגוד למצביע, מובטח שהפניה מצביעה לערך תקף מטיפוס נתון וידוע לכל אורך החיים של ההפניה.
 
-Here is how you would define and use a `calculate_length` function that has a
-reference to an object as a parameter instead of taking ownership of the value:
+הינה הדרך להגדיר ולהשתמש בפונקציה `calculate_length` עם הפניה לאובייקט כפרמטר במקום לקיחת בעלות על הערך:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -18,54 +10,35 @@ reference to an object as a parameter instead of taking ownership of the value:
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-07-reference/src/main.rs:all}}
 ```
 
-First, notice that all the tuple code in the variable declaration and the
-function return value is gone. Second, note that we pass `&s1` into
-`calculate_length` and, in its definition, we take `&String` rather than
-`String`. These ampersands represent *references*, and they allow you to refer
-to some value without taking ownership of it. Figure 4-5 depicts this concept.
+ראשית, שימו לב שכל הקוד סביב הרצף והערך המוחזר מהפונקציה כבר לא שם. שנית, אנו מעבירים `&s1` ל-`calculate_length`, ובהגדרת הפונקציה אנחנו לוקחים `&String` במקום `String`. סימני האמפרסנט מייצגים *הפניות*, והם מאפשרים לכם להתייחס לערך מבלי לקחת בעלות עליו. תמונה 4-5 מבהירה את הרעיון הזה.
 
 <img alt="Three tables: the table for s contains only a pointer to the table
 for s1. The table for s1 contains the stack data for s1 and points to the
 string data on the heap." src="img/trpl04-05.svg" class="center" />
 
-<span class="caption">Figure 4-5: A diagram of `&String s` pointing at `String
-s1`</span>
+<span class="caption">תמונה 4-5: דיאגרמה של `&String s` המצביע אל `String s1`</span>
 
-> Note: The opposite of referencing by using `&` is *dereferencing*, which is
-> accomplished with the dereference operator, `*`. We’ll see some uses of the
-> dereference operator in Chapter 8 and discuss details of dereferencing in
-> Chapter 15.
+> הערה: הפעולה ההפוכה להפניה תוך שימוש ב-`&` נקראת *דה-הפניה*, והיא מבוצעת באמצעות אופרטור הדה-הפניה, `*`. נראה כמה שימושים באופרטור הד-הפניה בפרק 8 ונדון בפרטים של דה-הפניות בפרק 15.
 
-Let’s take a closer look at the function call here:
+הבה נתבונן מקרוב בקריאה לפונקציה כאן:
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-07-reference/src/main.rs:here}}
 ```
 
-The `&s1` syntax lets us create a reference that *refers* to the value of `s1`
-but does not own it. Because it does not own it, the value it points to will
-not be dropped when the reference stops being used.
+המבנה התחבירי `&s1` מאפשר ליצור הפניה *שמפנה* לערך של `s1` אבל לא לוקחת עליו בעלות. מכיוון שהיא לא בעלת הערך אליו היא מפנה, הערך עצמו לא יעזב כאשר ההפניה יוצאת משימוש.
 
-Likewise, the signature of the function uses `&` to indicate that the type of
-the parameter `s` is a reference. Let’s add some explanatory annotations:
+באופן דומה, החותם של הפונקציה משתמש ב-`&` כדי לציין שטיפוס הפרמטר הוא הפניה. הבה נוסיף כמה ביאורים להסברה:
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-08-reference-with-annotations/src/main.rs:here}}
 ```
 
-The scope in which the variable `s` is valid is the same as any function
-parameter’s scope, but the value pointed to by the reference is not dropped
-when `s` stops being used, because `s` doesn’t have ownership. When functions
-have references as parameters instead of the actual values, we won’t need to
-return the values in order to give back ownership, because we never had
-ownership.
+המתחם בו המשתנה `s` תקף הוא כמו המתחם של כל פרמטר אחר של הפונקציה, אבל הערך עליו ההפניה מצביעה לא נעזב כאשר `s` יוצא מהמתחם, כיוון ש- `s` אינו בעל הערך. כאשר לפונקציות יש הפניות כפרמטרים במקום את הערכים עצמם, אנחנו לא צריכים להחזיר את הערכים כדי להעביר חזרה את הבעלות, כיוון שהבעלות מעולם לא הועברה אלינו.
 
-We call the action of creating a reference *borrowing*. As in real life, if a
-person owns something, you can borrow it from them. When you’re done, you have
-to give it back. You don’t own it.
+הפעולה של יצירת הפניה נקראת *השאלה* (borrowing). כמו בחיים האמיתיים, אם למישהו יש בעלות על חפץ, אז ניתן להשאיל אותו מהם. כמובן שאח"כ יש להחזיר את החפץ. הוא לא בבעלותך.
 
-So, what happens if we try to modify something we’re borrowing? Try the code in
-Listing 4-6. Spoiler alert: it doesn’t work!
+אם כן, מה קורה אם ננסה לשנות משהו שהשאלנו? נסו את הקוד ברשימה 4-6. ספויילר אלרט: הוא לא עובד!
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -73,21 +46,19 @@ Listing 4-6. Spoiler alert: it doesn’t work!
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-06/src/main.rs}}
 ```
 
-<span class="caption">Listing 4-6: Attempting to modify a borrowed value</span>
+<span class="caption">רשימה 4-6: ניסיון לשנות ערך שאול</span>
 
-Here’s the error:
+הינה השגיאה:
 
 ```console
 {{#include ../listings/ch04-understanding-ownership/listing-04-06/output.txt}}
 ```
 
-Just as variables are immutable by default, so are references. We’re not
-allowed to modify something we have a reference to.
+בדיוק כמו שברירת המחדל היא שמשתנים הם מנועי-שינוי, כך גם הפניות. ברירת המחדל היא שאם יש לנו הפניה למשהו, אז אסור לנו לשנות אותו.
 
-### Mutable References
+### הפניות ברות-שינוי
 
-We can fix the code from Listing 4-6 to allow us to modify a borrowed value
-with just a few small tweaks that use, instead, a *mutable reference*:
+ניתן לתקן את הקוד מרשימה 4-6 כדי שיאפשר לנו לשנות ערך מושאל, וזאת באמצעות כמה התאמות קלות, דהיינו להשתמש *בהפניות ברות-שינוי*:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -95,14 +66,10 @@ with just a few small tweaks that use, instead, a *mutable reference*:
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-09-fixes-listing-04-06/src/main.rs}}
 ```
 
-First we change `s` to be `mut`. Then we create a mutable reference with `&mut
-s` where we call the `change` function, and update the function signature to
-accept a mutable reference with `some_string: &mut String`. This makes it very
-clear that the `change` function will mutate the value it borrows.
+קודם כל, נשנה את `s` להיות `mut`. לאחר מכן, ניצור הפניה ברת-שינוי באמצעות `&mut s` כאשר אנחנו קוראים לפונקציה `change`, ונעדכן את חותם הפונקציה לקבל הפניה ברת-שינוי באמצעות `some_string: &mut String`.
+כל זה מבהיר שהפונקציה `change` כן תשנה את הערך אותו היא שואלת.
 
-Mutable references have one big restriction: if you have a mutable reference to
-a value, you can have no other references to that value. This code that
-attempts to create two mutable references to `s` will fail:
+להפניות ברות-שינוי יש מגבלה משמעותית אחת: אם יש לכם הפניה ברת-שינוי לערך, אז לא יכולה להיות לכם אף הפניה אחרת לאותו ערך. הקוד הבא, שמנסה לייצר שתי הפניות ברות-שינוי ל- `s`, ייכשל:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -110,93 +77,59 @@ attempts to create two mutable references to `s` will fail:
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-10-multiple-mut-not-allowed/src/main.rs:here}}
 ```
 
-Here’s the error:
+הינה השגיאה:
 
 ```console
 {{#include ../listings/ch04-understanding-ownership/no-listing-10-multiple-mut-not-allowed/output.txt}}
 ```
 
-This error says that this code is invalid because we cannot borrow `s` as
-mutable more than once at a time. The first mutable borrow is in `r1` and must
-last until it’s used in the `println!`, but between the creation of that
-mutable reference and its usage, we tried to create another mutable reference
-in `r2` that borrows the same data as `r1`.
+שגיאה זו אומרת שהקוד אינו תקין מכיוון לא ניתן לשאול את `s` כבר-שינוי יותר מפעם אחת באותו זמן. ההשאלה ברת-השינוי הראשונה מתבצעת ב- `r1` והיא חייבת להימשך עד לשימוש בה בשורת ה- `println!`, אבל, בין יצירת הפניה ברת-שינוי זו לשימוש בה, ניסינו ליצור הפניה ברת-שינוי נוספת ב- `r2` אשר שואלת את אותו דאטה כמו `r1`.
 
-The restriction preventing multiple mutable references to the same data at the
-same time allows for mutation but in a very controlled fashion. It’s something
-that new Rustaceans struggle with because most languages let you mutate
-whenever you’d like. The benefit of having this restriction is that Rust can
-prevent data races at compile time. A *data race* is similar to a race
-condition and happens when these three behaviors occur:
+המגבלה שמונעת ריבוי הפניות ברות-שינוי לאותה פיסת דאטה בכל זמן נתון מאפשרת ביצוע שינויים, אבל בצורה מאוד מבוקרת. עניין זה הוא משהו שראסטיונרים מתחילים רבים מתקשים איתו כיוון שרוב שפות התכנות מאפשרות לכם לבצע שינויים מתי שתרצו. היתרון שבמגבלה זו הוא שראסט יכולה למנוע מרוצי דאטה (data races) בזמן הקומפילציה. *מרוץ דאטה* מתרחש כאשר שלושת ההתנהגויות הבאות קורות:
 
-* Two or more pointers access the same data at the same time.
-* At least one of the pointers is being used to write to the data.
-* There’s no mechanism being used to synchronize access to the data.
+* לפחות שני מצביעים ניגשים לאותו דאטה באותו זמן.
+* לפחות באחד מהמצביעים נעשה שימוש כדי לכתוב לדאטה.
+* אין שימוש במנגנון לסינכרוניזציה של הגישה לדאטה.
 
-Data races cause undefined behavior and can be difficult to diagnose and fix
-when you’re trying to track them down at runtime; Rust prevents this problem by
-refusing to compile code with data races!
+מרוצי דאטה מובילים להתנהגות בלתי מוגדרת ויכולים להיות קשים לאבחון ולתיקון כאשר מנסים לאתר אותם בזמן הריצה; ראסט מונעת בעיה זו ע"י סירוב לקמפל קוד הכולל מרוצי דאטה!
 
-As always, we can use curly brackets to create a new scope, allowing for
-multiple mutable references, just not *simultaneous* ones:
+כתמיד, ניתן להשתמש בסוגריים מסולסלים כדי ליצור מתחם חדש, ולאפשר כמה הפניות ברות-שינוי, פשוט לא *סימולטנית*:
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-11-muts-in-separate-scopes/src/main.rs:here}}
 ```
 
-Rust enforces a similar rule for combining mutable and immutable references.
-This code results in an error:
+ראסט כופה כלל דומה בדבר שילוב הפניות ברות-שינוי ושאינן ברות-שינוי. הקוד הבא שגוי:
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-12-immutable-and-mutable-not-allowed/src/main.rs:here}}
 ```
 
-Here’s the error:
+הינה השגיאה:
 
 ```console
 {{#include ../listings/ch04-understanding-ownership/no-listing-12-immutable-and-mutable-not-allowed/output.txt}}
 ```
 
-Whew! We *also* cannot have a mutable reference while we have an immutable one
-to the same value.
+מדהים! אנחנו *גם* לא יכולים שתהיה לנו הפניה ברת-שינוי בזמן שיש לנו הפניה מנועת-שינוי לאותו ערך.
 
-Users of an immutable reference don’t expect the value to suddenly change out
-from under them! However, multiple immutable references are allowed because no
-one who is just reading the data has the ability to affect anyone else’s
-reading of the data.
+משתמשים של הפניה מנועת-שינוי לא מצפים שהערך ישתנה להם פתאום! אולם, ריבוי הפניות מנועות-שינוי כן מותר מכיוון שאף אחד מקוראי הדאטה לא יכול להשפיע על אופן הקריאה של האחרים.
 
-Note that a reference’s scope starts from where it is introduced and continues
-through the last time that reference is used. For instance, this code will
-compile because the last usage of the immutable references, the `println!`,
-occurs before the mutable reference is introduced:
+שימו לב שהמתחם של הפניה מתחיל במקום בוא היא מוכרזת וממשיך עד למקום בו נעשה שימוש בהפניה בפעם האחרונה. למשל, הקוד הזה יעבור קומפילציה כי השימוש האחרון בהפניה מנועת-השינוי, דהיינו ב-`println!`, מתרחש לפני ההכרזה על ההפניה ברת-השינוי:
 
 ```rust,edition2021
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-13-reference-scope-ends/src/main.rs:here}}
 ```
 
-The scopes of the immutable references `r1` and `r2` end after the `println!`
-where they are last used, which is before the mutable reference `r3` is
-created. These scopes don’t overlap, so this code is allowed: the compiler can
-tell that the reference is no longer being used at a point before the end of
-the scope.
+המתחמים של ההפניות מנועות-השינוי `r1` ו-`r2` מסתיימים לאחר ה- `println!` שבו נעשה בהם השימוש האחרון, וזה קורה לפני שההפניה ברת-השינוי `r3` נוצרת. מתחמים אלו לא חופפים, ולכן הקוד הזה תקני: הקומפיילר יכול לדעת, בנקדות זמן לפני סוף המתחם, שההפנייה כבר לא בשימוש.
 
-Even though borrowing errors may be frustrating at times, remember that it’s
-the Rust compiler pointing out a potential bug early (at compile time rather
-than at runtime) and showing you exactly where the problem is. Then you don’t
-have to track down why your data isn’t what you thought it was.
+למרות ששגיאות השאלה יכולות להיות מתסכלות, זכרו שמקורן בקומפיילר של ראסט שמספק לכם התרעה מוקדמת על באג פוטנציאלי (בזמן הקומפילציה, ולא בזמן הריצה) ומראה לכם היכן הבעיה. כך לא תצטרכו לנבור במכלול הסיבות הסבוכות להסברים מדוע הדאטה שלכם אינו מה שחשבתם שהוא צריך להיות.
 
-### Dangling References
+### הפניות משתלשלות
 
-In languages with pointers, it’s easy to erroneously create a *dangling
-pointer*—a pointer that references a location in memory that may have been
-given to someone else—by freeing some memory while preserving a pointer to that
-memory. In Rust, by contrast, the compiler guarantees that references will
-never be dangling references: if you have a reference to some data, the
-compiler will ensure that the data will not go out of scope before the
-reference to the data does.
+בשפות עם מצביעים, קל ליצור בטעות *מצביע משתלשל* -- מצביע שמפנה למקום בזיכרון שהוקצה למשהו אחר -- ע"י שחרור זיכרון תוך שמירת המצביע לאותו מקום בזיכרון. בראסט, באופן מנוגד, הקומפיילר מבטיח שהפנייות לעולם לא יהיו הפניות משתלשלות: אם יש לכם הפניה לפיסת דאטה, אז הקומפיילר יוודא שהדאטה לא יצא מהמתחם לפני שההפנייה אליו תצא מהמתחם.
 
-Let’s try to create a dangling reference to see how Rust prevents them with a
-compile-time error:
+הבה ננסה ליצור הפניה משתלשלת כדי לראות כיצד ראסט מונעת אותן באמצעות שגיאת זמן-קומפילציה:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -204,23 +137,19 @@ compile-time error:
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-14-dangling-reference/src/main.rs}}
 ```
 
-Here’s the error:
+הינה השגיאה:
 
 ```console
 {{#include ../listings/ch04-understanding-ownership/no-listing-14-dangling-reference/output.txt}}
 ```
 
-This error message refers to a feature we haven’t covered yet: lifetimes. We’ll
-discuss lifetimes in detail in Chapter 10. But, if you disregard the parts
-about lifetimes, the message does contain the key to why this code is a problem:
+שגיאה זו מתייחסת לתכונה שעוד לא ראינו: פז"ם. נדון בפז"ם ביתר פירוט בפרק 10. אבל, אם תתעלמו כרגע מהחלקים הנוגעים לפז"ם, שאר הודעת השגיאה כבר מכיל את גרעין הבעיה בקוד:
 
 ```text
-this function's return type contains a borrowed value, but there is no value
-for it to be borrowed from
+טיפוס הערך החוזר של הפונקציה הזאת מכיל השאלה לערך, אבל אין ערך שניתן להשאלה
 ```
 
-Let’s take a closer look at exactly what’s happening at each stage of our
-`dangle` code:
+הבה נתבונן מקרוב במה בדיוק קורה בכל שלב של הקוד `המשתלשל` שלנו:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -228,26 +157,21 @@ Let’s take a closer look at exactly what’s happening at each stage of our
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-15-dangling-reference-annotated/src/main.rs:here}}
 ```
 
-Because `s` is created inside `dangle`, when the code of `dangle` is finished,
-`s` will be deallocated. But we tried to return a reference to it. That means
-this reference would be pointing to an invalid `String`. That’s no good! Rust
-won’t let us do this.
+כיוון ש- `s` נוצר בתוך `dangle`, כאשר הקוד של `dangle` מסתיים יתבצע שחרור זיכרון עבור `s`. אבל, באותו זמן, אנחנו ניסינו גם להחזיר הפניה לערך ששוחרר. משמעות הדבר היא שהפניה זו תצביע אל ערך `String` שאינו תקף. מצב שאינו מתקבל על הדעת! ראסט לא תאפשר לנו לעשות משהו כזה.
 
-The solution here is to return the `String` directly:
+הפיתרון כאן הוא להחזיר `String` ישירות:
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-16-no-dangle/src/main.rs:here}}
 ```
 
-This works without any problems. Ownership is moved out, and nothing is
-deallocated.
+זה עובד ללא שום בעיות. הבעלות מועברת אל מחוץ למתחם, וכך לא מתבצע שחרור זיכרון.
 
-### The Rules of References
+### כללי הפניות
 
-Let’s recap what we’ve discussed about references:
+הבה נסכם את הדיון אודות הפנייות עד כה:
 
-* At any given time, you can have *either* one mutable reference *or* any
-  number of immutable references.
-* References must always be valid.
+* בכל נקודה בזמן, ניתן שתהיה *או* הפניה ברת-שינוי יחידה *או* כל מספר שהוא של הפניות מנועות-שינוי.
+* הפניות חייבות תמיד להיות תקפות.
 
-Next, we’ll look at a different kind of reference: slices.
+מייד נתבונן בסוג אחר של הפניות: חיתוכים.
