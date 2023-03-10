@@ -23,7 +23,7 @@
 - [הבנת מושג הבעלות](ch04-00-understanding-ownership.md)
     - [מהי בעלות?](ch04-01-what-is-ownership.md)
     - [הפניות והשאלות](ch04-02-references-and-borrowing.md)
-    - [The Slice Type](ch04-03-slices.md)
+    - [טיפוס החיתוך](ch04-03-slices.md)
 
 - [Using Structs to Structure Related Data](ch05-00-structs.md)
     - [Defining and Instantiating Structs](ch05-01-defining-structs.md)

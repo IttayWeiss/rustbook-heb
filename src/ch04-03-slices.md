@@ -1,25 +1,16 @@
-## The Slice Type
+## טיפוס החיתוך
 
-*Slices* let you reference a contiguous sequence of elements in a collection
-rather than the whole collection. A slice is a kind of reference, so it does
-not have ownership.
+*חיתוכים* מאפשרים להפנות לשורה רציפה של אלמנטים באוסף, ולא בהכרח לאוסף כולו. חיתוך הוא סוג של הפניה, ולכן אין לו בעלות על הדאטה.
 
-Here’s a small programming problem: write a function that takes a string of
-words separated by spaces and returns the first word it finds in that string.
-If the function doesn’t find a space in the string, the whole string must be
-one word, so the entire string should be returned.
+הינה בעיית תכנות קטנה: כתבו פונקציה שמקבלת מחרוזת של מילים מופרדות ע"י רווחים, ומחזירה את המילה הראשונה שהיא מוצאת במחרוזת. אם הפונקציה לא מוצאת תו רווח במחרוזת, אז כל המחרוזת היא מילה בודדת, ולכן יש להחזיר את כל המחרוזת.
 
-Let’s work through how we’d write the signature of this function without using
-slices, to understand the problem that slices will solve:
+הבה נעקוב אחר אופן כתיבת חותם הפונקציה ללא שימוש בחיתוכים, על מנת להבין את הבעיה שחיתוכים פותרים:
 
 ```rust,ignore
 fn first_word(s: &String) -> ?
 ```
 
-The `first_word` function has a `&String` as a parameter. We don’t want
-ownership, so this is fine. But what should we return? We don’t really have a
-way to talk about *part* of a string. However, we could return the index of the
-end of the word, indicated by a space. Let’s try that, as shown in Listing 4-7.
+לפונקציה `first_word` יש `&String` כפרמטר. אנחנו לא רוצים בעלות, ולכן זה בסדר. אבל, מה עלינו להחזיר? אין לנו דרך של ממש לדבר על *חלק* ממחרוזת. אבל, נוכל להחזיר את האינדקס של סוף המילה, המצויינת ע"י רווח. הבה ננסה זאת, כמוצג ברשימה 4-7.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -27,51 +18,32 @@ end of the word, indicated by a space. Let’s try that, as shown in Listing 4-7
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-07/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 4-7: The `first_word` function that returns a
-byte index value into the `String` parameter</span>
 
-Because we need to go through the `String` element by element and check whether
-a value is a space, we’ll convert our `String` to an array of bytes using the
-`as_bytes` method.
+<span class="caption">רשימה 4-7: הפונקציה `first_word` שמחזירה ערך אינדקס מסוג בייט לפרמטר ה- `String` שלה</span>
+
+כיוון שאנחנו צריכים לעבור ה- `String` תו אחר תו ולבדוק האם הערך הוא רווח, נמיר את ה- `String` שלנו למערך של בייטים באמצעות המתודה `as_bytes`.
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-07/src/main.rs:as_bytes}}
 ```
 
-Next, we create an iterator over the array of bytes using the `iter` method:
+אח"כ, אנחנו יוצרים איטרטור על המערך של הבייטים באמצעות המתודה `iter`:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-07/src/main.rs:iter}}
 ```
 
-We’ll discuss iterators in more detail in [Chapter 13][ch13]<!-- ignore -->.
-For now, know that `iter` is a method that returns each element in a collection
-and that `enumerate` wraps the result of `iter` and returns each element as
-part of a tuple instead. The first element of the tuple returned from
-`enumerate` is the index, and the second element is a reference to the element.
-This is a bit more convenient than calculating the index ourselves.
+באיטרטורים נדון בפירוט [בפרק 13][ch13]<!-- ignore -->. לעכשיו, כל שצריך לדעת הוא ש-`iter` היא מתודה שמחזירה כל אלמנט באוסף וש-`enumerate` עוטפת את התוצאה מה-`iter` ומחזירה כל אלמנט כחלק מרצף באורך 2. האיבר הראשון של הרצף שמוחזר מ-`enumerate` הוא האינדקס, והאבר השני הוא הפניה לאלמנט עצמו. מצב זה קצת יותר נוח מלחשב את האינדקס בעצמנו.
 
-Because the `enumerate` method returns a tuple, we can use patterns to
-destructure that tuple. We’ll be discussing patterns more in [Chapter
-6][ch6]<!-- ignore -->. In the `for` loop, we specify a pattern that has `i`
-for the index in the tuple and `&item` for the single byte in the tuple.
-Because we get a reference to the element from `.iter().enumerate()`, we use
-`&` in the pattern.
+מכיוון שהמתודה `enumerate` מחזירה רצף, ניתן להשתמש בדפוסים כדי לפרק את הרצף. אנו נדון יותר בדפוסים [בפרק 6][ch6]<!-- ignore -->. בלולאת ה- `for` אנחנו מספקים דפוס שמשתמש ב-`i` עבור האינדקס ברצף וב-`&item` עבור הבייט הבודד ברצף. בגלל שאנחנו מקבלים הפניה לאלמנט מ-`.iter().enumerate()`, אנחנו משתמשים ב-`&` בדפוס.
 
-Inside the `for` loop, we search for the byte that represents the space by
-using the byte literal syntax. If we find a space, we return the position.
-Otherwise, we return the length of the string by using `s.len()`.
+בתוך לולאת ה-`for` אנחנו מחפשים אחר הבייט שמייצג תו רווח ע"י שימוש בתחביר של בייטים מפורשים. במידה ואחנו מוצאים רווח, אנחנו מחזירים את המיקום. אחרת, אנחנו מחזירים את האורך של המחרוזת ע"י שימוש ב- `s.len()`.
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-07/src/main.rs:inside_for}}
 ```
 
-We now have a way to find out the index of the end of the first word in the
-string, but there’s a problem. We’re returning a `usize` on its own, but it’s
-only a meaningful number in the context of the `&String`. In other words,
-because it’s a separate value from the `String`, there’s no guarantee that it
-will still be valid in the future. Consider the program in Listing 4-8 that
-uses the `first_word` function from Listing 4-7.
+בשלב זה יש בידינו דרך למצוא את האינדקס של סוף המילה הראשונה במחרוזת, אבל יש כאן בעיה. אנחנו מחזירים `usize` בלבד, בעוד הערך הוא מספר בעל משמעות רק בהקשר של ה-`&String`. במילים אחרות, כיוון שזה ערך נפרד מה- `String`, אין שום ערובה שהערך עדיין יהיה תקף בעתיד. קחו למשל את התכנית ברשימה 4-8, שמשתמש בפונקציה `first_word` מרשימה 4-7.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -79,49 +51,32 @@ uses the `first_word` function from Listing 4-7.
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-08/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 4-8: Storing the result from calling the
-`first_word` function and then changing the `String` contents</span>
 
-This program compiles without any errors and would also do so if we used `word`
-after calling `s.clear()`. Because `word` isn’t connected to the state of `s`
-at all, `word` still contains the value `5`. We could use that value `5` with
-the variable `s` to try to extract the first word out, but this would be a bug
-because the contents of `s` have changed since we saved `5` in `word`.
+<span class="caption">רשימה 4-8: אכסון התוצאה מהקריאה לפונקציה `first_word` ואז שינוי התוכן של ה- `String`</span>
 
-Having to worry about the index in `word` getting out of sync with the data in
-`s` is tedious and error prone! Managing these indices is even more brittle if
-we write a `second_word` function. Its signature would have to look like this:
+תוכנית זו עוברת קומפילציה ללא שגיאות, ותמשיך לעבור קומפילציה גם אם היינו משתמשים ב- `word` לאחר הקריאה ל- `s.clear()`. היות ו-`word` כלל לא קשור למצב של `s`, המשתנה `word` עדיין מאכסן את הערך `5`. היינו יכולים להשתמש בערך `5` עם המשתנה `s` כדי לנסות להוציא את המילה הראשונה, אבל זה יהיה באג משום שהתוכן של `s` עבר שינוי מאז ששמרנו את הערך `5` ב- `word`.
+
+הצורך לדאוג שמה האינדקס ב-`word` יצא מסינכרון עם הדאטה ב-`s` הוא מייגע ומועד לטעויות! ניהול אינדקסים אלה הוא אפילו עוד יותר שברירי אם כותבים פונקציה כמו `second_word`. החותם שלה יהיה צריך להראות כך:
 
 ```rust,ignore
 fn second_word(s: &String) -> (usize, usize) {
 ```
 
-Now we’re tracking a starting *and* an ending index, and we have even more
-values that were calculated from data in a particular state but aren’t tied to
-that state at all. We have three unrelated variables floating around that need
-to be kept in sync.
+כאת אנו עוקבים אחר אינדקס התחלה *וגם* אינדקס סיום, ואז יש לנו אפילו עוד ערכים שחושבו מדאטה שמנצא במצב מאוד ספציפי, אבל הם לא קשורים למצב כלל. יש לנו שלושה משתנים לא קשורים שצפים להם באיזור, ויש לשמור אותם מסונכרנים.
 
-Luckily, Rust has a solution to this problem: string slices.
+למרבה המזל, לראסט יש פתרון לבעיה זו: חיתוכי מחרוזות.
 
-### String Slices
+### חיתוכי מחרוזות
 
-A *string slice* is a reference to part of a `String`, and it looks like this:
+*חיתוך מחרוזת* הינו הפניה לחלק מ-`String`, והוא נראה כמו:
 
 ```rust
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-17-slice/src/main.rs:here}}
 ```
 
-Rather than a reference to the entire `String`, `hello` is a reference to a
-portion of the `String`, specified in the extra `[0..5]` bit. We create slices
-using a range within brackets by specifying `[starting_index..ending_index]`,
-where `starting_index` is the first position in the slice and `ending_index` is
-one more than the last position in the slice. Internally, the slice data
-structure stores the starting position and the length of the slice, which
-corresponds to `ending_index` minus `starting_index`. So, in the case of `let
-world = &s[6..11];`, `world` would be a slice that contains a pointer to the
-byte at index 6 of `s` with a length value of `5`.
+במקום הפניה לכל ה-`String`, המשתנה `hello` הוא הפניה לחלק מה- `String`, החלק שנקבע ע"י `[0..5]`. אנחנו יוצרים חיתוכים תוך שימוש בטווח בתוך סוגריים מרובעים מהצורה `[starting_index..ending_index]`, כאשר `starting_index` הוא המיקום של תחילת החיתוך ו- `ending_index` הוא אחד יותר מהמיקום של סוף החיתוך. החיתוך, כמבנה נתונים, מאכסן את מיקום ההתחלה ואת האורך של החיתוך, שהוא שווה ל-`ending_index` פחות `starting_index`. לכן, במקרה של `let world = &s[6..11];`, המשתנה `world` הוא חיתוך שמכיל מצביע לבייט באינדקס 6 של `s` עם אורך `5`.
 
-Figure 4-6 shows this in a diagram.
+תמונה 4-6 מראה זאת בדיאגרמה.
 
 <img alt="Three tables: a table representing the stack data of s, which points
 to the byte at index 0 in a table of the string data &quot;hello world&quot; on
@@ -129,11 +84,9 @@ the heap. The third table rep-resents the stack data of the slice world, which
 has a length value of 5 and points to byte 6 of the heap data table."
 src="img/trpl04-06.svg" class="center" style="width: 50%;" />
 
-<span class="caption">Figure 4-6: String slice referring to part of a
-`String`</span>
+<span class="caption">תמונה 4-6: חיתוך מחרוזת המפנה לחלק מ-`String`</span>
 
-With Rust’s `..` range syntax, if you want to start at index 0, you can drop
-the value before the two periods. In other words, these are equal:
+עם תחביר הטווח `..` של ראסט, אם רוצים להתחיל במיקום שבאינדקס 0, ניתן להשמיט את הערך שלפני שתי הנקודות. במילים אחרות, הביטויים הבאים שקולים:
 
 ```rust
 let s = String::from("hello");
@@ -142,8 +95,7 @@ let slice = &s[0..2];
 let slice = &s[..2];
 ```
 
-By the same token, if your slice includes the last byte of the `String`, you
-can drop the trailing number. That means these are equal:
+לפי אותו עקרון, אם החיתוך כולל את הבייט האחרון של ה-`String`, ניתן להשמיט את המספר שאחרי שתי הנקודות. משמע ששני הביטויים הבאים שקולים גם הם:
 
 ```rust
 let s = String::from("hello");
@@ -154,8 +106,7 @@ let slice = &s[3..len];
 let slice = &s[3..];
 ```
 
-You can also drop both values to take a slice of the entire string. So these
-are equal:
+ניתן גם להשמיט את שני המספרים בכדי ליצור חיתוך של המחרוזת כולה. אם כן, שני הביטויים הבאים שקולים אף הם:
 
 ```rust
 let s = String::from("hello");
@@ -166,15 +117,9 @@ let slice = &s[0..len];
 let slice = &s[..];
 ```
 
-> Note: String slice range indices must occur at valid UTF-8 character
-> boundaries. If you attempt to create a string slice in the middle of a
-> multibyte character, your program will exit with an error. For the purposes
-> of introducing string slices, we are assuming ASCII only in this section; a
-> more thorough discussion of UTF-8 handling is in the [“Storing UTF-8 Encoded
-> Text with Strings”][strings]<!-- ignore --> section of Chapter 8.
+> הערה: אינדקסים לחיתוכי מחרוזות חייבים להיות במיקומים במחרוזת שבדיוק בין תווי UTF-8. אם תנסו ליצור חיתוך מחרוזת באמצע תו שאורכו יותר מבייט אחד, אז התכנית תעצור ותודיע על שגיאה. למטרת הצגת הרעיון של חיתוכי מחרוזות אנחנו מניחים, בסעיף זה, תווי ASCII בלבד. דיון רחב יותר בדבר טיפול בתווי UTF-8 נמצא בסעיף ["אכסון באמצעות מחרוזות של טקסט בקידוד UTF-8"][strings]<!-- ignore --> בפרק 8.
 
-With all this information in mind, let’s rewrite `first_word` to return a
-slice. The type that signifies “string slice” is written as `&str`:
+עכשיו, עם כל המידע שברשותנו, הבה נשכתב את הפונקציה `first_word` כך שתחזיר חיתוך. הטיפוס המייצג "חיתוך מחרוזת" הוא `&str`:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -182,30 +127,17 @@ slice. The type that signifies “string slice” is written as `&str`:
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-18-first-word-slice/src/main.rs:here}}
 ```
 
-We get the index for the end of the word the same way we did in Listing 4-7, by
-looking for the first occurrence of a space. When we find a space, we return a
-string slice using the start of the string and the index of the space as the
-starting and ending indices.
+אנחנו מוצאים את האינדקס של סוף המילה באותה דרך בה פעלנו ברשימה 4-7, ע"י חיפוש אחר המופע הראשון של תו רווח. כאשר אנו מוצאים רווח, אנחנו מחזירים חיתוך תוך שימוש בתחילת המחרוזת והאינדקס של תו הרווח שמצאנו בתור תחילת וסיום החיתוך, בהתאמה.
 
-Now when we call `first_word`, we get back a single value that is tied to the
-underlying data. The value is made up of a reference to the starting point of
-the slice and the number of elements in the slice.
+עכשיו, כאשר אנחנו קוראים ל-`first_word`, אנחנו מקבלים חזרה ערך יחיד שקשור הדוקות לדאטה הרלוונטי. הערך מורכב מהפניה לתחילת החיתוך וממספר האלמנטים בחיתוך.
 
-Returning a slice would also work for a `second_word` function:
+החזרת טיפוס חיתוך תעבוד גם עבור הפונקציה `second_word`:
 
 ```rust,ignore
 fn second_word(s: &String) -> &str {
 ```
 
-We now have a straightforward API that’s much harder to mess up because the
-compiler will ensure the references into the `String` remain valid. Remember
-the bug in the program in Listing 4-8, when we got the index to the end of the
-first word but then cleared the string so our index was invalid? That code was
-logically incorrect but didn’t show any immediate errors. The problems would
-show up later if we kept trying to use the first word index with an emptied
-string. Slices make this bug impossible and let us know we have a problem with
-our code much sooner. Using the slice version of `first_word` will throw a
-compile-time error:
+כעת יש לנו API פשוט והרבה יותר קשה להשתמש בו בצורה לא בטוחה כיוון שהקומפיילר יוודא שההפניה לתוך ה-`String` נשארת תקפה. זוכרים את הבאג מהתכנית ברשימה 4-8, כאשר קיבלנו את האינדקס לסוף המילה הראשונה אבל אז רוקנו את המחרוזת ובכך האינדקס איבד את תוקפו? הקוד ההוא היה שגוי מבחינה לוגית, אבל לא יצר שגיאות מיידיות. הבעיה היתה צצה בשלב מאוחר יותר במידה והיינו משתמשים באינדקס למילה הראשונה לאחר ריקון המחרוזת. חיתוכים הופכים באג זה לבלתי אפשרי ומיידעים אותנו בדבר קיום הבעיה מוקדם הרבה יותר. שימוש בגרסת החיתוך של `first_word` תגרום לשגיאת זמן-קומפילציה:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -213,65 +145,47 @@ compile-time error:
 {{#rustdoc_include ../listings/ch04-understanding-ownership/no-listing-19-slice-error/src/main.rs:here}}
 ```
 
-Here’s the compiler error:
+הינה השגאיה מהקומפיילר:
 
 ```console
 {{#include ../listings/ch04-understanding-ownership/no-listing-19-slice-error/output.txt}}
 ```
 
-Recall from the borrowing rules that if we have an immutable reference to
-something, we cannot also take a mutable reference. Because `clear` needs to
-truncate the `String`, it needs to get a mutable reference. The `println!`
-after the call to `clear` uses the reference in `word`, so the immutable
-reference must still be active at that point. Rust disallows the mutable
-reference in `clear` and the immutable reference in `word` from existing at the
-same time, and compilation fails. Not only has Rust made our API easier to use,
-but it has also eliminated an entire class of errors at compile time!
+זכרו מכללי הבעלות שאם יש לנו הפניה מנועת-שינוי לדאטה, אז לא ניתן ליצור גם הפניה ברת-שינוי באותו זמן. בגלל ש-`clear` צריכה לקטום את ה-`String`, היא צריכה לקבל הפניה ברת-שינוי. הפקודה `println!` שלאחר הקריאה ל- `clear` משתמשת בהפניה ב-`word`, ולכן ההפניה מנועת-השינוי חייבת עדיין להיות פעילה בנקודה זו. ראסט לא מאפשרת להפניה ברת-השינוי ב- `clear` ולהפניה מנועת-השינוי ב-`word` מלהתקיים בו-זמנית, והקומפילציה נכשלת. לא רק שראסט הפכה את ה-API קל לשימוש, היא גם חיסלה, בזמן הקומפילציה, מחלקה שלמה של שגיאות!
 
 <!-- Old heading. Do not remove or links may break. -->
 <a id="string-literals-are-slices"></a>
 
-#### String Literals as Slices
+#### מחרוזות מפורשות כחיתוכים
 
-Recall that we talked about string literals being stored inside the binary. Now
-that we know about slices, we can properly understand string literals:
+זכרו שדיברנו על איך שמחרוזות מפורשות מאוכסנות בקובץ הבינארי. כעת משאנחנו מכירים חיתוכים, נוכל להבין נכונה מחרוזות מפורשות:
 
 ```rust
 let s = "Hello, world!";
 ```
 
-The type of `s` here is `&str`: it’s a slice pointing to that specific point of
-the binary. This is also why string literals are immutable; `&str` is an
-immutable reference.
+הטיפוס של `s` כאן הוא `&str`: זהו חיתוך המצביע למיקום ספציפי זה בקובץ הבינארי. זו גם הסיבה שמחרוזות מפורשות הן מנועות-שינוי; `&str` היא הפניה מנועת-שינוי.
 
-#### String Slices as Parameters
+#### חיתוכי מחרוזות כפרמטרים
 
-Knowing that you can take slices of literals and `String` values leads us to
-one more improvement on `first_word`, and that’s its signature:
+עכשיו כשאנו יודעים לעבוד עם חיתוכים של מחרוזות מפורשות ושל ערכי `String`, נוכל לבצע עוד שיפור אחד של `first_word`, בחותם הפונקציה:
 
 ```rust,ignore
 fn first_word(s: &String) -> &str {
 ```
 
-A more experienced Rustacean would write the signature shown in Listing 4-9
-instead because it allows us to use the same function on both `&String` values
-and `&str` values.
+ראסטיונר מנוסה יותר יכתוב את החותם המופיע ברשימה 4-9 משום שזה יאפשר להשתמש באותה פונקציה גם על ערכי `&String` וגם על ערכי `&str`.
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-09/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 4-9: Improving the `first_word` function by using
-a string slice for the type of the `s` parameter</span>
 
-If we have a string slice, we can pass that directly. If we have a `String`, we
-can pass a slice of the `String` or a reference to the `String`. This
-flexibility takes advantage of *deref coercions*, a feature we will cover in
-[“Implicit Deref Coercions with Functions and
-Methods”][deref-coercions]<!--ignore--> section of Chapter 15.
+<span class="caption">רשימה 4-9: שיפור הפונקציה `first_word` ע"י שימוש בחיתוך מחרוזת עבור הטיפוס של הפרמטר `s`</span>
 
-Defining a function to take a string slice instead of a reference to a `String`
-makes our API more general and useful without losing any functionality:
+אם יש לנו חיתוך מחרוזת, נוכל להעביר אותו ישירות. אם יש לנו `String`, נוכל להעביר חיתוך של ה- `String` או הפניה אל ה-`String`. גמישות זו עושה שימוש *בכפיית דירף*, תכונה עליה נדבר בסעיף ["כפיות דירף מפורשות עם פונקציות ומתודות"][deref-coercions]<!--ignore--> בפרק 15.
+
+הגדרת פונקציה לקבל חיתוך מחרוזת במקום הפניה ל-`String` הופכת את ה-API שלנו לכללי ושמיש יותר, ללא איבוד פונקציונאליות:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -279,17 +193,15 @@ makes our API more general and useful without losing any functionality:
 {{#rustdoc_include ../listings/ch04-understanding-ownership/listing-04-09/src/main.rs:usage}}
 ```
 
-### Other Slices
+### חיתוכים אחרים
 
-String slices, as you might imagine, are specific to strings. But there’s a
-more general slice type too. Consider this array:
+חיתוכי מחרוזות, כפי שוודאי תוכלו לנחש, הם ספציפיים למחרוזות. אבל יש גם טיפוס חיתוך כללי יותר. התבוננו במערך הזה:
 
 ```rust
 let a = [1, 2, 3, 4, 5];
 ```
 
-Just as we might want to refer to part of a string, we might want to refer to
-part of an array. We’d do so like this:
+בדיוק כפי שניתן להפנות לחלק ממחרוזת, ניתן גם להפנות לחלק ממערך. נעשה זאת כך:
 
 ```rust
 let a = [1, 2, 3, 4, 5];
@@ -299,22 +211,13 @@ let slice = &a[1..3];
 assert_eq!(slice, &[2, 3]);
 ```
 
-This slice has the type `&[i32]`. It works the same way as string slices do, by
-storing a reference to the first element and a length. You’ll use this kind of
-slice for all sorts of other collections. We’ll discuss these collections in
-detail when we talk about vectors in Chapter 8.
+חיתוך זה הוא מטיפוס `&[i32]`. הוא עובד באותה הצורה כמו חיתוכי מחרוזות, ע"י אכסון הפניה לאלמנט הראשון, ובתוספת אורך. משתמשים בסוג זה של חיתוכים עבור אוספים מגוונים. אנו נדון באוספים אלה בפירוט כשנדבר על ווקטורים בפרק 8.
 
-## Summary
+## סיכום
 
-The concepts of ownership, borrowing, and slices ensure memory safety in Rust
-programs at compile time. The Rust language gives you control over your memory
-usage in the same way as other systems programming languages, but having the
-owner of data automatically clean up that data when the owner goes out of scope
-means you don’t have to write and debug extra code to get this control.
+המושגים של בעלות, השאלה, וחיתוכים מוודאים, בזמן הקומפילציה, שימוש בטוח בזיכרון בתכניות ראסט. השפה ראסט מקנה לכם שליטה על השימוש בזיכרון באותה דרך בה שפות אחרות ברמת המערכת עושות זאת, אבל העובדה שמשתנה לו יש בעלות על דאטה משחרר אותו ברגע שהוא יוצא מהמתחם חוסך לכם את הצורך לכתוב תוספת קוד, ולרדוף אחר באגים, כדי להשיג שליטה זו.
 
-Ownership affects how lots of other parts of Rust work, so we’ll talk about
-these concepts further throughout the rest of the book. Let’s move on to
-Chapter 5 and look at grouping pieces of data together in a `struct`.
+לבעלות יש השפעה על דרך עבודתם של חלקים אחרים של ראסט, כפי שנראה במהלך הספר. הבה נעבור לפרק 5 ונראה כיצד לאגד פיסות דאטה יחדיו באמצעות `struct`.
 
 [ch13]: ch13-02-iterators.html
 [ch6]: ch06-02-match.html#patterns-that-bind-to-values

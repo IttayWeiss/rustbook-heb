@@ -76,3 +76,6 @@ dangling reference הפניה משתלשלת
 deref דה-הפניה
 deref coercion כפיית דה-הפניה
 garbage collector מאסף אשפה
+struct מבנה
+field שדה
+tuple struct מבנה רצף
