@@ -79,3 +79,4 @@ garbage collector מאסף אשפה
 struct מבנה
 field שדה
 tuple struct מבנה רצף
+derived trait תכונה נגזרת

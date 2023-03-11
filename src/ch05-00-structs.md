@@ -1,14 +1,5 @@
-# Using Structs to Structure Related Data
+# שימוש במבנים בכדי לעצב דאטה מקושר
 
-A *struct*, or *structure*, is a custom data type that lets you package
-together and name multiple related values that make up a meaningful group. If
-you’re familiar with an object-oriented language, a *struct* is like an
-object’s data attributes. In this chapter, we’ll compare and contrast tuples
-with structs to build on what you already know and demonstrate when structs are
-a better way to group data.
+*מבנה* (struct, structure), זה טיפוס דאטה מעוצב ידנית שמאפשר למקם יחדיו ערכים הקשורים זה לזה תחת מבנה בעל משמעות שניתן להתחייס אליו בשם ספציפי. אם אתם מכירים שפות מוכוונות-אובייקטים, אז *מבנה* זה כמו ***. בפרק זה נתבונן בדומה ובשונה בין רצפים לבין מבנים על מנת לבנות על הידע שלכם עד כה ולהדגים מתי מבנים הם דרך טובה יותר לאגד דאטה.
 
-We’ll demonstrate how to define and instantiate structs. We’ll discuss how to
-define associated functions, especially the kind of associated functions called
-*methods*, to specify behavior associated with a struct type. Structs and enums
-(discussed in Chapter 6) are the building blocks for creating new types in your
-program’s domain to take full advantage of Rust’s compile-time type checking.
+אנו נראה כיצד להגדיר ולאתחל מבנים. נדון באיך להגדיר פונקציות מקושרות, בייחוד הסוג של פונקציות מקושרות שנקרא *מתודות*, כדי להגדיר התנהגות המקושרת עם טיפוס של מבנה. מבנים ומבחרים (שיידונו בפרק 6) הם אבני הבניין ליצירת טיפוסים עבור התכניות שלכם בצורה שמנצלת היטב את בודק הטיפוסים בזמן-קומפילציה של ראסט.

@@ -1,17 +1,9 @@
-## Defining and Instantiating Structs
+## הגדרה ואתחול של מבנים
 
-Structs are similar to tuples, discussed in [“The Tuple Type”][tuples]<!--
-ignore --> section, in that both hold multiple related values. Like tuples, the
-pieces of a struct can be different types. Unlike with tuples, in a struct
-you’ll name each piece of data so it’s clear what the values mean. Adding these
-names means that structs are more flexible than tuples: you don’t have to rely
-on the order of the data to specify or access the values of an instance.
+מבנים הם די דומים לרצפים, עליהם דיברנו בסעיף [טיפוס הרצף][tuples]<!--
+ignore --> , כיוון ששניהם מאגדים כמה ערכים הקשורים זה לזה. כמו רצפים, הפיסות השונות של מבנה יכולות להיות מטיפוסים שונים. בניגוד לרצפים, במבנה יש לתת שם לכל פיסת דאטה כדי שיהיה ברור מה משמעות כל ערך. הוספת שמות אלה משמעה שמבנים הם יותר גמישים מרצפים: אין צורך להסתמך על הסדר של הדאטה כדי לבצע השמה או כדי לגשת לערכים של מופע של המבנה.
 
-To define a struct, we enter the keyword `struct` and name the entire struct. A
-struct’s name should describe the significance of the pieces of data being
-grouped together. Then, inside curly brackets, we define the names and types of
-the pieces of data, which we call *fields*. For example, Listing 5-1 shows a
-struct that stores information about a user account.
+כדי להגדיר מבנה, כותבים את מילת המפתח `struct` ואז לתת שם למבנה כולו. ראוי שהשם של המבנה יתאר את החשיבות של איגוד פיסות הדאטה יחדיו. אז, בתוך סוגריים מסולסלים, מגדירים את השמות והטיפוסים של פיסות הדאטה, להם קוראים *שדות*. לדוגמא, רשימה 5-1 מראה מבנה שמאכסן מידע אודות חשבון משתמש.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -19,17 +11,9 @@ struct that stores information about a user account.
 {{#rustdoc_include ../listings/ch05-using-structs-to-structure-related-data/listing-05-01/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 5-1: A `User` struct definition</span>
+<span class="caption">רשימה 5-1: הגדרה של המבנה `User`</span>
 
-To use a struct after we’ve defined it, we create an *instance* of that struct
-by specifying concrete values for each of the fields. We create an instance by
-stating the name of the struct and then add curly brackets containing *key:
-value* pairs, where the keys are the names of the fields and the values are the
-data we want to store in those fields. We don’t have to specify the fields in
-the same order in which we declared them in the struct. In other words, the
-struct definition is like a general template for the type, and instances fill
-in that template with particular data to create values of the type. For
-example, we can declare a particular user as shown in Listing 5-2.
+כדי להשתמש במבנה אחרי שהגדרנו אותו, ניתן ליצור *מופע* (instance) של המבנה ע"י הזנת ערכים קונקרטיים עבור כל אחד מהשדות. אנחנו יוצרים מופע ע"י ציון שם המבנה ואז סוגריים מסולסלים המכילים זוגות *key: value*, כאשר המפתחות הם שמות השדות והערכים הם הדאטה שאנחנו רוצים לאכסן בשדות אלה. אין צורך לציין את השדות באותו הסדר בו הכרזנו עליהם במבנה. במילים אחרות, הגדרת המבנה היא כמו תבנית כללית עבור הטיפוס, ומופעים ממלאים את התבנית עם דאטה ספציפי, ובכך נוצרים ערכים של הטיפוס. למשל, אנחנו יכולים להכריז על משתמש ספציפי כפי שמוצג ברשימה 5-2.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -37,14 +21,10 @@ example, we can declare a particular user as shown in Listing 5-2.
 {{#rustdoc_include ../listings/ch05-using-structs-to-structure-related-data/listing-05-02/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 5-2: Creating an instance of the `User`
-struct</span>
 
-To get a specific value from a struct, we use dot notation. For example, to
-access this user’s email address, we use `user1.email`. If the instance is
-mutable, we can change a value by using the dot notation and assigning into a
-particular field. Listing 5-3 shows how to change the value in the `email`
-field of a mutable `User` instance.
+<span class="caption">רשימה 5-2: יצירת מופע של הבנה `User`</span>
+
+על מנת לגשת לערך ספציפי במבנה, ניתן להשתמש בנוטצית הנקודה. למשל, כדי לגשת לכתובת האימייל של משתמש, נוכל לכתוב `user1.email`. אם המופע בר-שינוי, אז נוכל גם לשנות ערך באמצעות נוטצית הנקודה והשמש לתוך השדה הנדון. רשימה 5-3 מראה איך לשנות את הערך בשדה `email` של מופע בר-שינוי של `User`.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -52,17 +32,12 @@ field of a mutable `User` instance.
 {{#rustdoc_include ../listings/ch05-using-structs-to-structure-related-data/listing-05-03/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 5-3: Changing the value in the `email` field of a
-`User` instance</span>
 
-Note that the entire instance must be mutable; Rust doesn’t allow us to mark
-only certain fields as mutable. As with any expression, we can construct a new
-instance of the struct as the last expression in the function body to
-implicitly return that new instance.
+<span class="caption">רשימה 5-3: שינוי הערך בשדה `email` של מופע של `User`</span>
 
-Listing 5-4 shows a `build_user` function that returns a `User` instance with
-the given email and username. The `active` field gets the value of `true`, and
-the `sign_in_count` gets a value of `1`.
+שימו לב שהמופע כולו חייב להיות בר-שינוי; ראסט אינה מאפשרת לנו לסמן רק חלק מהשדות כברי-שינוי. כמו עם כל ביטוי, אנחנו יכולים ליצור מופע חדש של מבנה כביטוי האחרון בגוף פונקציה, ואז ערך זה יהיה הערך המוחזר מהפונקציה.
+
+רשימה 5-4 מציגה את הפונקציה `build_user` אשר מחזירה מופע של `User` עם אימייל ושם משתמש. השדה `active` מקבל את הערך `true`, והשדה `sign_in_count` מקבל את הערך `1`.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -70,23 +45,17 @@ the `sign_in_count` gets a value of `1`.
 {{#rustdoc_include ../listings/ch05-using-structs-to-structure-related-data/listing-05-04/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 5-4: A `build_user` function that takes an email
-and username and returns a `User` instance</span>
 
-It makes sense to name the function parameters with the same name as the struct
-fields, but having to repeat the `email` and `username` field names and
-variables is a bit tedious. If the struct had more fields, repeating each name
-would get even more annoying. Luckily, there’s a convenient shorthand!
+<span class="caption">רשימה 5-4: הפונקציה `build_user` אשר מקבלת אימייל ושם משתמש ומחזירה מופע של `User`</span>
+
+זה הגיוני לקרוא לפרמטרים של הפונקציה באותם השמות כמו שדות המבנה, אבל הצורך לחזור על שמות השדות `email` ו- `username` הוא קצת מייגע. אם למבנה היו עוד שדות, הצורך לחזור על כל אחד ואחד משמות השדות היה כבר מעצבן. למרבה המזל יש קיצור נוח!
 
 <!-- Old heading. Do not remove or links may break. -->
 <a id="using-the-field-init-shorthand-when-variables-and-fields-have-the-same-name"></a>
 
-### Using the Field Init Shorthand
+### שימוש באתחול שדות מקוצר
 
-Because the parameter names and the struct field names are exactly the same in
-Listing 5-4, we can use the *field init shorthand* syntax to rewrite
-`build_user` so it behaves exactly the same but doesn’t have the repetition of
-`username` and `email`, as shown in Listing 5-5.
+בגלל ששמות הפרמטרים ושמות השדות של המבנה ברשימה 5-4 זהים, ניתן להשתמש בתחביר *אתחול שדות מקוצר* כדי לשכתב את `build_user` כך שתתנהג בדיוק באותו אופן אבל ללא החזרה על `username` ו- `email`, כפי שמוצג ברשימה 5-5.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -94,25 +63,16 @@ Listing 5-4, we can use the *field init shorthand* syntax to rewrite
 {{#rustdoc_include ../listings/ch05-using-structs-to-structure-related-data/listing-05-05/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 5-5: A `build_user` function that uses field init
-shorthand because the `username` and `email` parameters have the same name as
-struct fields</span>
 
-Here, we’re creating a new instance of the `User` struct, which has a field
-named `email`. We want to set the `email` field’s value to the value in the
-`email` parameter of the `build_user` function. Because the `email` field and
-the `email` parameter have the same name, we only need to write `email` rather
-than `email: email`.
+<span class="caption">רשימה 5-5: הפונקציה `build_user` שמשתמשת באתחול שדות מקוצר כיוון שלפרמטרים `username` ו-`email` יש את אותם השמות כמו שדות המבנה</span>
 
-### Creating Instances from Other Instances with Struct Update Syntax
+אנחנו יוצרים כאן פומע חדש של המבנה `User`, שיש לו שדה בשם `email`. אנחנו רוצים לקבוע את הערך של השדה `email` להיות הערך בפרמטר `email` של הפונקציה `build_user`. משום שלשדה `email` ולפרמטר `email` יש את אותו השם, כל שצריך לעשות זה לכתוב `email`, במקום `email: email`.
 
-It’s often useful to create a new instance of a struct that includes most of
-the values from another instance, but changes some. You can do this using
-*struct update syntax*.
+### יצירת מופעים של מבנה ממופעים אחרים שלו באמצעות תחביר עדכון מבנה
 
-First, in Listing 5-6 we show how to create a new `User` instance in `user2`
-regularly, without the update syntax. We set a new value for `email` but
-otherwise use the same values from `user1` that we created in Listing 5-2.
+לעיתים קרובות יש צורך ליצור מופע חדש של מבנה שכולל את הערכים ממבנה אחר כמו שהם, ורק כמה מהם צריכים שינוי. ניתן לעשות זאת באמצעות *תחביר עדכון מבנה*.
+
+ראשית, ברשימה 5-6 אנו מראים כיצד ליצור מופע חדש של `User` ב- `user2` בצורה הרגילה, ללא תחביר העדכון. אנו קובעים ערך חדש ל- `email` אבל שאר השדות מקבלים את ערכיהם מהמופע `user1` שיצרנו ברשימה 5-2.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -120,12 +80,10 @@ otherwise use the same values from `user1` that we created in Listing 5-2.
 {{#rustdoc_include ../listings/ch05-using-structs-to-structure-related-data/listing-05-06/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 5-6: Creating a new `User` instance using one of
-the values from `user1`</span>
 
-Using struct update syntax, we can achieve the same effect with less code, as
-shown in Listing 5-7. The syntax `..` specifies that the remaining fields not
-explicitly set should have the same value as the fields in the given instance.
+<span class="caption">רשימה 5-6: יצירת מופע חדש של `User` תוך שימוש באחד מהערכים של `user1`</span>
+
+בעזרת תחביר עדכון מבנה, ניתן להשיג את אותה התוצאה בפחות קוד, כפי שנראה ברשימה 5-7. התחביר `..` משמעו שלשאר השדות, אלה שלא נעשה בהם שימוש מפורש, יש את אותם הערכים כמו בשדות של המופע הנתון.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -133,41 +91,18 @@ explicitly set should have the same value as the fields in the given instance.
 {{#rustdoc_include ../listings/ch05-using-structs-to-structure-related-data/listing-05-07/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 5-7: Using struct update syntax to set a new
-`email` value for a `User` instance but to use the rest of the values from
-`user1`</span>
 
-The code in Listing 5-7 also creates an instance in `user2` that has a
-different value for `email` but has the same values for the `username`,
-`active`, and `sign_in_count` fields from `user1`. The `..user1` must come last
-to specify that any remaining fields should get their values from the
-corresponding fields in `user1`, but we can choose to specify values for as
-many fields as we want in any order, regardless of the order of the fields in
-the struct’s definition.
+<span class="caption">רשימה 5-7: שימוש בתחביר עדכון מבנה כדי לקבוע ערך חדש לשדה `email` של המופע `User` ולקבוע את ערכי שאם השדות לפי הערכים ב-`user1`</span>
 
-Note that the struct update syntax uses `=` like an assignment; this is because
-it moves the data, just as we saw in the [“Variables and Data Interacting with
-Move”][move]<!-- ignore --> section. In this example, we can no longer use
-`user1` as a whole after creating `user2` because the `String` in the
-`username` field of `user1` was moved into `user2`. If we had given `user2` new
-`String` values for both `email` and `username`, and thus only used the
-`active` and `sign_in_count` values from `user1`, then `user1` would still be
-valid after creating `user2`. Both `active` and `sign_in_count` are types that
-implement the `Copy` trait, so the behavior we discussed in the [“Stack-Only
-Data: Copy”][copy]<!-- ignore --> section would apply.
+הקוד ברשימה 5-7 גם מייצר מופע ב- `user2` בעל ערך שונה לשדה `email` אבל עם אותם ערכים כמו ב- `user1` עבור השדות `username`, `active`, ו- `sign_in_count`. הנוטציה `..user1` חייבת להופיע בשורה האחרונה כדי לציין שכל השדות הנותרים צריכים לקבל את ערכם מהשדות התואמים ב- `user1`, אבל אנחנו חופשיים לקבוע ערכים לכל מספר שהוא של שדות, ובכל סדר שנרצה, ללא תלות בסדר של שדות בהגדרת המבנה.
 
-### Using Tuple Structs Without Named Fields to Create Different Types
+שימו לב שהתחביר לעדכון מבנה משתמש בסימן `=` כמו השמה; זאת משום שהוא מזיז את הדאטה, כפי בדיוק כפי שראינו בסעיף [***][move]<!-- ignore --> . בדוגמא זו, לא ניתן להשתמש ב-`user1` לאחר יצירת `user2` כיוון שה- `String` בשדה `username` של `user1` הוזזה לתוך `user2`. אילו היינו נותנים ל- `user2` ערך חדש של `String` גם עבור `email` וגם עבור `username`, וכך רק משתמשים בערכים של `active` וב- `sign_in_count` מ- `user1`, אז `user1` עדיין יהיה תקף לאחר יצירת `user2`. הטיפוסים `active` ו- `sign_in_count` מיישמים שניהם את התכונה `Copy`, ולכן ההתנהגות עליה דיברנו בסעיף [***][copy]<!-- ignore --> בתוקף.
 
-Rust also supports structs that look similar to tuples, called *tuple structs*.
-Tuple structs have the added meaning the struct name provides but don’t have
-names associated with their fields; rather, they just have the types of the
-fields. Tuple structs are useful when you want to give the whole tuple a name
-and make the tuple a different type from other tuples, and when naming each
-field as in a regular struct would be verbose or redundant.
+### שימוש במבני רצף ללא שמות לשדות כדי ליצור טיפוסים שונים
 
-To define a tuple struct, start with the `struct` keyword and the struct name
-followed by the types in the tuple. For example, here we define and use two
-tuple structs named `Color` and `Point`:
+ראסט גם תומכת במבנים שמאוד דומים לרצפים, ונקראים *מבני רצף* (tuple structs). למבני רצף יש את המשמעות הנוספת שניתנת להם מהשם של המבנה, אבל לשדות שלהם אין שמות משלהם; רק טיפוסי השדות קיימים. מבני רצף הם שימושיים כאשר רוצים לתת שם לרצף בכללותו ובכך להפוך את הרצף לטיפוס דאטה שונה מרצפים אחרים, וגם כאשר מתן שם לכל שדה, כמו במבנה רגיל, זה מיותר או מוגזם.
+
+כדי להגדיר מבנה רצף, יש להתחיל עם מילת המפתח `struct` ועם שם המבנה, ולהמשיך עם הטיפוסים ברצף. למשל, כאן אנו מגדירים ומשתמשים בשני מבני הרצף `Color` ו-`Point`:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -175,24 +110,11 @@ tuple structs named `Color` and `Point`:
 {{#rustdoc_include ../listings/ch05-using-structs-to-structure-related-data/no-listing-01-tuple-structs/src/main.rs}}
 ```
 
-Note that the `black` and `origin` values are different types because they’re
-instances of different tuple structs. Each struct you define is its own type,
-even though the fields within the struct might have the same types. For
-example, a function that takes a parameter of type `Color` cannot take a
-`Point` as an argument, even though both types are made up of three `i32`
-values. Otherwise, tuple struct instances are similar to tuples in that you can
-destructure them into their individual pieces, and you can use a `.` followed
-by the index to access an individual value.
+שימו לב שהערכים `black` ו-`origin` הם מטיפוס שונה כי הם מופעים של מבני רצף שונים. כל מבנה שתגדירו הוא טיפוס בפני עצמו, אפילו אם לשדות בשני המבנים זהים. לדוגמא, פונקציה שלוקחת פרמטר מטיפוס `Color` לא תקבל מופע של `Point` כפרמטר, אפילו ששני הטיפוסים מורכבים משלושה ערכים מטיפוס `i32`. מלבד זאת, מבני רצף דומים מאוד לרצפים בכך שניתן לפרק אותם לרכיבים שלהם, וניתן גם להשתמש בנוטציה `.` ולאחריה אינדקס על מנת לגשת לרכיב מסויים.
 
-### Unit-Like Structs Without Any Fields
+### מבנים דמויי-unit ללא כל שדות
 
-You can also define structs that don’t have any fields! These are called
-*unit-like structs* because they behave similarly to `()`, the unit type that
-we mentioned in [“The Tuple Type”][tuples]<!-- ignore --> section. Unit-like
-structs can be useful when you need to implement a trait on some type but don’t
-have any data that you want to store in the type itself. We’ll discuss traits
-in Chapter 10. Here’s an example of declaring and instantiating a unit struct
-named `AlwaysEqual`:
+ניתן גם להגדיר מבנים בלי אף שדה כלל! מבנים כאלה נקראים *מבנים דמויי-unit* מכיוון שהם מתנהגים באופן דומה ל- `()`, טיפוס היחידה שהזכרנו בסעיף [***][tuples]<!-- ignore --> . מבנים דמויי-unit יכולים להיות שימושיים כאשר אנו רוצים ליישם תכונה עבור טיפוס מסויים, אבל אין לנו דאטה שרוצים לאכסן בטיפוס עצמו. בתכנותו נדון בפרק 10. הינה דוגמא להכרזה ואתחול של מבנה דמוי-unit בשם `AlwaysEqual`:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -200,33 +122,18 @@ named `AlwaysEqual`:
 {{#rustdoc_include ../listings/ch05-using-structs-to-structure-related-data/no-listing-04-unit-like-structs/src/main.rs}}
 ```
 
-To define `AlwaysEqual`, we use the `struct` keyword, the name we want, and
-then a semicolon. No need for curly brackets or parentheses! Then we can get an
-instance of `AlwaysEqual` in the `subject` variable in a similar way: using the
-name we defined, without any curly brackets or parentheses. Imagine that later
-we’ll implement behavior for this type such that every instance of
-`AlwaysEqual` is always equal to every instance of any other type, perhaps to
-have a known result for testing purposes. We wouldn’t need any data to
-implement that behavior! You’ll see in Chapter 10 how to define traits and
-implement them on any type, including unit-like structs.
+כדי להגדיר את `AlwaysEqual` אנו משתמשים במילת המפתח `struct`, שם המבנה הרצוי, ומייד אחריו נקודה-פסיק. אין צורך בסוגריים (מסולסלים או עגולים)! אז אנחנו יכולים ליצור `AlwaysEqual` במשתנה `subject` בדרך דומה: שימוש בשם שהגדרנו, ללא כל סוגריים. דמיינו שאח"כ נממש התנהגות עבור טיפוס זה כך שכל מופע `AlwaysEqual` תמיד שווה לכל מופע של כל טיפוס אחר, למשל בכדי ליצור תוצאה ידועה מראש למטרת בדיקות. לא נצטרך שום דאטה כדי ליישם התנהגות זו! תראו בפרק 10 כיצד להגדיר תכונות וליישם אותן עבור כל טיפוס שהוא, כולל מבנים דמויי-unit.
 
-> ### Ownership of Struct Data
->
-> In the `User` struct definition in Listing 5-1, we used the owned `String`
-> type rather than the `&str` string slice type. This is a deliberate choice
-> because we want each instance of this struct to own all of its data and for
-> that data to be valid for as long as the entire struct is valid.
->
-> It’s also possible for structs to store references to data owned by something
-> else, but to do so requires the use of *lifetimes*, a Rust feature that we’ll
-> discuss in Chapter 10. Lifetimes ensure that the data referenced by a struct
-> is valid for as long as the struct is. Let’s say you try to store a reference
-> in a struct without specifying lifetimes, like the following; this won’t work:
->
+> ### בעלות על דאטה במבנה
+> 
+> בהגדרה של המבנה  `User` ברשימה 5-1, השתמשנוב-`String`, טיפוס עם בעלות על הדאטה שלו, ולא בטיפוס חיתוך מחרוזת `&str`. זוהי בחירה מכוונת כיוון שאנחנו רוצים שכל מופע של מבנה זה יהיה הבעלים של הדאטה שלו, ושהדאטה יהיה תקף כל עוד המבנה כולו תקף.
+> 
+> מבנים יכולים גם לאכסן הפניות לדאטה בבעלות של משהו אחר, אבל כדי לעשות זאת יש להשתמש *בפז"ם* (lifetime), תכונה של ראסט בה נדון בפרק 10. פז"ם מבטיח שהדאטה אליו מפנים מתוך מופע של מבנה תקף כל עוד המופע תקף. הבה נניח שאתם מנסים לאכסן הפנייה במבנה ללא שימוש בפז"ם, כמו בדוגמא הבאה; שאינה עובדת:
+> 
 > <span class="filename">Filename: src/main.rs</span>
->
+> 
 > <!-- CAN'T EXTRACT SEE https://github.com/rust-lang/mdBook/issues/1127 -->
->
+> 
 > ```rust,ignore,does_not_compile
 > struct User {
 >     active: bool,
@@ -234,7 +141,7 @@ implement them on any type, including unit-like structs.
 >     email: &str,
 >     sign_in_count: u64,
 > }
->
+> 
 > fn main() {
 >     let user1 = User {
 >         active: true,
@@ -244,9 +151,9 @@ implement them on any type, including unit-like structs.
 >     };
 > }
 > ```
->
-> The compiler will complain that it needs lifetime specifiers:
->
+> 
+> הקומפיילר יתלונן שהוא צריך מצייני פז"ם:
+> 
 > ```console
 > $ cargo run
 >    Compiling structs v0.1.0 (file:///projects/structs)
@@ -262,7 +169,7 @@ implement them on any type, including unit-like structs.
 > 2 |     active: bool,
 > 3 ~     username: &'a str,
 >   |
->
+> 
 > error[E0106]: missing lifetime specifier
 >  --> src/main.rs:4:12
 >   |
@@ -276,14 +183,12 @@ implement them on any type, including unit-like structs.
 > 3 |     username: &str,
 > 4 ~     email: &'a str,
 >   |
->
+> 
 > For more information about this error, try `rustc --explain E0106`.
 > error: could not compile `structs` due to 2 previous errors
 > ```
->
-> In Chapter 10, we’ll discuss how to fix these errors so you can store
-> references in structs, but for now, we’ll fix errors like these using owned
-> types like `String` instead of references like `&str`.
+> 
+> בפרק 10, נראה כיצד לתקן שגיאות אלה כדי שתוכלו לאכסן הפנייות במבנים, אבל לבינתיים נתקן בעיות כגון אלה תוך שימוש בטיפוסים עם בעלות כמו  `String` במקום הפנייות כמו `&str`.
 
 <!-- manual-regeneration
 for the error above
@@ -291,6 +196,8 @@ after running update-rustc.sh:
 pbcopy < listings/ch05-using-structs-to-structure-related-data/no-listing-02-reference-in-struct/output.txt
 paste above
 add `> ` before every line -->
+
+[tuples]: ch03-02-data-types.html#the-tuple-type
 
 [tuples]: ch03-02-data-types.html#the-tuple-type
 [move]: ch04-01-what-is-ownership.html#variables-and-data-interacting-with-move
