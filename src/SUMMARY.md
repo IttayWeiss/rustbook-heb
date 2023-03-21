@@ -26,7 +26,7 @@
     - [טיפוס החיתוך](ch04-03-slices.md)
 
 - [שימוש במבנים בכדי לעצב דאטה מקושר](ch05-00-structs.md)
-    - [Defining and Instantiating Structs](ch05-01-defining-structs.md)
+    - [הגדרה ואתחול של מבנים](ch05-01-defining-structs.md)
     - [An Example Program Using Structs](ch05-02-example-structs.md)
     - [Method Syntax](ch05-03-method-syntax.md)
 
