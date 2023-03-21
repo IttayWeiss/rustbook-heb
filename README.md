@@ -1,4 +1,17 @@
-# The Rust Programming Language
+# The Rust Programming Language - Hebrew Translation
+
+Translation Status: Chapters 1-4 have been translated.
+
+A HebEngTerm.txt file in the root directory contains a list of standard Rust-related terminology with the chosen translations into Hebrew. 
+
+## Style of translation
+The translation aims to preserve the feel of the original text, while ahering to Hebrew idioms. That means that time tenses are mostly preserved, except when sounding very awkward in Hebrew or if deviating from the original style significantly improves clarity. 
+
+Contributions are very welcomed. It is recommended to familiarise yourself with the already translated material before translating other chapters, and to strive for a similar style of translation. 
+
+The rest of the this README.md has not been translated yet. 
+
+# Original README.md Starts Here
 
 ![Build Status](https://github.com/rust-lang/book/workflows/CI/badge.svg)
 
