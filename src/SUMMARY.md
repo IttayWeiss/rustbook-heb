@@ -28,7 +28,7 @@
 - [שימוש במבנים בכדי לעצב דאטה מקושר](ch05-00-structs.md)
     - [הגדרה ואתחול של מבנים](ch05-01-defining-structs.md)
     - [תכנית לדוגמא המשתמשת במבנים](ch05-02-example-structs.md)
-    - [Method Syntax](ch05-03-method-syntax.md)
+    - [תחביר מתודות](ch05-03-method-syntax.md)
 
 - [Enums and Pattern Matching](ch06-00-enums.md)
     - [Defining an Enum](ch06-01-defining-an-enum.md)
