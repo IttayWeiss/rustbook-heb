@@ -1,254 +1,145 @@
 <!-- Old heading. Do not remove or links may break. -->
 <a id="the-match-control-flow-operator"></a>
-## The `match` Control Flow Construct
 
-Rust has an extremely powerful control flow construct called `match` that
-allows you to compare a value against a series of patterns and then execute
-code based on which pattern matches. Patterns can be made up of literal values,
-variable names, wildcards, and many other things; [Chapter
-18][ch18-00-patterns]<!-- ignore --> covers all the different kinds of patterns
-and what they do. The power of `match` comes from the expressiveness of the
-patterns and the fact that the compiler confirms that all possible cases are
-handled.
+## המבנה התחבירי `match` לבקרת זרימה
 
-Think of a `match` expression as being like a coin-sorting machine: coins slide
-down a track with variously sized holes along it, and each coin falls through
-the first hole it encounters that it fits into. In the same way, values go
-through each pattern in a `match`, and at the first pattern the value “fits,”
-the value falls into the associated code block to be used during execution.
+לראסט יש מבנה תחבירי עצמתי מאוד שנקרא `match` שמאפשר לכם להשוות ערך מול סדרה של דפוסים ולהריץ קוד בהתאם לדפוס שמותאם לערך. דפוסים יכולים להיות מורכבים מערכים מפורשים, שמות משתנים, תווים כלליים (wildcards), ודברים רבים אחרים; [Chapter 18][ch18-00-patterns]<!-- ignore --> מכסה את כל הסוגים השונים של דפוסים, ודרך פעולתם. מקור הכח של `match` הוא יכולת הביטוי של הדפוסים והעובדה שהקומפיילר מוודא שכל הסיטואציות האפשריות עבור הערך הרלוונטי מטופלות.
 
-Speaking of coins, let’s use them as an example using `match`! We can write a
-function that takes an unknown US coin and, in a similar way as the counting
-machine, determines which coin it is and returns its value in cents, as shown
-in Listing 6-3.
+חשבו על ביטוי `match` כמו על מכונה למיון מטבעות: מטבעות מחליקים במורד משפך עם חורים בגדלים שונים, וכל מטבע נופל לתוך החור הראשון שלתוכו הוא מתאים. באותה דרך, ערכים עוברים דרך כל דפוס ב-`match`, והדפוס הראשון שלתוכו ערך מסוים "מתאים", מופנה לבלוק הקוד המשוייך לדפוס לשימושו בזמן הריצה.
+
+אם כבר אנחנו מדברים על מטבעות, הבה נבנה דוגמא סביבם לשימוש ב-`match`! אנחנו יכולים לכתוב פונקציה שמקבלת מטבע לא ידוע (נניח מסדרת המטבעות הסטנדרטית בארצות הברית), בדרך דומה למכונת הספירה, קובעת איזה מטבע זה ומחזירה את ערכו בסנטים, כפי שמוצג ברשימה 6-3.
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-03/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 6-3: An enum and a `match` expression that has
-the variants of the enum as its patterns</span>
 
-Let’s break down the `match` in the `value_in_cents` function. First we list
-the `match` keyword followed by an expression, which in this case is the value
-`coin`. This seems very similar to a conditional expression used with `if`, but
-there’s a big difference: with `if`, the condition needs to evaluate to a
-Boolean value, but here it can be any type. The type of `coin` in this example
-is the `Coin` enum that we defined on the first line.
+<span class="caption">רשימה 6-3: מבחר וביטוי `match` שבו הדפוסים הם הווריאנטים של המבחר</span>
 
-Next are the `match` arms. An arm has two parts: a pattern and some code. The
-first arm here has a pattern that is the value `Coin::Penny` and then the `=>`
-operator that separates the pattern and the code to run. The code in this case
-is just the value `1`. Each arm is separated from the next with a comma.
+הבה נפרוט את ה-`match` בפונקציה `value_in_cents`. ראשית, לאחר מילת המפתח `match` מופיע ביטוי, שבמקרה זה הוא הערך `coin`. זה נראה מאוד דומה לביטוי התנאי ב- `if`, אבל יש הבדל גדול: עם `if` על התנאי להיות מוערך לערך בוליאני, אבל כאן הוא יכול להיות מכל טיפוס שהוא. הטיפוס של `coin` בדוגמא זו הוא המבחר `Coin` שאותו הגדרנו בשורה הראשונה.
 
-When the `match` expression executes, it compares the resultant value against
-the pattern of each arm, in order. If a pattern matches the value, the code
-associated with that pattern is executed. If that pattern doesn’t match the
-value, execution continues to the next arm, much as in a coin-sorting machine.
-We can have as many arms as we need: in Listing 6-3, our `match` has four arms.
+אח"כ מגיעות זרועות ה- `match`. לזרוע יש שני חלקים: דפוס וקוד. לזרוע הראשונה כאן יש את הדפוס שהוא הערך `Coin::Penny` ולאחריו האופרטור `=>` שמפריד בין הדפוס לבין הקוד להרצה. הקוד במקרה זההוא פשוט הערך `1`. כל זרוע מופרדת מהבאה אחריה ע"י פסיק.
 
-The code associated with each arm is an expression, and the resultant value of
-the expression in the matching arm is the value that gets returned for the
-entire `match` expression.
+כאשר ביטוי ה- `match` רץ, הוא משווה את הערך שהוא תוצאת הביטוי עליו ה- <0>match</0> מוגדר כנגד הדפוס בכל זרוע, לפי סדרן. אם דפוס תואם את הערך, אז הקוד המשוייך לדפוס זה יבוצע. אם הדפוס אינו תואם את הערך, אז הביצוע זורם אל הזרוע הבאה, בדומה לפעולת מכונת מיון מטבעות. ניתן להוסיף זרועות כפי הצורך: ברשימה 6-3, ל-`match` יש ארבע זרועות.
 
-We don’t typically use curly brackets if the match arm code is short, as it is
-in Listing 6-3 where each arm just returns a value. If you want to run multiple
-lines of code in a match arm, you must use curly brackets, and the comma
-following the arm is then optional. For example, the following code prints
-“Lucky penny!” every time the method is called with a `Coin::Penny`, but still
-returns the last value of the block, `1`:
+הקוד המשוייך לכל זרוע הוא ביטוי, והערך שהוא תוצאת הביטוי בזרוע התואמת הוא הערך שמוחזר עבור על ביטוי ה-`match`.
+
+אם הקוד בזרוע מסויימת הוא קצר, כמו למשל ברשימה 6-3 שם כל זרוע פשוט מחזירה ערך, אז בדר"כ לא משתמשים בסוגריים מסלוסלות. אם רוצים להריץ כמה שורות קוד בזרוע מסויימת, אז חייבים להשתמש בסוגריים מסולסלים, ובמקרה זה הפסיק המפריד בין זרועות הוא אופציונאלי. למשל, הקוד הבא מדפיס “Lucky penny!” בכל פעם שהמתודה נקראת עםא הערך `Coin::Penny`, אבל עדיין מחזיר את הערך האחרון של הבלוק, `1`:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-08-match-arm-multiple-lines/src/main.rs:here}}
 ```
 
-### Patterns That Bind to Values
+### דפוסים שנקשרים לערכים
 
-Another useful feature of match arms is that they can bind to the parts of the
-values that match the pattern. This is how we can extract values out of enum
-variants.
+תכונה שימושית נוספת של זרועות match היא שהן יכולות להיקשר לחלקים של הערך שמותאם לדפוס. הינה כיצד להפיק ערכים מתוך ווריאנטים של מבחר.
 
-As an example, let’s change one of our enum variants to hold data inside it.
-From 1999 through 2008, the United States minted quarters with different
-designs for each of the 50 states on one side. No other coins got state
-designs, so only quarters have this extra value. We can add this information to
-our `enum` by changing the `Quarter` variant to include a `UsState` value
-stored inside it, which we’ve done in Listing 6-4.
+כדוגמא, הבה נשנה את אחד הווריאנטים של המבחר כך שיאכסן בתוכו דאטה. ב-1999 עד 2008, ארצות הברית הנפיקה מטבעות של רבע-דולר בעיצוב שונה של אחד הצדדים לכל אחת מ-50 המדינות. לשאר המטבעות היו עיצובים אחידים, כך שרק למטבעות רבע-דולר יש ערך נוסף זה. ניתן להוסיף מידע זה למבחר שלנו ע"י שינוי הווריאנט `Quarter` כך שיכיל ערך `UsState`, כפי שעשינו ברשימה 6-4.
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-04/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 6-4: A `Coin` enum in which the `Quarter` variant
-also holds a `UsState` value</span>
 
-Let’s imagine that a friend is trying to collect all 50 state quarters. While
-we sort our loose change by coin type, we’ll also call out the name of the
-state associated with each quarter so that if it’s one our friend doesn’t have,
-they can add it to their collection.
+<span class="caption">רשימה 6-4: המבחר `Coin` בו הווריאנט `Quarter` מאכסן ערך `UsState`</span>
 
-In the match expression for this code, we add a variable called `state` to the
-pattern that matches values of the variant `Coin::Quarter`. When a
-`Coin::Quarter` matches, the `state` variable will bind to the value of that
-quarter’s state. Then we can use `state` in the code for that arm, like so:
+הבה נדמיין שחברים שלנו מנסים לאסוף מטבעות רבע-דולר מכל 50 המדינות. בעודנו ממיינים את הכסף הקטן שלנו לפי סוג מטבע, נשים לב גם לשם המדינה המשוייכת לכל רבע-דולר, וכך אם נמצא מטבע שלחברים שלנו עוד אין באוסף, הם יוכלו להוסיף אותו.
+
+בביטוי ההתאמה עבור קוד זה, נוסיף לדפוס משתנה בשם `state` שתואם לערכים של הווריאנט `Coin::Quarter`. כאשר `Coin::Quarter` מותאם, המשתנה `state` ייקשר לערך של שם המדינה המשוייך למטבע רבע-דולר זה. כך נוכל להשתמש ב-`state` בקוד עבור הזרוע הרלוונטית, בצורה הבאה:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-09-variable-in-pattern/src/main.rs:here}}
 ```
 
-If we were to call `value_in_cents(Coin::Quarter(UsState::Alaska))`, `coin`
-would be `Coin::Quarter(UsState::Alaska)`. When we compare that value with each
-of the match arms, none of them match until we reach `Coin::Quarter(state)`. At
-that point, the binding for `state` will be the value `UsState::Alaska`. We can
-then use that binding in the `println!` expression, thus getting the inner
-state value out of the `Coin` enum variant for `Quarter`.
+לו היינו קוראים ל- `value_in_cents(Coin::Quarter(UsState::Alaska))` אז המשתנה `coin` יקבל את הערך `Coin::Quarter(UsState::Alaska)`. כאשר אנו משווים ערך זה מול זרועות ההתאמה, אף אחת מהן לא מותאמת עד שמגיעים ל- `Coin::Quarter(state)`. בשלב זה, הקישור עבור `state` יהיה לערך `UsState::Alaska`. ואז ניתן להשתמש בביטוי `println!`, וכך לקבל גישה לשם המדינה, שהוא הערך הפנימי בווריאנט `Quarter` של המבחר `Coin`.
 
-### Matching with `Option<T>`
+### התאמה עם `Option<T>`
 
-In the previous section, we wanted to get the inner `T` value out of the `Some`
-case when using `Option<T>`; we can also handle `Option<T>` using `match`, as
-we did with the `Coin` enum! Instead of comparing coins, we’ll compare the
-variants of `Option<T>`, but the way the `match` expression works remains the
-same.
+בסעיף הקודם רצינו לקרוא את הערך הפנימי מטיפוס `T` שבתוך `Some` כאשר השתמשנו ב- `Option<T>`; ניתן גם לטפל ב- `Option<T>` באמצעות `match`, כפי שעשינו עם המבחר `Coin`! במקום להשוות מטבעות, אנו נשווה ווריאנטים של `Option<T>`, אבל האופן בו ביטוי ה- `match` עובד לא משתנה.
 
-Let’s say we want to write a function that takes an `Option<i32>` and, if
-there’s a value inside, adds 1 to that value. If there isn’t a value inside,
-the function should return the `None` value and not attempt to perform any
-operations.
+נניח שאנחנו רוצים לכתוב פונקציה שלוקחת `Option<i32>` ומוסיפה אחד לערך הפנימי, במידה ויש כזה. אם אין ערך פנימי, אז הפונקציה צריכה להחזיר את הערך `None` ולא לנסות לבצע פעולות.
 
-This function is very easy to write, thanks to `match`, and will look like
-Listing 6-5.
+הודות ליכולות של `match` פונקציה זו מאוד קלה לכתיבה, והיא נראית כמו שמוצג ברשימה 6-5.
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-05/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 6-5: A function that uses a `match` expression on
-an `Option<i32>`</span>
 
-Let’s examine the first execution of `plus_one` in more detail. When we call
-`plus_one(five)`, the variable `x` in the body of `plus_one` will have the
-value `Some(5)`. We then compare that against each match arm:
+<span class="caption">רשימה 6-5: פונקציה שמשתמשת בביטוי `match` על ערך מטיפוס `Option<i32>`</span>
+
+הבה נבחן את הריצה הראשונה של `plus_one` בפירוט מסויים. כאשר אנו קוראים ל-`plus_one(five)`, המשתנה `x` שבגוף הפונקציה `plus_one` יכיל את הערך `Some(5)`. אז אנחנו משווים זאת מול כל אחת מזרועות ההתאמה:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-05/src/main.rs:first_arm}}
 ```
 
-The `Some(5)` value doesn’t match the pattern `None`, so we continue to the
-next arm:
+הערך `Some(5)` לא מותאם לדפוס `None` ולכן אנו ממשיכים לזרוע הבאה:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-05/src/main.rs:second_arm}}
 ```
 
-Does `Some(5)` match `Some(i)`? It does! We have the same variant. The `i`
-binds to the value contained in `Some`, so `i` takes the value `5`. The code in
-the match arm is then executed, so we add 1 to the value of `i` and create a
-new `Some` value with our total `6` inside.
+האם `Some(5)` מותאם ל- `Some(i)`? כן, בהחלט! יש לנו את אותו הווריאנט. הערך `i` מקושר לערך שנמצא בתוך ה- `Some`, ולכן `i` מקבל את הערך `5`. הקוד בזרוע זו של ההתאמה מבוצעת, ולכן אנו מוסיפים 1 לערך ב- `i` ויוצרים ערך `Some` חדש ובו הערך הפנימי `6`.
 
-Now let’s consider the second call of `plus_one` in Listing 6-5, where `x` is
-`None`. We enter the `match` and compare to the first arm:
+עכשיו, הבה נבדוק את הקריאה השניה ל- `plus_one` מרשימה 6-5, שם `x` שווה ל-`None`. אנחנו נכנסים ל- `match` ומשווים לזרוע הראשונה:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-05/src/main.rs:first_arm}}
 ```
 
-It matches! There’s no value to add to, so the program stops and returns the
-`None` value on the right side of `=>`. Because the first arm matched, no other
-arms are compared.
+יש לנו התאמה! אין שום ערך להוסיף לו דבר, ולכן התכנית עוצרת ומחזירה את הערך `None` שבצד ימין של האופרטור `=>`. מכיוון שהזרוע הראשונה הותאמה, לא מתבצע נסיון להתאים לשאר הזרועות.
 
-Combining `match` and enums is useful in many situations. You’ll see this
-pattern a lot in Rust code: `match` against an enum, bind a variable to the
-data inside, and then execute code based on it. It’s a bit tricky at first, but
-once you get used to it, you’ll wish you had it in all languages. It’s
-consistently a user favorite.
+שילוב של `match` עם מבחרים הוא יעיל בסיטאציות רבות. אתם תתקלו בדפוס תכנות זה רבות בקוד ראסט: `match` כנגד מבחר, קישור משתנה לדאטה פנימי, ואז הרצת קוד בהתאם. זה מצריך קצת מחשבה בהתחלה, אבל ברגע שתתרגלו לזה, לא תבינו איך הסתדרתם בלי זה. זה באופן עקבי תכונה חביב על משתמשים.
 
-### Matches Are Exhaustive
+### התאמות חייבות למצות
 
-There’s one other aspect of `match` we need to discuss: the arms’ patterns must
-cover all possibilities. Consider this version of our `plus_one` function,
-which has a bug and won’t compile:
+ישנו אספק אחר של `match` עליו עלינו לדון: הדפוסים על פני כל הזרועות חייבים למצות את כל האפשרויות. קחו למשל את הגרסה הזו של הפונקציה `plus_one`, יש בה באג והיא לא עוברת קומפילציה:
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-10-non-exhaustive-match/src/main.rs:here}}
 ```
 
-We didn’t handle the `None` case, so this code will cause a bug. Luckily, it’s
-a bug Rust knows how to catch. If we try to compile this code, we’ll get this
-error:
+לא טיפלנו במקרה שהערך הוא `None`, ולכן הקוד יגרום לבאג. למרבה המזל, זהו באג שראסט יודעת לתפוס. אם ננסה לקמפל את הקוד הזה, נקבל את השגיאה הזו:
 
 ```console
 {{#include ../listings/ch06-enums-and-pattern-matching/no-listing-10-non-exhaustive-match/output.txt}}
 ```
 
-Rust knows that we didn’t cover every possible case, and even knows which
-pattern we forgot! Matches in Rust are *exhaustive*: we must exhaust every last
-possibility in order for the code to be valid. Especially in the case of
-`Option<T>`, when Rust prevents us from forgetting to explicitly handle the
-`None` case, it protects us from assuming that we have a value when we might
-have null, thus making the billion-dollar mistake discussed earlier impossible.
+ראסט יודעת שלא כיסינו את כל האפשרויות שהמשתנה עליו ההאמה מבוצעת יכול לקבל, ואפילו יודעת איזה דפוס שכחנו! התאמות בראסט חייבות להיות *ממצות*: עלינו למצות את כל האפשרויות עד האחרונה שבהן על מנת שהקוד יהיה תקף. ביחוד במקרה של `Option<T>`, כאשר ראסט מונעת מאיתנו מלשכוח לטפל מפורשות במקרה שהערך הוא `None`, היא שומרת עלינו מלהניח שיש לנו ערך כאשר ייתכן שיש לנו null, וכך הופכת את טעות ביליון הדולר מהסעיף הקודם לבלתי אפשרית.
 
-### Catch-all Patterns and the `_` Placeholder
+### דפוסים תופסי-כל (catch-all) ואוחז המקום (placeholder) `_`
 
-Using enums, we can also take special actions for a few particular values, but
-for all other values take one default action. Imagine we’re implementing a game
-where, if you roll a 3 on a dice roll, your player doesn’t move, but instead
-gets a new fancy hat. If you roll a 7, your player loses a fancy hat. For all
-other values, your player moves that number of spaces on the game board. Here’s
-a `match` that implements that logic, with the result of the dice roll
-hardcoded rather than a random value, and all other logic represented by
-functions without bodies because actually implementing them is out of scope for
-this example:
+תוך שימוש במבחרים, ניתן לנקוט בפעולות יחודיות עבור ערכים ספציפיים, ולפעול באמצעות ברירת מחדל עבור כל הערכים האחרים. למשל, במקרה בו אנו מיישמים משחק בו אם מגלגלים 3 בקוביות, השחקן לא זז, ובמקום זאת מקבל כובע מסוגנן חדש. אם מגלגלים 7, השחקן מאבד כובע. לכל שאר הערכים, השחקן מתקדם על הלוח לפי המספר על הקוביות. הינה יישום של הלוגיקה הזו באמצעות `match`, בו תוצאת זריקת הקוביות מקודדת ישירות במקום כערך משני, וכל שאר הלוגיקה מיוצגת ע"י פונקציות ללא יישום של גופן כיוון שיישום כזה הוא מעבר למטרת הדוגמא:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-15-binding-catchall/src/main.rs:here}}
 ```
 
-For the first two arms, the patterns are the literal values `3` and `7`. For
-the last arm that covers every other possible value, the pattern is the
-variable we’ve chosen to name `other`. The code that runs for the `other` arm
-uses the variable by passing it to the `move_player` function.
+עבור שתי הזרועות הראשונות, הדפוסים הם הערכים המפורשים `3` ו-`7`. עבור הזרוע האחרונה שמכסה את כל שאר האפשרויות, הדפוס הוא המשתנה שבחרנו לקרוא בשם `other`. הקוד שרץ בזרוע `other` משתמש במשתנה הזה ע"י העברתו לפונקציה `move_player`.
 
-This code compiles, even though we haven’t listed all the possible values a
-`u8` can have, because the last pattern will match all values not specifically
-listed. This catch-all pattern meets the requirement that `match` must be
-exhaustive. Note that we have to put the catch-all arm last because the
-patterns are evaluated in order. If we put the catch-all arm earlier, the other
-arms would never run, so Rust will warn us if we add arms after a catch-all!
+קוד זה עובר קומפילציה אפילו שלא מנינו את כל הערכים ש-`u8` יכול לקבל, וזאת משום שהדפוס האחרון יותאם לכל ערך שלא הופיע מפורשות. דפוס תופס-כל זה עונה לדרישה שכל ביטוי `match` חייב להיות ממצה. שימו לב שעלינו למקם את הזרוע הכוללת הזאת כזרוע האחרונה מכיוון שהזרועות מוערכות לפי סדרן. במידה ונמקם זרוע כוללת מוקדם יותר, שאר הזרועות לא ירוצו אף-פעם, ולכן ראסט תזהיר אותנו במקרה בו אנו מוסיפים זרועות לאחר זרוע כוללת!
 
-Rust also has a pattern we can use when we want a catch-all but don’t want to
-*use* the value in the catch-all pattern: `_` is a special pattern that matches
-any value and does not bind to that value. This tells Rust we aren’t going to
-use the value, so Rust won’t warn us about an unused variable.
+לראסט יש גם דפוס בו ניתן להשתמש כאשר אנו רוצים דפוס תופס-כל אבל לא רוצים *להשתמש* בערך עצמו שבדפוס: `_` הוא דפוס מיוחד שמותאם לכל ערך שהו אבל לא נקשר לערך הזה. בצורה זו אנו אומרים לראסט שאנחנו לא עומדים להשתמש בערך עצמו, וכך ראסט לא תזהיר אותנו אודות ערך שאינו בשימוש.
 
-Let’s change the rules of the game: now, if you roll anything other than a 3 or
-a 7, you must roll again. We no longer need to use the catch-all value, so we
-can change our code to use `_` instead of the variable named `other`:
+הבה נשנה את חוקי המשחק: עכשיו, אם מגלגלים כל תוצאה חוץ מ-3 או 7, יש לגלגל שוב. עכשיו אין צורך להשתמש בערך במקרה הכולל, ולכן אנחנו יכולים לשנות את הקוד שלנו להשתמש ב-`_` במקום בשם המשתנה `other`:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-16-underscore-catchall/src/main.rs:here}}
 ```
 
-This example also meets the exhaustiveness requirement because we’re explicitly
-ignoring all other values in the last arm; we haven’t forgotten anything.
+גם דוגמא זו עונה לדרישה למצות את כל האפשרויות, כיוון שאנחנו מתעלמים מפורשות מכל הערכים בזרוע האחרונה; לא שכחנו דבר.
 
-Finally, we’ll change the rules of the game one more time so that nothing else
-happens on your turn if you roll anything other than a 3 or a 7. We can express
-that by using the unit value (the empty tuple type we mentioned in [“The Tuple
-Type”][tuples]<!-- ignore --> section) as the code that goes with the `_` arm:
+לבסוף, נשנה את חוקי המשחק פעם נוספת כך ששום דבר נוסף לא קורה בתורך אם מגלגלים כל מספר חוץ מ-3 או 7. נוכל לבטא זאת באמצעות שימוש בערך unit (הרצף הריק עליו דיברנו בסעיף [“The Tuple Type”][tuples]<!-- ignore --> ) כקוד המשוייך לזרוע `_`:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-17-underscore-unit/src/main.rs:here}}
 ```
 
-Here, we’re telling Rust explicitly that we aren’t going to use any other value
-that doesn’t match a pattern in an earlier arm, and we don’t want to run any
-code in this case.
+כאן, אנו אומרים לראסט באופן מפורש שאנחנו לא הולכים להשתמש באף ערך שלא הותאם בזרוע קודמת, וגם שבמקרה זה אנחנו לא מעוניינים להריץ קוד כלל.
 
-There’s more about patterns and matching that we’ll cover in [Chapter
-18][ch18-00-patterns]<!-- ignore -->. For now, we’re going to move on to the
-`if let` syntax, which can be useful in situations where the `match` expression
-is a bit wordy.
+נוסיף להעמיק בדפוסים ובהתאמות [בפרק 18][ch18-00-patterns]<!-- ignore -->. בשלב זה נעבור הלאה לדבר על התחביר `if let`, שהוא שימושי בסיטואציות בהן ביטוי `match` סבוך שלא לצורך.
 
 [tuples]: ch03-02-data-types.html#the-tuple-type
+[ch18-00-patterns]: ch18-00-patterns.html
 [ch18-00-patterns]: ch18-00-patterns.html

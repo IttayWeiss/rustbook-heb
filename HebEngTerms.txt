@@ -81,3 +81,4 @@ struct מבנה
 field שדה
 tuple struct מבנה רצף
 derived trait תכונה נגזרת
+match expression ביטוי התאמה
