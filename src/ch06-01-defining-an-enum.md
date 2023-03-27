@@ -1,116 +1,65 @@
-## Defining an Enum
+## הגדרת מבחר
 
-Where structs give you a way of grouping together related fields and data, like
-a `Rectangle` with its `width` and `height`, enums give you a way of saying a
-value is one of a possible set of values. For example, we may want to say that
-`Rectangle` is one of a set of possible shapes that also includes `Circle` and
-`Triangle`. To do this, Rust allows us to encode these possibilities as an enum.
+בעוד שמבנים מקנים לכם דרך לאגד יחדיו שדות הקשורים זה לזה ודאטה, כמו המבנה `Rectangle` עם השדות `width` ו- `height`, מבחרים מאפשרים לכם לאמר שערך הוא אחד ממחלקה מסויימת של ערכים. למשל, נוכל לרצות לאמר ש-`Rectangle` הוא צורה אחת מתוך מחלקה של צורות אפשריות שכוללות גם את `Circle` וגם את `Triangle`. על מנת לעשות זאת, ראסט מאפשרת לקודד אפשרויות כמבחר.
 
-Let’s look at a situation we might want to express in code and see why enums
-are useful and more appropriate than structs in this case. Say we need to work
-with IP addresses. Currently, two major standards are used for IP addresses:
-version four and version six. Because these are the only possibilities for an
-IP address that our program will come across, we can *enumerate* all possible
-variants, which is where enumeration gets its name.
+הבה נתבונן בסיטואציה שנרצה לבטא בקוד ונראה מדוע מבחרים שימושיים ומתאימים, במקרה זה, יותר ממבנים. נניח שאנו עובדים עם כתובות IP. שני סטנדרטים מרכזיים נמצאים בשימוש עבור כתובות IP: גרסת ארבע וגרסת שש. מכיוון שאלו האפשרויות היחידות עבוד כתובת IP בהן שהתוכנית שלנו אי-פעם תשתמש, יש ביכולתנו למנות את כל הווריאנטים האפשריים. המינוח באנגלית למבחר הוא enumeration, דהיינו מניה, ומכאן נגזר המינוח הלועזי.
 
-Any IP address can be either a version four or a version six address, but not
-both at the same time. That property of IP addresses makes the enum data
-structure appropriate because an enum value can only be one of its variants.
-Both version four and version six addresses are still fundamentally IP
-addresses, so they should be treated as the same type when the code is handling
-situations that apply to any kind of IP address.
+כל כתובת IP יכולה להיות או גרסת ארבע או גרסת שש, אבל לא שתי הגרסאות באותו זמן. תכונה זו של כתובות IP היא זו שהופכת את השימוש במבחר למתאים במקרה זה משום שערך של מבחר יכול להיות בדיוק אחד מהווריאנטים שלו. גם כתובות גרסת ארבע וגם גרסת שש הן עדיין, ביסודן, כתובות IP, ולכן יש להתייחס אליהן כבעלות אותו טיפוס כאשר הקוד מטפל במצב שתקף לכל סוג של כתובת IP.
 
-We can express this concept in code by defining an `IpAddrKind` enumeration and
-listing the possible kinds an IP address can be, `V4` and `V6`. These are the
-variants of the enum:
+אנו יכולים להביע מושג זה בקוד ע"י הגדרת מבחר בשם `IpAddrKind` וציון הסוגים האפשריים שכתובת IP יכולה להיות, דהיינו `V4` ו- `V6`. אלו הווריאנטים של המבחר:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-01-defining-enums/src/main.rs:def}}
 ```
 
-`IpAddrKind` is now a custom data type that we can use elsewhere in our code.
+כעט, `IpAddrKind` הוא טיפוס דאטה בפני עצמו וניתן להשתמש בו בכל מקום בקוד.
 
-### Enum Values
+### ערך מטיפוס מבחר
 
-We can create instances of each of the two variants of `IpAddrKind` like this:
+ניתן ליצור מופעים של כל אחד משני הווריאנטים של `IpAddrKind` כך:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-01-defining-enums/src/main.rs:instance}}
 ```
 
-Note that the variants of the enum are namespaced under its identifier, and we
-use a double colon to separate the two. This is useful because now both values
-`IpAddrKind::V4` and `IpAddrKind::V6` are of the same type: `IpAddrKind`. We
-can then, for instance, define a function that takes any `IpAddrKind`:
+שימו לב שהווריאנטים של המבחר ממוקמים (namespaced) תחת המציין שלו, ומשתמשים בנקודותיים כפולות כדי להפריד בינהם. זה שימושי ונוח כי עכשיו שני הערכים `IpAddrKind::V4` ו- `IpAddrKind::V6` הם מאותו טיפוס: `IpAddrKind`. ולכן אפשר, למשל, להגדיר פונקציה שלוקחת כל משתנה מטיפוס `IpAddrKind`:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-01-defining-enums/src/main.rs:fn}}
 ```
 
-And we can call this function with either variant:
+לפונקציה זו ניתן לקרוא עם כל אחד מהווריאנטים:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-01-defining-enums/src/main.rs:fn_call}}
 ```
 
-Using enums has even more advantages. Thinking more about our IP address type,
-at the moment we don’t have a way to store the actual IP address *data*; we
-only know what *kind* it is. Given that you just learned about structs in
-Chapter 5, you might be tempted to tackle this problem with structs as shown in
-Listing 6-1.
+לשימוש במבחרים יש אפילו עוד יתרונות. מחשבה מועטה אודות טיפוס כתובות ה-IP שלנו מגלה שבשלב זה אין לנו דרך לאכסן את כתובת ה-IP עצמה; כל שאנו יודעים הוא מאיזה *סוג* היא. בהינתן שזה עתה למדתם, בפרק 5, על מבנים, ייתכן ואתם מתפתים לפתור בעיה זו באמצעות מבנים, כמו שמוצג ברשימה 6-1.
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-01/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 6-1: Storing the data and `IpAddrKind` variant of
-an IP address using a `struct`</span>
 
-Here, we’ve defined a struct `IpAddr` that has two fields: a `kind` field that
-is of type `IpAddrKind` (the enum we defined previously) and an `address` field
-of type `String`. We have two instances of this struct. The first is `home`,
-and it has the value `IpAddrKind::V4` as its `kind` with associated address
-data of `127.0.0.1`. The second instance is `loopback`. It has the other
-variant of `IpAddrKind` as its `kind` value, `V6`, and has address `::1`
-associated with it. We’ve used a struct to bundle the `kind` and `address`
-values together, so now the variant is associated with the value.
+<span class="caption">רשימה 6-1: אכסון הדאטה והווריאנט של `IpAddrKind` של כתובת IP תוך שימוש במבנה</span>
 
-However, representing the same concept using just an enum is more concise:
-rather than an enum inside a struct, we can put data directly into each enum
-variant. This new definition of the `IpAddr` enum says that both `V4` and `V6`
-variants will have associated `String` values:
+כאן, הגדרנו את המבנה `IpAddr` שלו שני שדות: השדה `kind` שהוא מטיפוס `IpAddrKind` (המבחר שהגדרנו קודם) והשדה `address` מטיפוס `String`. יש לנו שני מופעים של מבנה זה. הראשון הוא `home`, ובו מאוכסן הערך `IpAddrKind::V4` בשדה `kind` יחד עם הכתובת `127.0.0.1` כדאטה מקושר. המופע השני הוא `loopback`. לו יש את הווריאנט השני של `IpAddrKind` כערך בשדה `kind`, דהיינו `V6`, והכתובת המקושרת היא `::1`. השתמשנו במבנה כדי לאגד יחדיו את ערכי ה- `kind` וה- `address`, כך שעכשיו הווריאנט משוייך לערך.
+
+אולם, ייצוג אותו הרעיון תוך שימוש אך ורק במבחר פשוט יותר: במקום מבחר בתוך מבנה אנו יכולים לאכסן דאטה ישירות לתוך כל ווריאנט של המבחר. הגדרה חדשה זו את המבחר `IpAddr` מציינת שלשני הווריאנטים `V4` ו-`V6` ישוייכו ערכי `String`:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-02-enum-with-data/src/main.rs:here}}
 ```
 
-We attach data to each variant of the enum directly, so there is no need for an
-extra struct. Here, it’s also easier to see another detail of how enums work:
-the name of each enum variant that we define also becomes a function that
-constructs an instance of the enum. That is, `IpAddr::V4()` is a function call
-that takes a `String` argument and returns an instance of the `IpAddr` type. We
-automatically get this constructor function defined as a result of defining the
-enum.
+אנו מקשרים דאטה ישירות לכל ווריאנט של המבחר, וכך אין צורך ליצור מבנה מעבר למבחר. במקרה זה, גם קל להבחין בפרט נוסף בדבר דרך פעולת מבחרים: השם של כל ווריאנט של המבחר הוא מתפקד גם כפונקציה שבונה מופע של המבחר. ז"א ש- `IpAddr::V4()` הוא קריאה לפונקציה שמקבלת ארגומנט מטיפוס `String` ומחזירה מופע מטיפוס `IpAddr`. אנו מקבלים פונקציות בונות אלה בצורה אוטמוטית כתוצאה מהגדרת המבחר.
 
-There’s another advantage to using an enum rather than a struct: each variant
-can have different types and amounts of associated data. Version four IP
-addresses will always have four numeric components that will have values
-between 0 and 255. If we wanted to store `V4` addresses as four `u8` values but
-still express `V6` addresses as one `String` value, we wouldn’t be able to with
-a struct. Enums handle this case with ease:
+ישנו אף יתרון נוסף לשימוש במבחר במקום במבנה: לכל ווריאנט יכול להיות דאטה מקושר מטיפוסים שונים ובכמויות שונות. לגרסת ארבע של כתובות IP תמיד יהיו ארבע רכיבים נומריים בעלי ערכים בין 0 ל-255. לו רצינו לאכסן כתובת `V4` כארבע ערכי `u8` אבל עדיין לבטא כתובות `V6` שערך יחיד מטיפוס `String`, לא היינו יכולים לעשות זאת באמצעות מבנה. מבחרים מתמודדים עם מקרה שכזה בקלות:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-03-variants-with-different-data/src/main.rs:here}}
 ```
 
-We’ve shown several different ways to define data structures to store version
-four and version six IP addresses. However, as it turns out, wanting to store
-IP addresses and encode which kind they are is so common that [the standard
-library has a definition we can use!][IpAddr]<!-- ignore --> Let’s look at how
-the standard library defines `IpAddr`: it has the exact enum and variants that
-we’ve defined and used, but it embeds the address data inside the variants in
-the form of two different structs, which are defined differently for each
-variant:
+הדגמנו כמה דרכים שונות להגדיר מבני דאטה לאכסון כתובות IP בגרסת ארבע ובגרסת שש. אבל, מתברר, אכסון כתובות IP וקידוד הסוג שלהן הוא דבר כל-כך נפוץ [שבספריה הסטנדרטית יש הגדרה לשימושנו!][IpAddr]<!-- ignore --> הבה נראה כיצד הספריה הסטנדרטית מגדירה את `IpAddr`: אנו מוצאים בדיוק את אותו המבחר והווריאנטים שאנו הגדרנו ובהם השתמשנו, אבל המידע אודות הכתובת עצמה נמצא באחד משני מבנים שונים, ואלו מוגדרים באופן שונה לכל ווריאנט:
 
 ```rust
 struct Ipv4Addr {
@@ -127,106 +76,62 @@ enum IpAddr {
 }
 ```
 
-This code illustrates that you can put any kind of data inside an enum variant:
-strings, numeric types, or structs, for example. You can even include another
-enum! Also, standard library types are often not much more complicated than
-what you might come up with.
+קוד זה מדגים שניתן לשים כל סוג של דאטה בתוך ווריאנט של מבחר: מחרוזות, טיפוסים נומריים, או מבנים, למשל. ניתן אף להשתמש במבחר אחר! בנוסף, טיפוסים המוגדרים בספריה הסטנדרטית הם לרוב לא הרבה יותר סבוכים ממה שאתם הייתם כותבים בעצמכם.
 
-Note that even though the standard library contains a definition for `IpAddr`,
-we can still create and use our own definition without conflict because we
-haven’t brought the standard library’s definition into our scope. We’ll talk
-more about bringing types into scope in Chapter 7.
+שימו לב שלמרות שהספריה הסטנדרטית מכילה הגדרה עבור `IpAddr`, אנחנו עדיין יכולים ליצור ולהשתמש בהגדרות משלנו ללא התנגשות, כיוון שלא הבאנו את ההגדרות מהספריה הסטנדרטית למתחם שלנו. נרחיב את הדיבור אודות הכנסת טיפוסים למתחם בפרק 7.
 
-Let’s look at another example of an enum in Listing 6-2: this one has a wide
-variety of types embedded in its variants.
+הבה נתבונן בדוגמא נוספת של מבחר ברשימה 6-2: הפעם יש מגוון רחב של טיפוסים המשובצים בתוך הווריאנטים.
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/listing-06-02/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 6-2: A `Message` enum whose variants each store
-different amounts and types of values</span>
 
-This enum has four variants with different types:
+<span class="caption">רשימה 6-2: מבחר `Message` בו כל ווריאנט מאכסן כמות שונה של ערכים מטיפוסים שונים</span>
 
-* `Quit` has no data associated with it at all.
-* `Move` has named fields, like a struct does.
-* `Write` includes a single `String`.
-* `ChangeColor` includes three `i32` values.
+למבחר זה יש ארבעה ווריאנטים מטיפוסים שונים:
 
-Defining an enum with variants such as the ones in Listing 6-2 is similar to
-defining different kinds of struct definitions, except the enum doesn’t use the
-`struct` keyword and all the variants are grouped together under the `Message`
-type. The following structs could hold the same data that the preceding enum
-variants hold:
+* ל-`Quit` אין כלל דאטה מקושר.
+* ל-`Move` יש שדות עם שמות, כמו שיש במבנה.
+* ל-`Write` יש ערך יחיד מטיפוס `String`.
+* ל-`ChangeColor` יש שלושה ערכי `i32`.
+
+הגדרת מבחר אם ווריאנטים כמו אלה ברשימה 6-2 דומה להגדרת סוגים שונים של הגדרות מבנה, למעט שבמקרה של מבחר לא משתמשים במילת המפתח `struct` וכל הווריאנטים מקובצים יחדיו תחת הטיפוס `Message`. המבנים הבאים יכולים לאכסן את אותו המידע כמו הווריאנטים של המבחר הקודם:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-04-structs-similar-to-message-enum/src/main.rs:here}}
 ```
 
-But if we used the different structs, each of which has its own type, we
-couldn’t as easily define a function to take any of these kinds of messages as
-we could with the `Message` enum defined in Listing 6-2, which is a single type.
+אבל, אם היינו משתמשים במבנים האחרים, שכל אחד מהם הוא טיפוס בפני עצמו, לא היינו יכולים להגדיר פונקציה שיכולה לקבל כל אחד מסוגי ההודעות האלה באותה הקלות בה אנו עושים זאת באמצעות המבחר `Message` המוגדר ברשימה 6-2, שהוא טיפוס אחד ויחיד.
 
-There is one more similarity between enums and structs: just as we’re able to
-define methods on structs using `impl`, we’re also able to define methods on
-enums. Here’s a method named `call` that we could define on our `Message` enum:
+יש עוד נקודת דמיון אחת בין מבחרים למבנים: בדיוק כניתן להגדיר מתודות על מבנים באמצעות `impl`, ניתן גם להגדיר מתודות על מבחרים. הינה מתודה בשם `call` שניתן להגדיר על המבחר `Message`:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-05-methods-on-enums/src/main.rs:here}}
 ```
 
-The body of the method would use `self` to get the value that we called the
-method on. In this example, we’ve created a variable `m` that has the value
-`Message::Write(String::from("hello"))`, and that is what `self` will be in the
-body of the `call` method when `m.call()` runs.
+בגוף המתודה משתמשים ב-`self` כדי לגשת אל הערך עליו המתודה נקראה. בדוגמא זו, יצרנו את המשתנה `m` שמקושר לערך `Message::Write(String::from("hello"))`, וזה הערך אליו `self` יתייחס בגוף המתודה `call` כאשר `m.call()` רץ.
 
-Let’s look at another enum in the standard library that is very common and
-useful: `Option`.
+הבה נתבונן במבחר נוסף, שימושי מאוד, מהספריה הסטנדרטית: `Option`.
 
-### The `Option` Enum and Its Advantages Over Null Values
+### המבחר `Option` ויתרונותיו מול ערכי Null
 
-This section explores a case study of `Option`, which is another enum defined
-by the standard library. The `Option` type encodes the very common scenario in
-which a value could be something or it could be nothing.
+סעיף זה הוא מקרה בוחן (case study) לשימוש ב- `Option`, שהוא מבחר נוסף מהספריה הסטנדרטית. הטיפוס `Option` מקודד את הסיטואציה השכיחה בה ערך מוסיים יכול להיות משהו או כלום.
 
-For example, if you request the first item in a non-empty list, you would get
-a value. If you request the first item in an empty list, you would get nothing.
-Expressing this concept in terms of the type system means the compiler can
-check whether you’ve handled all the cases you should be handling; this
-functionality can prevent bugs that are extremely common in other programming
-languages.
+למשל, אם קוראים את האיבר הראשון ברשימה שאינה ריקה, אז מקבלים ערך. אם מבקשים את האיבר הראשון מרשימה ריקה, לא מקבלים דבר. ביטוי מושג זה במונחי מערכת הטיפוסים משמעה שהקומפיילר יכול לבדוק אם טיפלתם בכל המקרים שצריכים טיפול; פונקציונאליות זו יכולה למנוע באגים נפוצים מאוד בשפות תכנות אחרות.
 
-Programming language design is often thought of in terms of which features you
-include, but the features you exclude are important too. Rust doesn’t have the
-null feature that many other languages have. *Null* is a value that means there
-is no value there. In languages with null, variables can always be in one of
-two states: null or not-null.
+התחום של עיצוב שפות תכנות נתפס לעיתים קרובות במונחים של התכונות שרוצים שהשפה תכלול, אבל תכונות שרוצים להדיר מהשפה חשובות גם הן. לראסט אין את תכונת ה-null שיש לשפות רבות אחרות. *Null* הוא ערך שמשמעותו היא שאין ערך. בשפות עם null, משתנים תמיד יכולים להיות באחד משני מצבים: null או non-null.
 
-In his 2009 presentation “Null References: The Billion Dollar Mistake,” Tony
-Hoare, the inventor of null, has this to say:
+במצגת “Null References: The Billion Dollar Mistake” משנת 2009, טוני הוארה (Tony Hoare), ממציא ה-null, אמר כך:
 
-> I call it my billion-dollar mistake. At that time, I was designing the first
-> comprehensive type system for references in an object-oriented language. My
-> goal was to ensure that all use of references should be absolutely safe, with
-> checking performed automatically by the compiler. But I couldn’t resist the
-> temptation to put in a null reference, simply because it was so easy to
-> implement. This has led to innumerable errors, vulnerabilities, and system
-> crashes, which have probably caused a billion dollars of pain and damage in
-> the last forty years.
+> אני קורא לזה טעות ביליון הדולר שלי. בזמנו, תכננתי את מערכת הטיפוסים המקיפה הראשונה להפניות בשפה מוכוונת אובייקטים. המטרה שלי היתה להבטיח שכל שימוש בהפניה יהיה בטוח לחלוטין, עם בדיקות שמבוצעות אוטומטית ע"י הקומפיילר. אבל לא יכולתי לעמוד בפיתוי של הוספת הפנית null, פשוט כי זה היה קל מאוד ליישום. דבר זה הוביל לאינספור שגיאות, רגישויות, וקריסות מערכת, שלבטח גרמו לנזק וכאב בשווי בליון דולר במהלך 40 השנים האחרונות.
 
-The problem with null values is that if you try to use a null value as a
-not-null value, you’ll get an error of some kind. Because this null or not-null
-property is pervasive, it’s extremely easy to make this kind of error.
+הבעיה עם ערכי null היא שאם מנסים להשתמש בערך null כאילו הוא non-null, מקבלים שגיאה כלשהיא. בגלל שהשאלה האם ערך הוא null או non-null יכולה לצוץ בכל מקום, שגיאות מסוג זה צצות אף הן בקלות רבה מידי.
 
-However, the concept that null is trying to express is still a useful one: a
-null is a value that is currently invalid or absent for some reason.
+בכל זאת, המושג ש-null מנסה לבטא הוא בעל חשיבות: null מייצג ערך שכרגע, מסיבה זו או אחרת, לא תקף או חסר.
 
-The problem isn’t really with the concept but with the particular
-implementation. As such, Rust does not have nulls, but it does have an enum
-that can encode the concept of a value being present or absent. This enum is
-`Option<T>`, and it is [defined by the standard library][option]<!-- ignore -->
-as follows:
+שורש הבעיה אינו נעוץ במושג עצמו אלא באופן היישום. וכך, בראסט אין ערכי null, אבל מבחר מתאים המקודד את המושג של נוכחות או העדרות של ערך, יש ויש. מבחר זה הוא `Option<T>`, והוא [מוגדר בספריה הסטנדרטית][option]<!-- ignore -->
+בצורה הבאה:
 
 ```rust
 enum Option<T> {
@@ -235,89 +140,39 @@ enum Option<T> {
 }
 ```
 
-The `Option<T>` enum is so useful that it’s even included in the prelude; you
-don’t need to bring it into scope explicitly. Its variants are also included in
-the prelude: you can use `Some` and `None` directly without the `Option::`
-prefix. The `Option<T>` enum is still just a regular enum, and `Some(T)` and
-`None` are still variants of type `Option<T>`.
+המבחר `Option<T>` הוא כל-כך שימושי שהוא אפילו נכלל בפרליוד; אין צורך להביא אותו לתוך המתחם באופן מפורש. הווריאנטים שלו כלולים גם הם בפרליוד: ניתן להשתמש ב- `Some` וב- `None` ישירות, ללא צורך להקדימם עם `Option::`. מעבר לכך, המבחר `Option<T>` הוא מבחר ככל מבחר אחר, והווריאנטים `Some(T)` ו-`None` הם פשוט ווריאנטים מטיפוס `Option<T>`.
 
-The `<T>` syntax is a feature of Rust we haven’t talked about yet. It’s a
-generic type parameter, and we’ll cover generics in more detail in Chapter 10.
-For now, all you need to know is that `<T>` means that the `Some` variant of
-the `Option` enum can hold one piece of data of any type, and that each
-concrete type that gets used in place of `T` makes the overall `Option<T>` type
-a different type. Here are some examples of using `Option` values to hold
-number types and string types:
+התחביר `<T>` הוא יכולת של ראסט עליה עוד לא דיברנו. זהו פרמטר טיפוס גנרי, נושא בו נדון ביתר פירוט בפרק 10. לעכשיו, כל שאתם צריכים לדעת הוא שהמשמעות של `<T>` היא שהווריאנט `Some` של המבחר `Option` יכול להכיל פיסת דאטה אחת מכל טיפוס שהוא, ושכל טיפוס קונקרטי בו משתמשים במקום `T` הוא חלק בלתי נפרד מהטיפוס הכולל של `Option<T>`. במילים אחרות, <0>Option<1></0> הוא משפחה שלמה של טיפוסים, אחד לכל טיפוס <0>T</0>. הינה כמה דוגמאות לשימוש בערכי `Option` על מנת לאכסן טיפוסי מספר וטיפוסי מחרוזת:
 
 ```rust
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-06-option-examples/src/main.rs:here}}
 ```
 
-The type of `some_number` is `Option<i32>`. The type of `some_char` is
-`Option<char>`, which is a different type. Rust can infer these types because
-we’ve specified a value inside the `Some` variant. For `absent_number`, Rust
-requires us to annotate the overall `Option` type: the compiler can’t infer the
-type that the corresponding `Some` variant will hold by looking only at a
-`None` value. Here, we tell Rust that we mean for `absent_number` to be of type
-`Option<i32>`.
+הטיפוס של `some_number` הוא `Option<i32>`. הטיפוס של `some_char` הוא `Option<char>`, וזה טיפוס שונה. ראסט יכול להסיק את הטיפוסים האלה כיוון שציינו ערך בתוך הווריאנט `Some`. עבור `absent_number`, ראסט דורשת שנבאר באיזה טיפוס `Option` מדובר: הקומפיילר לא יכול להסיק בעצמו איזה טיפוס הווריאנט `Some` יהיה רק מהמידע שמסופק לו באמצעות ערך `None`. כאן, אנו אומרים לראסט שכוונתנו היא ש- `absent_number` הוא מטיפוס `Option<i32>`.
 
-When we have a `Some` value, we know that a value is present and the value is
-held within the `Some`. When we have a `None` value, in some sense it means the
-same thing as null: we don’t have a valid value. So why is having `Option<T>`
-any better than having null?
+כאשר יש לנו ערך מסוג `Some`, אנו יודעים יש ערך בנמצא ושערך זה ממוקם בתוך ה- `Some`. כאשר יש לנו ערך מסוג `None`, במובן מסויים המשמעות היא זהה למשמעות של null: אין לנו ערך תקף. אז מדוע `Option<T>` עדיף על null?
 
-In short, because `Option<T>` and `T` (where `T` can be any type) are different
-types, the compiler won’t let us use an `Option<T>` value as if it were
-definitely a valid value. For example, this code won’t compile, because it’s
-trying to add an `i8` to an `Option<i8>`:
+בקצרה, משום ש- `Option<T>` ו- `T` (כאשר `T` יכול להיות כל טיפוס שהוא) הם טיפוסים שונים, הקומפיילר לא יאפשר לנו להשתמש בערכי `Option<T>` כאילו שהיו ערך תקף. למשל, הקוד הבא לא יעבור קומפילציה, בגלל שהוא מנסה להוסיף `i8` ל- `Option<i8>`:
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch06-enums-and-pattern-matching/no-listing-07-cant-use-option-directly/src/main.rs:here}}
 ```
 
-If we run this code, we get an error message like this one:
+אם נריץ את הקוד, נקבל את הודעת שגיאה מהצורה:
 
 ```console
 {{#include ../listings/ch06-enums-and-pattern-matching/no-listing-07-cant-use-option-directly/output.txt}}
 ```
 
-Intense! In effect, this error message means that Rust doesn’t understand how
-to add an `i8` and an `Option<i8>`, because they’re different types. When we
-have a value of a type like `i8` in Rust, the compiler will ensure that we
-always have a valid value. We can proceed confidently without having to check
-for null before using that value. Only when we have an `Option<i8>` (or
-whatever type of value we’re working with) do we have to worry about possibly
-not having a value, and the compiler will make sure we handle that case before
-using the value.
+מלחיץ! למעשה, הודעת שגיאה זו משמעה שראסט אינה מבינה איך להוסיף `i8` ל-`Option<i8>`, כיוון שהם מטיפוסים שונים. כאשר יש לנו ערך מטיפוס `i8` בראסט, הקומפיילר יוודא שתמיד יש לנו ערך תקף. אנו תמיד יכולים להמשיך בביטחון ללא צורך לבדוק שמה הערך הוא null לפני שימוש בו. אנחנו רק צריכים לדאוג אם יש ערך או אין כשאנו מתעסקים עם `Option<i8>` (או כל טיפוס אחר לערך עצמו), והקומפיילר יוודא שאנו מטפלים בכך בצורה נאותה לפני שנורשה לנסות ולהשתמש בערך.
 
-In other words, you have to convert an `Option<T>` to a `T` before you can
-perform `T` operations with it. Generally, this helps catch one of the most
-common issues with null: assuming that something isn’t null when it actually is.
+במילים אחרות, יש להמיר את `Option<T>` ל-`T` לפני שאפשר לבצע פעולות מסוג `T` על הערך. באופן כללי, פועל יוצא מכך הוא הימנעות מאחת הבעיות הנפוצות שנובעות משימוש ב-null: הנחה מוטעית שמשהו אינו null כשלמעשה הוא כן null.
 
-Eliminating the risk of incorrectly assuming a not-null value helps you to be
-more confident in your code. In order to have a value that can possibly be
-null, you must explicitly opt in by making the type of that value `Option<T>`.
-Then, when you use that value, you are required to explicitly handle the case
-when the value is null. Everywhere that a value has a type that isn’t an
-`Option<T>`, you *can* safely assume that the value isn’t null. This was a
-deliberate design decision for Rust to limit null’s pervasiveness and increase
-the safety of Rust code.
+העלמת הסכנה של הנחה שגויה שערך מסויים אינו null תורמת לביטחון שלכם בקוד שלכם. על מנת לאפשר מצב בו ערך יכול להיות null, יש לבחור מפורשות לעשות זאת ע"י הצהרת הטיפוס של הערך כ- `Option<T>`. ואז, כאשר מתשמשים בערך זה, חייבים לטפל בצורה מפורשת במקרה שהערך הוא null. בכל מקום בו לערך יש טיפוס שאינו `Option<T>`, אז *אפשר* בביטחון להניח שערך זה אינו null. מצב זה הוא החלטת עיצוב מתוכננת בראסט על מנת להגביל את הפזיזות שבשימוש ב-null ולהגביר את בטיחות הקוד של ראסט.
 
-So how do you get the `T` value out of a `Some` variant when you have a value
-of type `Option<T>` so that you can use that value? The `Option<T>` enum has a
-large number of methods that are useful in a variety of situations; you can
-check them out in [its documentation][docs]<!-- ignore -->. Becoming familiar
-with the methods on `Option<T>` will be extremely useful in your journey with
-Rust.
+אם כן, כיצד מפיקים ערך מטיפוס `T` מתוך הווריאנט `Some` כאשר יש לכם ערך מטיפוס `Option<T>` על מנת להשתמש בו ישירות? למבחר `Option<T>` יש מספר רב של מתודות שימושיות למגוון מצבים; תוכלו לקרוא עליהן ב-[תיעוד][docs] של המבחר<!-- ignore -->. פיתוח הכרות ונוחות שימוש עם המתודות המוגדרות על `Option<T>` יהיו יכולות שימושיות וחשובות במסלול ההתקדמות שלכם עם ראסט.
 
-In general, in order to use an `Option<T>` value, you want to have code that
-will handle each variant. You want some code that will run only when you have a
-`Some(T)` value, and this code is allowed to use the inner `T`. You want some
-other code to run only if you have a `None` value, and that code doesn’t have a
-`T` value available. The `match` expression is a control flow construct that
-does just this when used with enums: it will run different code depending on
-which variant of the enum it has, and that code can use the data inside the
-matching value.
+באופן כללי, על מנת להשתמש בערך מטיפוס `Option<T>`, יש לכלול קוד שמטפל בכל ווריאנט. תרצו שיהיה קוד שירוץ רק כאשר הערך הוא מסוג `Some(T)`, וקוד זה רשאי להשתמש בערך הפנימי מטיפוס `T`. תרצו גם קוד שירוץ רק כאשר הערך הוא ערך מסוג `None`, ולקוד זה אין דרך להתייחס לערך הפנימי מטיפוס `T`. ביטוי `match` הוא מבנה תחבירי לבקרת זרימה של קוד שמאפשר ארגון קוד בצורה זו תוך שימוש במבחרים: הוא מריץ קוד שונה בהתאם לווריאנט של המבחר בו הוא פוגש, וקוד זה יכול לגשת לדאטה שבתוך הערך המותאם.
 
 [IpAddr]: ../std/net/enum.IpAddr.html
 [option]: ../std/option/enum.Option.html

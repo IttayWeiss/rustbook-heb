@@ -3,6 +3,7 @@ Cargo קארגו
 enum מבחר
 hash map מיפוי גיבוב
 generics ג'נריקס
+generic גנרי
 trait תכונה
 lifetime פז"ם
 closure סגור
