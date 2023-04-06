@@ -1,57 +1,28 @@
-## Defining Modules to Control Scope and Privacy
+## שימוש במודולים לשליטה על מתחמים ופרטיות
 
-In this section, we’ll talk about modules and other parts of the module system,
-namely *paths* that allow you to name items; the `use` keyword that brings a
-path into scope; and the `pub` keyword to make items public. We’ll also discuss
-the `as` keyword, external packages, and the glob operator.
+בסעיף זה נעסוק במודולים ובחלקים אחרים של מערכת המודולים, קריא: *מסלולים* שמאפשרים לנקוב בשמות של עצמים, מילת המפתח `use` המכניסה מסלול למתחם, ומילת המפתח `pub` אשר הופכת עצמים לפומביים. נדון גם במילת המפתח `as`, חבילות חיצוניות, ואופרטור הגלוב???
 
-First, we’re going to start with a list of rules for easy reference when you’re
-organizing your code in the future. Then we’ll explain each of the rules in
-detail.
+אבל קודם כל נתחיל עם רשימת כללים למען הנוחות לכשתארגנו את הקוד שלכם בעתיד. אנו נסביר כל אחד מהכללים האלה בפירוט.
 
-### Modules Cheat Sheet
+### שליף למודולים
 
-Here we provide a quick reference on how modules, paths, the `use` keyword, and
-the `pub` keyword work in the compiler, and how most developers organize their
-code. We’ll be going through examples of each of these rules throughout this
-chapter, but this is a great place to refer to as a reminder of how modules
-work.
+כאן אנו מספקים הפניה מהירה אודות מודולים, מסלולים, מילת המפתח `use` ומילת המפתח `pub`, ומנגנוני הפעולה שלהם עם הקומפיילר, וכיצד רוב המפתחים מארגנים את הקוד שלהם. נדגים כל אחד מהכללים האלה במהלך הפרק הזה, וזהו מקום מצויין לחזור אליו כדי לקבל תזכורות בדבר עבודה עם מודולים.
 
-- **Start from the crate root**: When compiling a crate, the compiler first
-  looks in the crate root file (usually *src/lib.rs* for a library crate or
-  *src/main.rs* for a binary crate) for code to compile.
-- **Declaring modules**: In the crate root file, you can declare new modules;
-say, you declare a “garden” module with `mod garden;`. The compiler will look
-for the module’s code in these places:
-  - Inline, within curly brackets that replace the semicolon following `mod
-    garden`
-  - In the file *src/garden.rs*
-  - In the file *src/garden/mod.rs*
-- **Declaring submodules**: In any file other than the crate root, you can
-  declare submodules. For example, you might declare `mod vegetables;` in
-  *src/garden.rs*. The compiler will look for the submodule’s code within the
-  directory named for the parent module in these places:
-  - Inline, directly following `mod vegetables`, within curly brackets instead
-    of the semicolon
-  - In the file *src/garden/vegetables.rs*
-  - In the file *src/garden/vegetables/mod.rs*
-- **Paths to code in modules**: Once a module is part of your crate, you can
-  refer to code in that module from anywhere else in that same crate, as long
-  as the privacy rules allow, using the path to the code. For example, an
-  `Asparagus` type in the garden vegetables module would be found at
-  `crate::garden::vegetables::Asparagus`.
-- **Private vs public**: Code within a module is private from its parent
-  modules by default. To make a module public, declare it with `pub mod`
-  instead of `mod`. To make items within a public module public as well, use
-  `pub` before their declarations.
-- **The `use` keyword**: Within a scope, the `use` keyword creates shortcuts to
-  items to reduce repetition of long paths. In any scope that can refer to
-  `crate::garden::vegetables::Asparagus`, you can create a shortcut with `use
-  crate::garden::vegetables::Asparagus;` and from then on you only need to
-  write `Asparagus` to make use of that type in the scope.
+- **יש להתחיל במכולת הבסיס**: כאשר מקמפלים מכולה, הקומפיילר קודם כל ניגש לקובץ בסיס המכולה (בדר"כ *src/lib.rs* עבור ספריה או *src/main.rs* עבור מכולה בינארית) ומחפש קוד לקימפול.
+- **הכרזה על מודולים**: ניתן להכריז על מודולים חדשים בקובץ בסיס המכולה; נניח שאתם מגדירים את המודול “garden” באמצעות השורה `mod garden;`. הקומפיילר יחפש אחר הקוד של המודול במקומות הבאים:
+  - מקומית בקובץ, בתוך סוגריים מסולסלים במקום הנקודה-פסיק שמופיעה מייד אחרי `mod
+garden`
+  - בקובץ *src/garden.rs*
+  - בקובץ *src/garden/mod.rs*
+- **הכרזה על תתי-מודולים**: בכל קובץ חוץ מבסיס המכולה, ניתן להגדיר תתי-מודולים. למשל, נותן להכריז `mod vegetables;` בקובץ *src/garden.rs*. הקומפיילר יחפש אחר הקוד של תת-המודול בתוך התיקייה ששמה כשם מודול-האב במקומות הבאים:
+  - כחלק מהקובץ, מייד לאחר `mod vegetables`, בתוך סוגריים מסולסלים במקום הנקודה-פסיק
+  - בקובץ *src/garden/vegetables.rs*
+  - בקובץ *src/garden/vegetables/mod.rs*
+- **מסלולים לקוד במודולים**: ברגע שמודול מסויים הוא חלק מהמכולה, ניתן לפנות לקוד במודול הזה מכל מקום אחר באותה מכולה תוך שימוש במסלול לקוד, במידה וכללי הפרטיות מאפשרים זאת. לדוגמא, אם הטיפוס `Asparagus` נמצא במודול vegetables אשר במודול garden, ניתן לגשת אליו באמצעות `crate::garden::vegetables::Asparagus`.
+- **פרטי לעומת פומבי**: קוד שבתוך מודול, כברירת מחדל, הוא פרטי ביחס למודולי-האב שלו. כדי להפוך מודול לפומבי, יש לבצע את ההכרזה באמצעות `pub mod` במקום `mod`. כדי להפוך עצמים בתוך מודול פומבי לפומביים בעצמם, יש להשתמש ב-`pub` לפני ההכרזות של העצמים.
+- **מילת המפתח `use` **: מילת המפתח `use` בתוך מתחם מייצרת קיצורי דרך לעצמים במטרה ליתר את השימוש בשמות מסלולים ארוכים. בכל מתחם שיכול להפנות ל-`crate::garden::vegetables::Asparagus`, ניתן ליצור קיצור דרך באמצעות `use crate::garden::vegetables::Asparagus;` שכן מרגע זה, על מנת להשתמש בטיפוס הנדון במתחם, כל שצריך לעשות הוא לכתוב `Asparagus`.
 
-Here we create a binary crate named `backyard` that illustrates these rules. The
-crate’s directory, also named `backyard`, contains these files and directories:
+בדוגמא כאן אנו יוצרים מכולה בינארית בשם `backyard` שמדגימה כללים אלה. תיקיית המכולה, שגם היא נקראת `backyard`, מכילה את הקבצים והתיקיות הבאות:
 
 ```text
 backyard
@@ -64,7 +35,7 @@ backyard
     └── main.rs
 ```
 
-The crate root file in this case is *src/main.rs*, and it contains:
+קובץ בסיס המכולה במקרה זה הוא *src/main.rs*, ותוכנו הוא:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -72,8 +43,7 @@ The crate root file in this case is *src/main.rs*, and it contains:
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/quick-reference-example/src/main.rs}}
 ```
 
-The `pub mod garden;` line tells the compiler to include the code it finds in
-*src/garden.rs*, which is:
+השורה `pub mod garden;` אומרת לקומפיילר להכיל את הקוד שנמצא בקובץ *src/garden.rs*, שבמקרה זה הוא:
 
 <span class="filename">Filename: src/garden.rs</span>
 
@@ -81,40 +51,24 @@ The `pub mod garden;` line tells the compiler to include the code it finds in
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/quick-reference-example/src/garden.rs}}
 ```
 
-Here, `pub mod vegetables;` means the code in *src/garden/vegetables.rs* is
-included too. That code is:
+כאן, משמעות השורה `pub mod vegetables;`, היא שהקוד בקובץ *src/garden/vegetables.rs* מוכל אף הוא. קוד זה הוא:
 
 ```rust,noplayground,ignore
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/quick-reference-example/src/garden/vegetables.rs}}
 ```
 
-Now let’s get into the details of these rules and demonstrate them in action!
+הבה נביט בפרטים של הכללים לעיל ונדגים אותם בפעולה!
 
-### Grouping Related Code in Modules
+### איגוד במודולים של פיסות קוד המקושרות זו לזו
 
-*Modules* let us organize code within a crate for readability and easy reuse.
-Modules also allow us to control the *privacy* of items, because code within a
-module is private by default. Private items are internal implementation details
-not available for outside use. We can choose to make modules and the items
-within them public, which exposes them to allow external code to use and depend
-on them.
+*מודולים* מאפשרים לנו לארגן קוד בתוך מכולה בצורה קריאה ונוחה לשימוש חוזר. מודולים גם מאפשרים לשלוט על הפרטיות של עצמים, כיוון שברירת המחדל היא שקוד הממוקם בתוך מודול הוא פרטי. עצמים פרטיים הם פרטי יישומים פנימיים ואינם זמינים לשימוש חיצוני. ניתן לבחור להפוך מודולים ואת העצמים שבתוכם לפומביים, פעולה שחושפת אותם ומאפשרת לקוד חיצוני להשתמש בהם ולהסתמך עליהם.
 
-As an example, let’s write a library crate that provides the functionality of a
-restaurant. We’ll define the signatures of functions but leave their bodies
-empty to concentrate on the organization of the code, rather than the
-implementation of a restaurant.
+כדוגמא, הבה נכתוב מכולת ספריה שמספקת את הפונקציונאליות של מסעדה. אנו נגדיר את חותמי הפונקציות, אבל נשאיר את גופי הפונקציו ריקים על מנת להתרכז בארגון הקוד במקום במימוש של המסעדה.
 
-In the restaurant industry, some parts of a restaurant are referred to as
-*front of house* and others as *back of house*. Front of house is where
-customers are; this encompasses where the hosts seat customers, servers take
-orders and payment, and bartenders make drinks. Back of house is where the
-chefs and cooks work in the kitchen, dishwashers clean up, and managers do
-administrative work.
+בתעשיית המסעדות, אזורים מסויימים במסעדה נקראים *קדמת הבית* ואחרים נקראים *אחורי הבית*. אזור קדמת הבית הוא היכן שנמצאים הלקוחות; אזור זה כולל את אזור הושבת הלקוחות, את המקומות ללקיחת הזמנות וביצוע תשלומים, והיכן שברטנדרים מכינים משקאות. אזור אחורי הבית מתייחס למקומות בהם שפים וטבחים עובדים במטבח, שותפי כלים מנקים, ומנהלים מבצעים עבודה אדמיניסטרטיבית.
 
-To structure our crate in this way, we can organize its functions into nested
-modules. Create a new library named `restaurant` by running `cargo new
-restaurant --lib`; then enter the code in Listing 7-1 into *src/lib.rs* to
-define some modules and function signatures. Here’s the front of house section:
+על מנת לעצב את המכולה שלנו בצורה זו, יש ביכולתנו לארגן את הפונקציות לתוך מודולים מקוננים. צרו ספריה חדשה בשם `restaurant` ע"י הרצת `cargo new
+restaurant --lib`; ואז הקלידו את הקוד מרשימה 7-1 לתוך הקובץ *src/lib.rs* כדי להגדיר כמה מודולים וחותמי פונקציות. הינה החלק עבור אזור קדמת הבית:
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -122,28 +76,16 @@ define some modules and function signatures. Here’s the front of house section
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-01/src/lib.rs}}
 ```
 
-<span class="caption">Listing 7-1: A `front_of_house` module containing other
-modules that then contain functions</span>
 
-We define a module with the `mod` keyword followed by the name of the module
-(in this case, `front_of_house`). The body of the module then goes inside curly
-brackets. Inside modules, we can place other modules, as in this case with the
-modules `hosting` and `serving`. Modules can also hold definitions for other
-items, such as structs, enums, constants, traits, and—as in Listing
-7-1—functions.
+<span class="caption">רשימה 7-1: מודול עובר `front_of_house` המכיל מודולים אחרים שבעצמם מכילים פונקציות</span>
 
-By using modules, we can group related definitions together and name why
-they’re related. Programmers using this code can navigate the code based on the
-groups rather than having to read through all the definitions, making it easier
-to find the definitions relevant to them. Programmers adding new functionality
-to this code would know where to place the code to keep the program organized.
+מגדירים מודול באמצעות מילת המפתח `mod` ולאחריה שם המודול (במקרה זה, `front_of_house`). גוף המודול מוכנס לתוך סוגריים מסולסלות. בתוך מודולים, ניתן למקם מודולים אחרים, כמו שרואים בדוגמא זו עם המודולים `hosting` ו- `serving`. מודולים יכולים גם להכיל הגדרות עבור עצמים אחרים, כמו מבנים, מבחרים, קבועים, תכונות, וגם -- כמו ברשימה 7-1 -- פונקציות.
 
-Earlier, we mentioned that *src/main.rs* and *src/lib.rs* are called crate
-roots. The reason for their name is that the contents of either of these two
-files form a module named `crate` at the root of the crate’s module structure,
-known as the *module tree*.
+ע"י שימוש במודולים, ניתן לאגד יחדיו הגדרות הקשורות זו לזו ולספק שם לסיבת הקשר. מתכנתים שמשתמשים בקוד יכולים כך לנווט את עצמם תוך התבססות על קבוצות הקוד במקום להאלץ לקרוא את כל ההגדרות. כך יותר קל להם למצוא את ההגדרות הרלווניות להם. מתכנתים שמוסיפים פונקציונאליות חדשה לקוד ידעו היכן למקם את הקוד החדש מתוך שאיפה לשמור על הארגון הקיים.
 
-Listing 7-2 shows the module tree for the structure in Listing 7-1.
+מוקדם יותר, הזכרנו שהקבצים *src/main.rs* ו- *src/lib.rs* נקראים בסיסי המכולה. הסיבה למינוח זה היא שהתוכן של כל אחד מקבצים אלה יוצרים מכולה שנקראת `crate` בבסיס מבנה המודולים של המכולה, הידוע בשם *עץ המודולים*.
+
+רשימה 7-2 מציגה את עץ המודולים עבור המבנה מרשימה 7-1.
 
 ```text
 crate
@@ -157,18 +99,9 @@ crate
          └── take_payment
 ```
 
-<span class="caption">Listing 7-2: The module tree for the code in Listing
-7-1</span>
 
-This tree shows how some of the modules nest inside one another; for example,
-`hosting` nests inside `front_of_house`. The tree also shows that some modules
-are *siblings* to each other, meaning they’re defined in the same module;
-`hosting` and `serving` are siblings defined within `front_of_house`. If module
-A is contained inside module B, we say that module A is the *child* of module B
-and that module B is the *parent* of module A. Notice that the entire module
-tree is rooted under the implicit module named `crate`.
+<span class="caption">רשימה 7-2: עץ המודולים עבור הקוד מרשימה 7-1</span>
 
-The module tree might remind you of the filesystem’s directory tree on your
-computer; this is a very apt comparison! Just like directories in a filesystem,
-you use modules to organize your code. And just like files in a directory, we
-need a way to find our modules.
+עץ זה מראה כיצד חלק מהמודולים מקוננים אחד בתוך השני; למשל, `hosting` מקוננן בתוך `front_of_house`. העץ גם מראה שמודולים מסויימים הם אחים (siblings) אחד של השני, דהיינו שהם מוגדרים באותו מודול; `hosting` ו- `serving` הם אחים המוגדרים שניהם בתוך `front_of_house`. אם מודול A מוכל בתוך מודל B, אנו אומרים שמודול A הוא *בן* (child) של מודול B, ושמודול B הוא *אב* (parent) של מודול A. שימו לב שעץ המודולים כולו מתחיל מהמודול ב-`crate`, ושזהו מודול שמוגדר באופן לא מפורש.
+
+ייתכן שעץ המודולים מזכיר לכם את עץ התיקייות במערכת הקבצים של המחשב שלכם; זוהי השוואה מאוד ראויה! בדיוק כמו תיקייות במערכת הקבצים, מודולים משמשים לארגון קוד. ובדיוק כמו קבצים בתיקייה, אנחנו צריכים דרך למצוא את המודולים שלנו.
