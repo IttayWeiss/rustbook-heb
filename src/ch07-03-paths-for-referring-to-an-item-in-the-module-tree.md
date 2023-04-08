@@ -1,33 +1,19 @@
-## Paths for Referring to an Item in the Module Tree
+## מסלולים להפניה לעצם בתוך עץ המודולים
 
-To show Rust where to find an item in a module tree, we use a path in the same
-way we use a path when navigating a filesystem. To call a function, we need to
-know its path.
+כדי להראות לראסט היכן נמצא עצם מסויים בעץ המודולים, ניתן להשתמש במסלול באותה הדרך מה משתמשים במסלול כאשר מנווטים את מערכת הקבצים. בכדי לקרוא לפונקציה, עלינו לדעת את המסלול אליה.
 
-A path can take two forms:
+מסלול יכול להיות באחת משתי צורות:
 
-* An *absolute path* is the full path starting from a crate root; for code
-  from an external crate, the absolute path begins with the crate name, and for
-  code from the current crate, it starts with the literal `crate`.
-* A *relative path* starts from the current module and uses `self`, `super`, or
-  an identifier in the current module.
+* *מסלול אבסולוטי* הוא המסלול המלא, החל ממכולת הבסיס; עבור קוד ממכולה חיצונית, המסלול המלא מתחיל עם שם המכולה, ועבור קוד מהמכולה הנוכחית, שם המסלול מתחיל במילה `crate`.
+* *מסלול יחסי* מתחיל מהמודול הנוכחי ומשתמש ב- `self`, `super`, או מציין כלשהו במודול הנוכחי.
 
-Both absolute and relative paths are followed by one or more identifiers
-separated by double colons (`::`).
+במסלולים אבסולוטיים ויחסיים כאחד משתמשים במציינים המופרדים ע"י נקודותיים כפולות (`::`).
 
-Returning to Listing 7-1, say we want to call the `add_to_waitlist` function.
-This is the same as asking: what’s the path of the `add_to_waitlist` function?
-Listing 7-3 contains Listing 7-1 with some of the modules and functions
-removed.
+הבה נחזור לרשימה 7-1, ונניח שאנו רוצים לקרוא לפונקציה `add_to_waitlist`. עלינו לענות על השאלה: מהו המסלול אל הפונקציה `add_to_waitlist`? רשימה 7-3 מכילה את תוכן רשימה 7-1 בהסרת כמה פונקציות ומודולים.
 
-We’ll show two ways to call the `add_to_waitlist` function from a new function
-`eat_at_restaurant` defined in the crate root. These paths are correct, but
-there’s another problem remaining that will prevent this example from compiling
-as-is. We’ll explain why in a bit.
+נראה שתי דרכים לקרוא לפונקציה `add_to_waitlist` מתוך הפונקציה החדשה `eat_at_restaurant` שמוגדרת בבסיס המכולה. מסלולים אלה נכונים, אבל נותרה עוד בעיה אחת שמונעת מדוגמא זו לעבור קומפילציה כמו שהיא. נסביר מדוע בעוד כמה רגעים.
 
-The `eat_at_restaurant` function is part of our library crate’s public API, so
-we mark it with the `pub` keyword. In the [“Exposing Paths with the `pub`
-Keyword”][pub]<!-- ignore --> section, we’ll go into more detail about `pub`.
+הפונקציה `eat_at_restaurant` היא חלק מה-API של מכולת הספריה שלנו, ולכן אנו מסמנים אותה במילת המפתח `pub`. בסעיף ["חשיפת מסלולים באמצעות מילת המפתח `pub`"][pub]<!-- ignore --> , נדון בפירוט בשימוש ב-`pub`.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -35,74 +21,33 @@ Keyword”][pub]<!-- ignore --> section, we’ll go into more detail about `pub`
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-03/src/lib.rs}}
 ```
 
-<span class="caption">Listing 7-3: Calling the `add_to_waitlist` function using
-absolute and relative paths</span>
 
-The first time we call the `add_to_waitlist` function in `eat_at_restaurant`,
-we use an absolute path. The `add_to_waitlist` function is defined in the same
-crate as `eat_at_restaurant`, which means we can use the `crate` keyword to
-start an absolute path. We then include each of the successive modules until we
-make our way to `add_to_waitlist`. You can imagine a filesystem with the same
-structure: we’d specify the path `/front_of_house/hosting/add_to_waitlist` to
-run the `add_to_waitlist` program; using the `crate` name to start from the
-crate root is like using `/` to start from the filesystem root in your shell.
+<span class="caption">רשימה 7-3: קריאה לפונקציה `add_to_waitlist` תוך שימוש במסלולים אבסולוטיים</span>
 
-The second time we call `add_to_waitlist` in `eat_at_restaurant`, we use a
-relative path. The path starts with `front_of_house`, the name of the module
-defined at the same level of the module tree as `eat_at_restaurant`. Here the
-filesystem equivalent would be using the path
-`front_of_house/hosting/add_to_waitlist`. Starting with a module name means
-that the path is relative.
+בפעם הראשונה בה אנו קוראים לפונקציה `add_to_waitlist` ב- `eat_at_restaurant`, אנו משתמשים במסלול אבסולוטי. הפונקציה `add_to_waitlist` מוגדרת באותה המכולה כמו `eat_at_restaurant`, ולכן ניתן להשתמש במילת המפתח `crate` כתחילת המסלול. ואז אנו משרשרים את שמות המודולים בעודנו עושים את דרכנו אל `add_to_waitlist`. תוכלו לדמיין מערכת קבצים עם אותו המבנה: נציין את המסלול `/front_of_house/hosting/add_to_waitlist` כדי להריץ את התכנית `add_to_waitlist`; שימוש בשם `crate` כדי לציין את בסיס המכולה כנקודת ההתחלה שקולה לשימוש מתוך המעטפת ב- `/` כדי לציין את בסיס מערכת הקבצים כנקודת ההתחלה.
 
-Choosing whether to use a relative or absolute path is a decision you’ll make
-based on your project, and depends on whether you’re more likely to move item
-definition code separately from or together with the code that uses the item.
-For example, if we move the `front_of_house` module and the `eat_at_restaurant`
-function into a module named `customer_experience`, we’d need to update the
-absolute path to `add_to_waitlist`, but the relative path would still be valid.
-However, if we moved the `eat_at_restaurant` function separately into a module
-named `dining`, the absolute path to the `add_to_waitlist` call would stay the
-same, but the relative path would need to be updated. Our preference in general
-is to specify absolute paths because it’s more likely we’ll want to move code
-definitions and item calls independently of each other.
+בפעם השניה בה אנו קוראים ל- `add_to_waitlist` ב- `eat_at_restaurant`, אנו משתמשים במסלול יחסי. המסלול מתחיל ב-`front_of_house`, שם המודול שמוגדר בעץ המודולים באותה הרמה בה `eat_at_restaurant` מוגדר. המקבילה בעולם מערכת הקבצים במקרה זה תהיה שימוש במסלול `front_of_house/hosting/add_to_waitlist`. התחלת מסלול בשם של מודול משמעה שהמסלול יחסי.
 
-Let’s try to compile Listing 7-3 and find out why it won’t compile yet! The
-error we get is shown in Listing 7-4.
+הבחירה באם להשתמש במסלול יחסי או אבסולוטי היא החלטה שתקבלו בהתאם לפרוייקט, והיא תלויה בסבירות שתעבירו הגדרת עצם זה או אחר בנפרד אם ביחד עם הקוד שמשתמש בעצם הזה. למשל, אם נעביר את המודול `front_of_house` ואת הפונקציה `eat_at_restaurant` לתוך מודול בשם `customer_experience`, נאלץ לעדכן את המסלול האבסולוטי ל- `add_to_waitlist`, אבל המסלול היחסי לא ישתנה. לאומת זאת, במידה ונעביר את הפונקציה `eat_at_restaurant` בנפרד לתוך מודול בשם `dining`, המסלול האבסולוטי לקריאה של `add_to_waitlist` לא ישתנה, בעוד שאת המסלול היחסי יהיה צריך לעדכן. ההעדפה שלנו באופן כללי היא לציין מסלולים אבסולוטיים מכיוון שיותר סביר שנרצה להעביר הגדרות קוד וקריאות לעצמים באופן בלתי תלוי זה בזה.
+
+הבה ננסה לקמפל את הקוד מרשימה 7-3 ונגלה מדוע נכשל! השגיאה שנקבל מוצגת ברשימה 7-4.
 
 ```console
 {{#include ../listings/ch07-managing-growing-projects/listing-07-03/output.txt}}
 ```
 
-<span class="caption">Listing 7-4: Compiler errors from building the code in
-Listing 7-3</span>
 
-The error messages say that module `hosting` is private. In other words, we
-have the correct paths for the `hosting` module and the `add_to_waitlist`
-function, but Rust won’t let us use them because it doesn’t have access to the
-private sections. In Rust, all items (functions, methods, structs, enums,
-modules, and constants) are private to parent modules by default. If you want
-to make an item like a function or struct private, you put it in a module.
+<span class="caption">רשימה 7-4: שגיאות קומפילציה בעקבות בניית הקוד ברשימה 7-3</span>
 
-Items in a parent module can’t use the private items inside child modules, but
-items in child modules can use the items in their ancestor modules. This is
-because child modules wrap and hide their implementation details, but the child
-modules can see the context in which they’re defined. To continue with our
-metaphor, think of the privacy rules as being like the back office of a
-restaurant: what goes on in there is private to restaurant customers, but
-office managers can see and do everything in the restaurant they operate.
+הודעות השגיאה מתריאות שהמודול `hosting` הוא פרטי. במילים אחרות, אנו משתמשים במסלולים הנכונים עובר המודול `hosting` והפונקציה `add_to_waitlist`, אבל ראסט לא מאפשרת לנו להשתמש בהם בגלל שאין לה גישה לחלקים הפרטיים. כברירת מחדל, כל העצמים בראסט (פונקציות, מתודות, מבחרים, מודולים, וקבועים) הם פרטיים בפני מודולי-אב. אם תרצו להפוך עצם כמו פונקציה או מבנה לפרטי, שימו אותו במודול.
 
-Rust chose to have the module system function this way so that hiding inner
-implementation details is the default. That way, you know which parts of the
-inner code you can change without breaking outer code. However, Rust does give
-you the option to expose inner parts of child modules’ code to outer ancestor
-modules by using the `pub` keyword to make an item public.
+עצמים במודול-אב לא יכולים להשתמש בעצמים פרטיים בתוך מודולי-בנים שלכם, אבל עצמים במודולי-בנים יכולים להשתמש בעצמים הנמצאים במודולי-האב שלהם (לכל דורותיהם). זאת משום שמודולי-בנים גוללים ומחביאים את פרטי היישומים שלהם, אבל מודולי-בנים יכולים לראות את הקונטקסט בו הם מוגדרים. כדי להמשיך עם המטפורה, חשבו על חוקי הפרטיות כעל מה שמתרחש בחלק המשרדי של מסעדה: מה שקורה שם הוא פרטי ביחס ללקוחות המסעדה, אבל המנהלים יכולים לראות ולעשות כרצונם במסעדה שתחת אחריותם.
 
-### Exposing Paths with the `pub` Keyword
+ראסט בוחרת לתפעל את מערכת המודולים בצורה זו כך שהסתרת פרטי היישומים הפנימיים היא ברירת המחדל. באופן זה ניתן לדעת אילו חלקים של הקוד ניתן לשנות ללא תופעות לוואי בעבור קוד חיצוני. אבל, ראסט מאפשרת לחשוף חלקים פנימיים של קוד במודולי-בנים למודולי-אב ע"י שימוש במילת המפתח `pub` כדי להפוך אותם לפומביים.
 
-Let’s return to the error in Listing 7-4 that told us the `hosting` module is
-private. We want the `eat_at_restaurant` function in the parent module to have
-access to the `add_to_waitlist` function in the child module, so we mark the
-`hosting` module with the `pub` keyword, as shown in Listing 7-5.
+### חשיפת מסלולים באמצעות מילת המפתח `pub`
+
+הבה נשוב לשגיאה מרשימה 7-4 שאמרה לנו שהמודול `hosting` הוא פרטי. אנחנו רוצים שלפונקציה `eat_at_restaurant` ממודול-האב תהיה גישה לפונקציה `add_to_waitlist` במודול-הבן, ולכן נסמן את המודול `hosting` במילת המפתח `pub`, כפי שאנו מראים ברשימה 7-5.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -110,34 +55,23 @@ access to the `add_to_waitlist` function in the child module, so we mark the
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-05/src/lib.rs}}
 ```
 
-<span class="caption">Listing 7-5: Declaring the `hosting` module as `pub` to
-use it from `eat_at_restaurant`</span>
 
-Unfortunately, the code in Listing 7-5 still results in an error, as shown in
-Listing 7-6.
+<span class="caption">רשימה 7-5: הכרזה על המודול `hosting` כפובמי באמצעות מילת המפתח `pub` בכדי לאפשר שימוש מתוך `eat_at_restaurant`</span>
+
+לרוע המזל, הקוד ברשימה 7-5 עדיין גורר שגיאה, כפי שרואים ברשימה 7-6.
 
 ```console
 {{#include ../listings/ch07-managing-growing-projects/listing-07-05/output.txt}}
 ```
 
-<span class="caption">Listing 7-6: Compiler errors from building the code in
-Listing 7-5</span>
 
-What happened? Adding the `pub` keyword in front of `mod hosting` makes the
-module public. With this change, if we can access `front_of_house`, we can
-access `hosting`. But the *contents* of `hosting` are still private; making the
-module public doesn’t make its contents public. The `pub` keyword on a module
-only lets code in its ancestor modules refer to it, not access its inner code.
-Because modules are containers, there’s not much we can do by only making the
-module public; we need to go further and choose to make one or more of the
-items within the module public as well.
+<span class="caption">רשימה 7-6: שגיאות קומפילציה בעקבות בניית הקוד מרשימה 7-5</span>
 
-The errors in Listing 7-6 say that the `add_to_waitlist` function is private.
-The privacy rules apply to structs, enums, functions, and methods as well as
-modules.
+מה קורה פה? הוספת מילת המפתח `pub` לפני ההכרזה `mod hosting` הופכת את המודול לפומבי. עם שינוי זה, אם ניתן לגשת ל- `front_of_house`, אז נוכל לגשת ל- `hosting`. אבל, *תוכן* המודול `hosting` עדיין פרטי; הפיכת המודול לפומבי לא הופכת את תוכנו לפומבי. הוספת מילת המפתח `pub` לפני הכרזה על מודול מאפשרת לקוד במודולי-האב שלו להתייחס אליו, אבל לא לגשת לקוד הפנימי שלו. מכיוון שמודולים הם כלי קיבול (containers), לא מתאפשרות יותר מידי פעולות רק מהפיכת המודול לפומבי; עלינו ללכת רחוק יותר ולבחור להפוך לפחות אחד מהעצמים בתוך המודול לפומביים גם כן.
 
-Let’s also make the `add_to_waitlist` function public by adding the `pub`
-keyword before its definition, as in Listing 7-7.
+השגיאות ברשימה 7-6 אומרות שהפונקציה `add_to_waitlist` היא פרטית. כללי הפרטיות תקפים למבנים, מבחרים, פונקציות, ומתודות, וכן למודולים.
+
+הבה נהפוך גם את הפונקציה `add_to_waitlist` לפומבית ע"י הוספת מילת המפתח `pub` לפני ההכרזה על הפונקציה, כמוצג ברשימה 7-7.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -145,75 +79,30 @@ keyword before its definition, as in Listing 7-7.
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-07/src/lib.rs}}
 ```
 
-<span class="caption">Listing 7-7: Adding the `pub` keyword to `mod hosting`
-and `fn add_to_waitlist` lets us call the function from
-`eat_at_restaurant`</span>
 
-Now the code will compile! To see why adding the `pub` keyword lets us use
-these paths in `add_to_waitlist` with respect to the privacy rules, let’s look
-at the absolute and the relative paths.
+<span class="caption">רשימה 7-7: הוספת מילת המפתח `pub` ל- `mod hosting` ול- `fn add_to_waitlist` מאפשרת לנו לקרוא לפונקציה `eat_at_restaurant`</span>
 
-In the absolute path, we start with `crate`, the root of our crate’s module
-tree. The `front_of_house` module is defined in the crate root. While
-`front_of_house` isn’t public, because the `eat_at_restaurant` function is
-defined in the same module as `front_of_house` (that is, `eat_at_restaurant`
-and `front_of_house` are siblings), we can refer to `front_of_house` from
-`eat_at_restaurant`. Next is the `hosting` module marked with `pub`. We can
-access the parent module of `hosting`, so we can access `hosting`. Finally, the
-`add_to_waitlist` function is marked with `pub` and we can access its parent
-module, so this function call works!
+כעת הקוד כן יעבור קומפילציה! כדי לראות מדוע הוספת מילת המפתח `pub` מאפשרת לנו להשתמש במסלולים אלה ב- `add_to_waitlist` בהתייחס לכללי הפרטיות, הבה נתבונן בשני המסלולים: האבסולוטי והיחסי.
 
-In the relative path, the logic is the same as the absolute path except for the
-first step: rather than starting from the crate root, the path starts from
-`front_of_house`. The `front_of_house` module is defined within the same module
-as `eat_at_restaurant`, so the relative path starting from the module in which
-`eat_at_restaurant` is defined works. Then, because `hosting` and
-`add_to_waitlist` are marked with `pub`, the rest of the path works, and this
-function call is valid!
+במסלול האבסולוטי אנו מתחילים עם `crate`, בסיס עץ המודולים של המכולה שלנו. המודול `front_of_house` מוגדר בבסיס המכולה. בעוד ש-`front_of_house` אינו פומבי, כיוון שהפונקציה `eat_at_restaurant` מוגדרת באותו מודול כמו `front_of_house` (ז"א ש-`eat_at_restaurant` ו- `front_of_house` הם אחים), ניתן להתייחס ל- `front_of_house` מתוך `eat_at_restaurant`. הבא בתור הוא המודול `hosting`, המסומן עם `pub`. אנו יכולים לגשת אל מודול-האב של `hosting`, ולכן יש לנו גישה ל- `hosting`. לבסוף, הפונקצה `add_to_waitlist` מסומנת עם `pub` ואנו יכולים לגשת אל מודול-האב שלה, ולכן הקריאה לפונקציה מצליחה!
 
-If you plan on sharing your library crate so other projects can use your code,
-your public API is your contract with users of your crate that determines how
-they can interact with your code. There are many considerations around managing
-changes to your public API to make it easier for people to depend on your
-crate. These considerations are out of the scope of this book; if you’re
-interested in this topic, see [The Rust API Guidelines][api-guidelines].
+במסלולים יחסיים, הלוגיקה המנחה זהה למקרה של מסלולים אבסולוטיים למעט הצעד הראשון: במקום להתחיל מבסיס המכולה, המסלול מתחיל מ-`front_of_house`. המודול `front_of_house` מוגדר באותו המודל כמו `eat_at_restaurant`, ולכן המסלול היחסי המתחיל במודול בו מוגדר `eat_at_restaurant`, עובד. ואז, בגלל ש-`hosting` ו-`add_to_waitlist` מסומנים כ- `pub`, שאר המסלול עובד, והקריאה לפונקציה תקפה!
 
-> #### Best Practices for Packages with a Binary and a Library
->
-> We mentioned a package can contain both a *src/main.rs* binary crate root as
-> well as a *src/lib.rs* library crate root, and both crates will have the
-> package name by default. Typically, packages with this pattern of containing
-> both a library and a binary crate will have just enough code in the binary
-> crate to start an executable that calls code with the library crate. This
-> lets other projects benefit from the most functionality that the package
-> provides, because the library crate’s code can be shared.
->
-> The module tree should be defined in *src/lib.rs*. Then, any public items can
-> be used in the binary crate by starting paths with the name of the package.
-> The binary crate becomes a user of the library crate just like a completely
-> external crate would use the library crate: it can only use the public API.
-> This helps you design a good API; not only are you the author, you’re also a
-> client!
->
-> In [Chapter 12][ch12]<!-- ignore -->, we’ll demonstrate this organizational
-> practice with a command-line program that will contain both a binary crate
-> and a library crate.
+כאשר אתם מתכננים לשתף את מכולת הספריה שלכם כך שפרוייקטים אחרים יוכלו להשתמש בקוד, זכרו שה- API הוא החוזה שלכם עם המשתמשים של המכולה שלכם והוא קובע כיצד הם יכולים להשתמש בקוד שלכם. ישנם שיקולים מרובים סביב ארגון שינויים ל-API על מנת להקל על משתמשים להסתמך על המכולה שלכם. שיקולים אלה הם מחוץ להשג ידו של הספר; אם אתם מתעניינים בנושא זה, פנו ל- [The Rust API Guidelines][api-guidelines].
 
-### Starting Relative Paths with `super`
+> #### התנהלות מיטבית בעבודה עם חבילות הכוללות מכולה בינארית ומכולת ספריה
+> 
+> כבר הזכרנו שחבילה יכולה להכיל גם קובץ  *src/main.rs*  כבסיס למכולה בינארי וגם קובץ  *src/lib.rs* כבסיס למכולת ספריה, ושתי המכולות ישתפו את שם החבילה כברירת מחדל. באופן טיפוסי, לחבילות כאלה, הכוללות גם מכולת ספריה וגם מכולה בינארית, יהיה רק את הקוד המינימלי הדרוש במכולה הבינארית כדי להתחיל את ההרצה שקוראת לקוד ממכולת הספריה. כך מתאפשר לפרוייקטים אחרים להפיק את מירב הפונקציונאליות שהחבילה מאפשרת, כי הקוד שבמכולת הספריה ניתן לשיתוף.
+> 
+> יש להגדיר את עץ המודולים בקובץ *src/lib.rs*. בדרך זו ניתן להשתמש  בכל עצם פומבי במכולה הבינארית ע"י התחלת מסלול עם שם החבילה. המכולה הבינארית הופכת להיות משתמש של ספרית המכולה, בדומה לדרך בה מכולה חיצונית לחלוטין היתה יכולה להשתמש במכולת הספריה: אך ורק תוך שימוש ב-API הפומבי. תוכנה זו מסייעת בתכנון ה-API בצורה טובה; אתם, המתכנתים, אינכם רק הכותבים, אלא גם המשתשמים!
+> 
+> [בפרק 12][ch12]<!-- ignore -->נדגים התנהלות ארגונית זו באמצעות תכנית שורת-פקודה שתכלול מכולה בינארית וגם מכולת ספריה.
 
-We can construct relative paths that begin in the parent module, rather than
-the current module or the crate root, by using `super` at the start of the
-path. This is like starting a filesystem path with the `..` syntax. Using
-`super` allows us to reference an item that we know is in the parent module,
-which can make rearranging the module tree easier when the module is closely
-related to the parent, but the parent might be moved elsewhere in the module
-tree someday.
+### מסלולים יחסיים המתחילים עם `super`
 
-Consider the code in Listing 7-8 that models the situation in which a chef
-fixes an incorrect order and personally brings it out to the customer. The
-function `fix_incorrect_order` defined in the `back_of_house` module calls the
-function `deliver_order` defined in the parent module by specifying the path to
-`deliver_order` starting with `super`:
+ניתן לבנות מסלולים יחסיים המתחילים עם במודול-האב, במקום במודול הנוכחי או במכולת הבסיס, ע"י שימוש ב- `super` בתחילת המסלול. נוהל זה שקול, במערת הקבצים, להתחלת מסלול עם התחביר `..`. שימוש ב-`super` מאפשר לפנות לעצם שאנחנו יודעים שהוא נמצא במודול-האב, שיכול להקל על ארגון מחדש של עץ המודולים כאשר המודול מקושר הדוקות למודול-האב, אבל מודול-האב עלול להיות מועבר למקום אחר בעץ המודולים בשלב עתידי כלשהו.
+
+התבוננו בקוד ברשימה 7-8, שממדל מצב בו שף מקבע הזמנה שגויה ומביא אותם בעצמו ללקוח. הפונקציה `fix_incorrect_order`, המוגדרת במודול `back_of_house`, קוראת לפונקציה `deliver_order`, המוגדרת במודול-האב, ע"י ציון המסלול אל `deliver_order` ומתחיל עם `super`:
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -221,30 +110,14 @@ function `deliver_order` defined in the parent module by specifying the path to
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-08/src/lib.rs}}
 ```
 
-<span class="caption">Listing 7-8: Calling a function using a relative path
-starting with `super`</span>
 
-The `fix_incorrect_order` function is in the `back_of_house` module, so we can
-use `super` to go to the parent module of `back_of_house`, which in this case
-is `crate`, the root. From there, we look for `deliver_order` and find it.
-Success! We think the `back_of_house` module and the `deliver_order` function
-are likely to stay in the same relationship to each other and get moved
-together should we decide to reorganize the crate’s module tree. Therefore, we
-used `super` so we’ll have fewer places to update code in the future if this
-code gets moved to a different module.
+<span class="caption">רשימה 7-8: קריאה לפונקציה תוך שימוש במסלול יחסי המתחיל עם `super`</span>
 
-### Making Structs and Enums Public
+הפונקציה `fix_incorrect_order` נמצאת במודול `back_of_house`, ולכן ניתן להשתמש ב- `super` על מנת לגשת למודול-האב של `back_of_house`, שבמקרה זה הוא `crate`, דהיינו הבסיס. מכאן, אנו מחפשים את `deliver_order`, ומוצאים אותו. מצויין! אנחנו מצפים בסבירות גבוהה שהמודול `back_of_house` והפונקציה `deliver_order` ישארו שאותו יחס אחד אל השני, ושבמקרה של ארגון מחדש של עץ המודולים, הם יועברו יחדיו. על כן, השימוש ב- `super` מבטיח שיהיו לנו פחות מקומות בהם יהיה צורך לעדכן את הקוד בעתיד במידה וקוד זה יועבר למודול אחר.
 
-We can also use `pub` to designate structs and enums as public, but there are a
-few details extra to the usage of `pub` with structs and enums. If we use `pub`
-before a struct definition, we make the struct public, but the struct’s fields
-will still be private. We can make each field public or not on a case-by-case
-basis. In Listing 7-9, we’ve defined a public `back_of_house::Breakfast` struct
-with a public `toast` field but a private `seasonal_fruit` field. This models
-the case in a restaurant where the customer can pick the type of bread that
-comes with a meal, but the chef decides which fruit accompanies the meal based
-on what’s in season and in stock. The available fruit changes quickly, so
-customers can’t choose the fruit or even see which fruit they’ll get.
+### הפיכת מבנים ומבחרים לפומביים
+
+ניתן גם להשתמש ב-`pub` כדי לסמן מבנים ומבחרים כפומביים, אבל ישמם כמה דגשים בנוגע לשימוש ב- `pub` עם מבנים ומבחרים. שימוש ב- `pub` לפני הגדרה של מבנה הופך את המבנה לפומבי, אבל שדות המבנה נשארים פרטיים. לגבי כל שדה ושדה ניתן לקבוע אם יישאר פרטי או יהפוך לפומבי. ברשימה 7-9 הגדרנו את המבנה `back_of_house::Breakfast` להיות פומבי עם שדה פומבי בשם `toast` ושדה פרטי בשם `seasonal_fruit`. מצב זה ממדל את מקרה בו במסעדה הלקוח יכול לבחור את סוג הלחם שמגיע עם הארוחה, אבל השף מחליט איזה פירות מלווים את הארוחה, וזאת בהתבסס על זמינות הפירות לפי העונה והמלאי. הפירות הזמינים משתנים במהירות, ולכן אין הלקוחות יכולים לבחור את הפירות, או אפילו לראות איזה פירות הם יקבלו.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -252,24 +125,14 @@ customers can’t choose the fruit or even see which fruit they’ll get.
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-09/src/lib.rs}}
 ```
 
-<span class="caption">Listing 7-9: A struct with some public fields and some
-private fields</span>
 
-Because the `toast` field in the `back_of_house::Breakfast` struct is public,
-in `eat_at_restaurant` we can write and read to the `toast` field using dot
-notation. Notice that we can’t use the `seasonal_fruit` field in
-`eat_at_restaurant` because `seasonal_fruit` is private. Try uncommenting the
-line modifying the `seasonal_fruit` field value to see what error you get!
+<span class="caption">רשימה 7-9: מבנה עם שדות פרטיים ושדות פומביים</span>
 
-Also, note that because `back_of_house::Breakfast` has a private field, the
-struct needs to provide a public associated function that constructs an
-instance of `Breakfast` (we’ve named it `summer` here). If `Breakfast` didn’t
-have such a function, we couldn’t create an instance of `Breakfast` in
-`eat_at_restaurant` because we couldn’t set the value of the private
-`seasonal_fruit` field in `eat_at_restaurant`.
+בגלל שהשדה `toast` במבנה `back_of_house::Breakfast` הוא פומבי, אנחנו יכולים לכתוב ולקרוא לשדה `toast` שבמבנה `eat_at_restaurant` באמצעות תחביר הנקודה. שימו לב שלא ניתן להשתמש בשדה `seasonal_fruit` שבמבנה `eat_at_restaurant` בגלל ש- `seasonal_fruit` הוא פרטי. נסו להסיר את סימון ההערה בשורה שמשנה את ערך השדה `seasonal_fruit` וראו איזו הודעת שגיאה תקבלו!
 
-In contrast, if we make an enum public, all of its variants are then public. We
-only need the `pub` before the `enum` keyword, as shown in Listing 7-10.
+בנוסף, שימו לב שמכיוון שב-`back_of_house::Breakfast` יש שדה פרטי, המבנה צריך לספק פונקציה משוייכת פומבית שבונה מופע של `Breakfast` (במקרה שלנו קראנו לפונקציה כזו `summer`). לו `Breakfast` לא היתה מספקת פונקציה כזו, לא היינו יכולים ליצור מופע של `Breakfast` ב-`eat_at_restaurant` משום שאין אפשרות לבצע השמה של ערך לדשה הפרטי `seasonal_fruit` ב-`eat_at_restaurant`.
+
+בניגוד לכך, אם מכריזים על מבחר כפומבי, אז כל הווריאנטים שלו פומביים גם הם. צריך למקם את `pub` רק לפני מילת המפתח `enum`, כפי שרואים ברשימה 7-10.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -277,21 +140,14 @@ only need the `pub` before the `enum` keyword, as shown in Listing 7-10.
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-10/src/lib.rs}}
 ```
 
-<span class="caption">Listing 7-10: Designating an enum as public makes all its
-variants public</span>
 
-Because we made the `Appetizer` enum public, we can use the `Soup` and `Salad`
-variants in `eat_at_restaurant`.
+<span class="caption">רשימה 7-10: ציון מבחר כפומבי הופך לפומביים את כל הווריאנטים שלו</span>
 
-Enums aren’t very useful unless their variants are public; it would be annoying
-to have to annotate all enum variants with `pub` in every case, so the default
-for enum variants is to be public. Structs are often useful without their
-fields being public, so struct fields follow the general rule of everything
-being private by default unless annotated with `pub`.
+בגלל שהפכנו את המבחר `Appetizer` לפומבי, ניתן להשתמש בווריאנטים `Soup` ו- `Salad` ב- `eat_at_restaurant`.
 
-There’s one more situation involving `pub` that we haven’t covered, and that is
-our last module system feature: the `use` keyword. We’ll cover `use` by itself
-first, and then we’ll show how to combine `pub` and `use`.
+מבחרים אינם יעילים במיוחד אם הווריאנטים שלהם אינם פומביים; זה יהיה מציק אם נצטרך לבאר את כל הווריאנטים של המבחר ב- `pub`, ולכן ברירת המחדל היא לחסוך מאיתנו עבודה מיותרת זו. מבנים הם שימושיים לרוב גם כאשר השדות שלהם לא פומביים, ולכן עובר שדות של מבנים חל החוק הכללי לפיו הכל פרטי כברירת מחדל, אלא אם מבואר אחרת ע"י `pub`.
+
+ישנו עוד מצב אחד המערב את `pub` שעליו עוד לא דיברנו, וזה מביא אותנו לתכונה האחרונה של מערכת המודולים: מילת המפתח `use`. תחילה נעבור על `use` בפני עצמו, ואז נראה עיצד לשלב בין `pub` ל- `use`.
 
 [pub]: ch07-03-paths-for-referring-to-an-item-in-the-module-tree.html#exposing-paths-with-the-pub-keyword
 [api-guidelines]: https://rust-lang.github.io/api-guidelines/

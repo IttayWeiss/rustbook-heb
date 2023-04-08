@@ -82,3 +82,6 @@ field שדה
 tuple struct מבנה רצף
 derived trait תכונה נגזרת
 match expression ביטוי התאמה
+encapsulation אפסון
+cheat sheet שליף
+module tree עץ המודולים
