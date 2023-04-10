@@ -85,3 +85,5 @@ match expression ביטוי התאמה
 encapsulation אפסון
 cheat sheet שליף
 module tree עץ המודולים
+re-exporting יצוא מחדש
+the glob operator אופרטור גלובה

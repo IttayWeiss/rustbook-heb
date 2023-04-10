@@ -1,16 +1,8 @@
-## Bringing Paths into Scope with the `use` Keyword
+## הכנסת מסלולים למתחם באמצעות מילת המפתח `use`
 
-Having to write out the paths to call functions can feel inconvenient and
-repetitive. In Listing 7-7, whether we chose the absolute or relative path to
-the `add_to_waitlist` function, every time we wanted to call `add_to_waitlist`
-we had to specify `front_of_house` and `hosting` too. Fortunately, there’s a
-way to simplify this process: we can create a shortcut to a path with the `use`
-keyword once, and then use the shorter name everywhere else in the scope.
+הצורך לציין מסלולים עבור כל קריאה לפונקציה יכול להיות לא נוח ורפטטיבי. ברשימה 7-7, בין אם אנו משתמשים במסלול האבסולוטי או היחסי לפונקציה `add_to_waitlist`, בכל פעם שרצינו לקרוא ל-`add_to_waitlist` היה עלינו לציין גם את `front_of_house` ו- `hosting`. למרבה המזל, ישנה דרך לפשט תהליך זה: ניתן ליצור קיצור דרך למסלול באמצעות מילת המפתח `use` פעם אחת, ואז להשתמש בשם המקוצר בכל מקום במתחם.
 
-In Listing 7-11, we bring the `crate::front_of_house::hosting` module into the
-scope of the `eat_at_restaurant` function so we only have to specify
-`hosting::add_to_waitlist` to call the `add_to_waitlist` function in
-`eat_at_restaurant`.
+ברשימה 7-11 אנחנו מכניסים את המודול `crate::front_of_house::hosting` למתחם של הפונקציה `eat_at_restaurant` כך שאנחנו רק צריכים לציין `hosting::add_to_waitlist` בשביל לקרוא לפונקציה `add_to_waitlist` ב-`eat_at_restaurant`.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -18,19 +10,12 @@ scope of the `eat_at_restaurant` function so we only have to specify
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-11/src/lib.rs}}
 ```
 
-<span class="caption">Listing 7-11: Bringing a module into scope with
-`use`</span>
 
-Adding `use` and a path in a scope is similar to creating a symbolic link in
-the filesystem. By adding `use crate::front_of_house::hosting` in the crate
-root, `hosting` is now a valid name in that scope, just as though the `hosting`
-module had been defined in the crate root. Paths brought into scope with `use`
-also check privacy, like any other paths.
+<span class="caption">רשימה 7-11: הכנסת מודול למתחם באמצעות `use`</span>
 
-Note that `use` only creates the shortcut for the particular scope in which the
-`use` occurs. Listing 7-12 moves the `eat_at_restaurant` function into a new
-child module named `customer`, which is then a different scope than the `use`
-statement, so the function body won’t compile:
+הוספת `use` ומסלול במתחם מסויים מתפקד באופן דומה ליצירת symbolic link במערכת קבצים. ע"י הוספת `use crate::front_of_house::hosting` בבסיס המכולה, `hosting` הופך להיות שם תקף במתחם, כאילו שהמודול `hosting` עצמו הוגדר בבסיס המכולה. מסלולים המוכנסים למתחם עם `use` עונים לדרישות הפרטיות, כמו כל מסלול אחר.
+
+שימו לב כי `use` יוצר את קיצור הדרך רק במתחם בו מופיע ה- `use`. רשימה 7-12 מעבירה את הפונקציה `eat_at_restaurant` למודול-בן חדש בשם `customer`, שהוא אז מתחם אחר מהמתחם בו מופיעה פקודת ה-`use`, ולכן גוף הפונקציה לא עובר קומפילציה:
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -38,27 +23,21 @@ statement, so the function body won’t compile:
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-12/src/lib.rs}}
 ```
 
-<span class="caption">Listing 7-12: A `use` statement only applies in the scope
-it’s in</span>
 
-The compiler error shows that the shortcut no longer applies within the
-`customer` module:
+<span class="caption">רשימה 7-12: פקודת `use` תקפה רק במתחם בו היא מופיעה</span>
+
+שגיאת הקומפילציה מראה שקיצור הדרך אינו תקף עוד בתוך המודול `customer`:
 
 ```console
 {{#include ../listings/ch07-managing-growing-projects/listing-07-12/output.txt}}
 ```
 
-Notice there’s also a warning that the `use` is no longer used in its scope! To
-fix this problem, move the `use` within the `customer` module too, or reference
-the shortcut in the parent module with `super::hosting` within the child
-`customer` module.
+שימו לב שמתקבלת גם אזהרה המודיעה כי `use` כבר לא נמצא במתחם שלו! כדי לתקן את המצב, יש להעביר גם את ה- `use` לתוך המודול `customer`, או להפנות אל קיצור הדרך במודול-האב באמצעות `super::hosting` מתוך מודול-הבן `customer`.
 
-### Creating Idiomatic `use` Paths
+### יצירת מסלולי `use` אידיאומטים
 
-In Listing 7-11, you might have wondered why we specified `use
-crate::front_of_house::hosting` and then called `hosting::add_to_waitlist` in
-`eat_at_restaurant` rather than specifying the `use` path all the way out to
-the `add_to_waitlist` function to achieve the same result, as in Listing 7-13.
+בהקשר לרשימה 7-11, יתכן ותהיתם מדוע כתבנו `use
+crate::front_of_house::hosting` ולאחר מכן קראנו ל-`hosting::add_to_waitlist` ב-`eat_at_restaurant` במקום לציין את מסלול ה-`use` כל הדרך אל `add_to_waitlist` כדי להשיג את אותה התוצאה, כמו ברשימה 7-13.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -66,21 +45,12 @@ the `add_to_waitlist` function to achieve the same result, as in Listing 7-13.
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-13/src/lib.rs}}
 ```
 
-<span class="caption">Listing 7-13: Bringing the `add_to_waitlist` function
-into scope with `use`, which is unidiomatic</span>
 
-Although both Listing 7-11 and 7-13 accomplish the same task, Listing 7-11 is
-the idiomatic way to bring a function into scope with `use`. Bringing the
-function’s parent module into scope with `use` means we have to specify the
-parent module when calling the function. Specifying the parent module when
-calling the function makes it clear that the function isn’t locally defined
-while still minimizing repetition of the full path. The code in Listing 7-13 is
-unclear as to where `add_to_waitlist` is defined.
+<span class="caption">רשימה 7-13: הכנסת הפונקציה `add_to_waitlist` למתחם באמצעות `use`, בצורה שאינה אידאומטית</span>
 
-On the other hand, when bringing in structs, enums, and other items with `use`,
-it’s idiomatic to specify the full path. Listing 7-14 shows the idiomatic way
-to bring the standard library’s `HashMap` struct into the scope of a binary
-crate.
+למרות שגם רשימה 7-11 וגם רשימה 7-13 משיגות את אותה המטרה, רשימה 7-11 היא הדרך האידאומטית להכנסת פונקציה למתחם באמצעות `use`. המשמעות של הכנסת מודול-האב של הפונקציה למתחם באמצעות `use` היא שעלינו לציין את מודול-האב בעת קריאה לפונקציה. ציון מודול-האב בזמן קריאה לפונקציה מבהיר את העובדה שהפונקציה אינה מוגדרת לוקאלית, וזאת בכל זאת תוך חזרה מינימלית על המסלול המלא. מהקוד ברשימה 7-13 לא ברור היכן הפונקציה `add_to_waitlist` מוגדרת.
+
+מצד שני, כאשר מכניסים למתחם מבנים, מבחרים, ושאר עצמים באמצעות `use`, הדרך האידאומטית היא לציין את המסלול המלא. רשימה 7-14 מראה את הדרך האידאומטית להכניס את המבנה `HashMap` מהספריה הסטנדרטית לתוך המתחם של מכולה בינארית.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -88,16 +58,12 @@ crate.
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-14/src/main.rs}}
 ```
 
-<span class="caption">Listing 7-14: Bringing `HashMap` into scope in an
-idiomatic way</span>
 
-There’s no strong reason behind this idiom: it’s just the convention that has
-emerged, and folks have gotten used to reading and writing Rust code this way.
+<span class="caption">רשימה 7-14: הכנסת `HashMap` למתחם בדרך אידאומטית</span>
 
-The exception to this idiom is if we’re bringing two items with the same name
-into scope with `use` statements, because Rust doesn’t allow that. Listing 7-15
-shows how to bring two `Result` types into scope that have the same name but
-different parent modules and how to refer to them.
+אין סיבה של ממש מאחורי אידאומה זו: זוהי פשוט הקונבנציה שנוצרה מעצמה, והקהילה התרגלה לקרוא ולכתוב קוד ראסט בצורה זו.
+
+היוצא מן הכלל לאידאומה זו הוא אם אנחנו מכניסים למתחם שני עצמים בעלי אותו שם באמצעות פקודת `use`, כיוון שראסט לא מאפשרת זאת. רשימה 7-15 מראה כיצד להכניס למתחם שני טיפוסי `Result` להם יש את אותו שם אבל מודולי-אב שונים, וכיצד להפנות אליהם.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -105,20 +71,14 @@ different parent modules and how to refer to them.
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-15/src/lib.rs:here}}
 ```
 
-<span class="caption">Listing 7-15: Bringing two types with the same name into
-the same scope requires using their parent modules.</span>
 
-As you can see, using the parent modules distinguishes the two `Result` types.
-If instead we specified `use std::fmt::Result` and `use std::io::Result`, we’d
-have two `Result` types in the same scope and Rust wouldn’t know which one we
-meant when we used `Result`.
+<span class="caption">רשימה 7-15: הכנסת שני טיפוסים בעלי אותו שם לאותו המתחם מצריכה שימוש במודולי-האב שלהם.</span>
 
-### Providing New Names with the `as` Keyword
+כפי שאתם רואים, שימוש במודולי-האב מבדיל בין שני טיפוסי ה- `Result`. לו היינו מציינים `use std::fmt::Result` ו- `use std::io::Result`, אז היו לנו שני טיפוסי `Result` באותו המתחם, וראסט לא היתה יודעת לאיזה מהם אנו מתכוונים כאשר אנו מפנים ל- `Result`.
 
-There’s another solution to the problem of bringing two types of the same name
-into the same scope with `use`: after the path, we can specify `as` and a new
-local name, or *alias*, for the type. Listing 7-16 shows another way to write
-the code in Listing 7-15 by renaming one of the two `Result` types using `as`.
+### אספקת שמות חדשים באמצעות מילת המפתח `as`
+
+ישנו פיתרון נוסף לבעיה של הכנסת שני טיפוסים עם אותו שם למתחם אחד באמצעות `use`: אחרי המסלול, ניתן לכתוב `as` ולציין שם לוקאלי חדש, או *כינוי*, עבור הטיפוס. רשימה 7-16 מציגה דרך נוספת לכתוב את הקוד מרשימה 7-15 ע"י שינוי השם של אחד מטיפוסי ה-`Result` תוך שימוש ב-`as`.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -126,25 +86,16 @@ the code in Listing 7-15 by renaming one of the two `Result` types using `as`.
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-16/src/lib.rs:here}}
 ```
 
-<span class="caption">Listing 7-16: Renaming a type when it’s brought into
-scope with the `as` keyword</span>
 
-In the second `use` statement, we chose the new name `IoResult` for the
-`std::io::Result` type, which won’t conflict with the `Result` from `std::fmt`
-that we’ve also brought into scope. Listing 7-15 and Listing 7-16 are
-considered idiomatic, so the choice is up to you!
+<span class="caption">רשימה 7-16: שינוי שם של טיפוס בזמן הכנסתו למתחם באמצעות מילת המפתח `as`</span>
 
-### Re-exporting Names with `pub use`
+בפקודת ה- `use` השניה, אנו בחרנו את השם החדש `IoResult` עבור הטיפוס `std::io::Result` כדי להימנע מההתנגשות עם ה- `Result` מ-`std::fmt` שגם אותו הכנסנו למתחם. גם רשימה 7-15 וגם רשימה 7-16 נחשבות אידאומטיות, ולכן הבחריה באיזה סגנון להשתמש בידיכם!
 
-When we bring a name into scope with the `use` keyword, the name available in
-the new scope is private. To enable the code that calls our code to refer to
-that name as if it had been defined in that code’s scope, we can combine `pub`
-and `use`. This technique is called *re-exporting* because we’re bringing
-an item into scope but also making that item available for others to bring into
-their scope.
+### יצוא מחדש של שמות באמצעות `pub use`
 
-Listing 7-17 shows the code in Listing 7-11 with `use` in the root module
-changed to `pub use`.
+כאשר מכניסים שם לתוך מתחם באמצעות מילת המפתח `use`, השם הזמן במתחם הוא פרטי. על מנת לאפשר לקוד שקורא לקוד שלנו להפנות לשם הזה כאילו הוא היה מוגדר במתחם של הקוד, ניתן לשלב את `pub` עם `use`. טכניקה זו נקראת *יצוא מחדש* משום שאנחנו מכניסים עצם למתחם אבל גם הופכים את העצם זמין בשביל שארחים יוכלו להכניסו למתחם שלהם.
+
+רשימה 7-17 מראה את הקוד מרשימה 7-11 בהחלפה של `use` בבסיס המודול ל-`pub use`.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -152,32 +103,17 @@ changed to `pub use`.
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-17/src/lib.rs}}
 ```
 
-<span class="caption">Listing 7-17: Making a name available for any code to use
-from a new scope with `pub use`</span>
 
-Before this change, external code would have to call the `add_to_waitlist`
-function by using the path
-`restaurant::front_of_house::hosting::add_to_waitlist()`. Now that this `pub
-use` has re-exported the `hosting` module from the root module, external code
-can now use the path `restaurant::hosting::add_to_waitlist()` instead.
+<span class="caption">רשימה 7-17: הפיכת שם לזמין לכל קוד, מכל מתחם, באמצעות `pub use`</span>
 
-Re-exporting is useful when the internal structure of your code is different
-from how programmers calling your code would think about the domain. For
-example, in this restaurant metaphor, the people running the restaurant think
-about “front of house” and “back of house.” But customers visiting a restaurant
-probably won’t think about the parts of the restaurant in those terms. With
-`pub use`, we can write our code with one structure but expose a different
-structure. Doing so makes our library well organized for programmers working on
-the library and programmers calling the library. We’ll look at another example
-of `pub use` and how it affects your crate’s documentation in the [“Exporting a
-Convenient Public API with `pub use`”][ch14-pub-use]<!-- ignore --> section of
-Chapter 14.
+לפני שינוי זה, קוד חיצוני היה צריך לקרוא לפונקציה `add_to_waitlist` תוך שימוש במסלול `restaurant::front_of_house::hosting::add_to_waitlist()`. השימוש ב- `pub
+use` גרם ליצוא מחדש של המודול `hosting` מבסיס המודול, ולכן קוד חיצוני יכול כעת פשוט להשתמש במסלול `restaurant::hosting::add_to_waitlist()`.
 
-### Using External Packages
+יצוא מחדש יעיל כאשר המבנה הפנימי של הקוד שלכם שונה מאיך שסביר שמתכנתים אחרים, שרק קוראים לקוד שלכם, יחשבו על מבנה הקוד שלכם. לדוגמא, במטפורת המסעדה, האנשים המנהלים את המסעדה חושבים במושגים של "קדמת הבית" ו-"אחורי הבית." אבל סביר מאוד שלקוחות המבקרים במסעדה לא יחשבו במונחים אלה. באמצעות `pub use` יש ביכולתנו לכתוב את הקוד במבנה נוח לנו, בעוד אנו חושפים מבנה אחר לשימוש. בכך אנו בונים ספריה מאורגנת היטב גם עובר מתכנתים המפתחים את הספריה וגם עבור מתכנתים שמשתמשים בה. אנו נראה דוגמא נוספת לשימוש ב- `pub use`, וההשפעה על תיעוד המכולה, בסעיף ["יצוא של API פומבי נוח באמצעות `pub use`"][ch14-pub-use]<!-- ignore --> בפרק 14.
 
-In Chapter 2, we programmed a guessing game project that used an external
-package called `rand` to get random numbers. To use `rand` in our project, we
-added this line to *Cargo.toml*:
+### שימוש בחבילות חיצוניות
+
+בפרק 2 תכנתנו פרוייקט משחק ניחוש מספר שהשתמש בחבילה החיצונית `rand` כדי לעבוד עם מספרים מקריים. על מנת להשתמש ב-`rand` בפרוייקט שלנו, הוספנו את השורה הבאה לקובץ *Cargo.toml*:
 
 <!-- When updating the version of `rand` used, also update the version of
 `rand` used in these files so they all match:
@@ -191,44 +127,27 @@ added this line to *Cargo.toml*:
 {{#include ../listings/ch02-guessing-game-tutorial/listing-02-02/Cargo.toml:9:}}
 ```
 
-Adding `rand` as a dependency in *Cargo.toml* tells Cargo to download the
-`rand` package and any dependencies from [crates.io](https://crates.io/) and
-make `rand` available to our project.
+הוספת `rand` כתלות ב- *Cargo.toml* אומרת לקארגו `rand` ואת כל התלותות שלה מ- [crates.io](https://crates.io/) ולהפוך את `rand` זמינה עבור הפרוייקט שלנו.
 
-Then, to bring `rand` definitions into the scope of our package, we added a
-`use` line starting with the name of the crate, `rand`, and listed the items
-we wanted to bring into scope. Recall that in the [“Generating a Random
-Number”][rand]<!-- ignore --> section in Chapter 2, we brought the `Rng` trait
-into scope and called the `rand::thread_rng` function:
+ואז, כדי להכניס הגדרות מ- `rand` למתחם של החבילה שלנו, הוספנו שורת `use` המתחילה, `rand`, וציינו את שמות העצמים שרצינו להכניס למתחם. זכרו שבסעיף ["יצירת מספר אקראי"][rand]<!-- ignore --> בפרק 2, הכנסנו את התכונה `Rng` למתחם וקראנו לפונקציה `rand::thread_rng`:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch02-guessing-game-tutorial/listing-02-03/src/main.rs:ch07-04}}
 ```
 
-Members of the Rust community have made many packages available at
-[crates.io](https://crates.io/), and pulling any of them into your package
-involves these same steps: listing them in your package’s *Cargo.toml* file and
-using `use` to bring items from their crates into scope.
+חברי קהילת ראסט בנו חבילות רבות והן זמינות ב-[crates.io](https://crates.io/). משיכת כל אחת מהן לשימוש בחבילות משלכם מערבת בדיוק את שתי הפעולות האלה: ציון החבילות לשימוש בקובץ *Cargo.toml* של החבילה שלכם, ושימוש ב- `use` כדי להכניס את העצמים מהחבילות האלה לתוך המתחם שלכם.
 
-Note that the standard `std` library is also a crate that’s external to our
-package. Because the standard library is shipped with the Rust language, we
-don’t need to change *Cargo.toml* to include `std`. But we do need to refer to
-it with `use` to bring items from there into our package’s scope. For example,
-with `HashMap` we would use this line:
+שימו לב שהספריה הסטנדרטית `std` גם היא מכולה חיצונית לחבילה שלנו. בגלל שהספריה הסטנדרטית מושקת ביחד עם שפת ראסט, אין צורך לשנות את את *Cargo.toml* כדי שיכיל את `std`. אבל כן צריך להפנות אליה באמצעות `use` כדי להכניס עצמים ממנה אל המתחם בחבילה שלנו. למשל, עם `HashMap` עלינו להשתמש בשורה:
 
 ```rust
 use std::collections::HashMap;
 ```
 
-This is an absolute path starting with `std`, the name of the standard library
-crate.
+זהו מסלול אבסולוטי המתחיל עם `std`, שם המכולה של הספריה הסטנדרטית.
 
-### Using Nested Paths to Clean Up Large `use` Lists
+### שימוש במסלולים מקוננים כדי לפשט רשימות `use` ארוכות
 
-If we’re using multiple items defined in the same crate or same module,
-listing each item on its own line can take up a lot of vertical space in our
-files. For example, these two `use` statements we had in the Guessing Game in
-Listing 2-4 bring items from `std` into scope:
+כאשר אנו משתמשים בעצמים רבים המוגדרים באותה מכולה או באותו מודול, ציון כל עצם ועצם בפני עצמו עלול למלא שורות רבות בקבצים שלנו. לדוגמא, שתי פקודות ה- `use` הבאות שהופיעו ברשימה 2-4 במשחק ניחוש המספר שלנו מכניסות עצמים מ-`std` למתחם:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -236,10 +155,7 @@ Listing 2-4 bring items from `std` into scope:
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/no-listing-01-use-std-unnested/src/main.rs:here}}
 ```
 
-Instead, we can use nested paths to bring the same items into scope in one
-line. We do this by specifying the common part of the path, followed by two
-colons, and then curly brackets around a list of the parts of the paths that
-differ, as shown in Listing 7-18.
+במקום זאת, ניתן להשתמש במסלולים מקוננים כדי להכניס למתחם בשורה אחת את אותם העצמים. אנו עושים זאת ע"י ציון החלק המשותף של המסלול, ולאחריו שני נקודותיים, ובעקבותיהם סוגריים מסולסלים סביב רשימת חלקי המסלולים השונים, כפי שמוצג ברשימה 7-18.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -247,17 +163,12 @@ differ, as shown in Listing 7-18.
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-18/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 7-18: Specifying a nested path to bring multiple
-items with the same prefix into scope</span>
 
-In bigger programs, bringing many items into scope from the same crate or
-module using nested paths can reduce the number of separate `use` statements
-needed by a lot!
+<span class="caption">רשימה 7-18: ציון מסלול מקונן על מנת להכניס למתחם מספר עצמים בעלי מסלול תחילי משותף</span>
 
-We can use a nested path at any level in a path, which is useful when combining
-two `use` statements that share a subpath. For example, Listing 7-19 shows two
-`use` statements: one that brings `std::io` into scope and one that brings
-`std::io::Write` into scope.
+בתכניות גדולות יותר, הכנסה למתחם של עצמים רבים מאותה מכולה או אותו מודול תוך שימוש במסלולים מקוננים יכולה להקטין משמעותית את מספר פקודות ה- `use` הנפרדות!
+
+ניתן להשתמש במסלול מקונן בכל רמה במסלול; יכולת מועילה כאשר משלבים שתי פקודות `use` שמשתפות תת-מסלול. למשל, רשימה 7-19 מראה שתי פקודות `use`: האחת מכניסה את `std::io` למתחם והשניה מכניסה את `std::io::Write` למתחם.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -265,12 +176,10 @@ two `use` statements that share a subpath. For example, Listing 7-19 shows two
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-19/src/lib.rs}}
 ```
 
-<span class="caption">Listing 7-19: Two `use` statements where one is a subpath
-of the other</span>
 
-The common part of these two paths is `std::io`, and that’s the complete first
-path. To merge these two paths into one `use` statement, we can use `self` in
-the nested path, as shown in Listing 7-20.
+<span class="caption">רשימה 7-19: שתי פקודות `use` כאשר האחת היא תת-מסלול של השניה</span>
+
+החלק המשותף לשני המסלולים הוא `std::io`, וזהו המסלול המלא הראשון. על מנת למזג את שני המסלולים האלה לכדי שימוש יחיד ב- `use`, ניתן להשתמש ב- `self` במסלול המקונן, כפי שרואים ברשימה 7-20.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -278,31 +187,23 @@ the nested path, as shown in Listing 7-20.
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-20/src/lib.rs}}
 ```
 
-<span class="caption">Listing 7-20: Combining the paths in Listing 7-19 into
-one `use` statement</span>
 
-This line brings `std::io` and `std::io::Write` into scope.
+<span class="caption">רשימה 7-20: שילוב המסלולים מרשימה 7-19 לשימוש יחיד בפקודת `use`</span>
 
-### The Glob Operator
+שורה זו מכניסה גם את `std::io` וגם את `std::io::Write` למתחם.
 
-If we want to bring *all* public items defined in a path into scope, we can
-specify that path followed by the `*` glob operator:
+### אופרטור הגלוב (glob)
+
+אם אנחנו רוצים להכניס למתחם את *כל* העצמים הפומביים שמוגדרים במסלול מסויים, נוכל לציין מסלול זה ולאחריו להשתמש באופרטור הגלוב `*`:
 
 ```rust
 use std::collections::*;
 ```
 
-This `use` statement brings all public items defined in `std::collections` into
-the current scope. Be careful when using the glob operator! Glob can make it
-harder to tell what names are in scope and where a name used in your program
-was defined.
+פקודת `use` זו מכניסה למתחם הנוכחי את כל העצמים הפומביים שמוגדרים ב- `std::collections`. היזהרו כאשר אתם משתמשים באופרטור גלוב! גלוב יכול להקשות עלינו להבין אלו שמות נמצאים במתחם והיכן הוגדר עצם זה או אחר בו אנו משתמשים.
 
-The glob operator is often used when testing to bring everything under test
-into the `tests` module; we’ll talk about that in the [“How to Write
-Tests”][writing-tests]<!-- ignore --> section in Chapter 11. The glob operator
-is also sometimes used as part of the prelude pattern: see [the standard
-library documentation](../std/prelude/index.html#other-preludes)<!-- ignore -->
-for more information on that pattern.
+לרוב משתמשים באופרטור גלוב כאשר מבצעים בדיקות, כדי להכניס את כל מה שאומר להיבדק תחת מודול, לרוב בשם `tests`; נדון בכך בסעיף ["כיצד לכתוב בדיקות"][writing-tests]<!-- ignore --> בפרק 11. לעיתים גם משתמשים באופרטור גלוב כחלק מדפוס הפרליוד: ראו [תיעוד הספריה הסטנדרטית](../std/prelude/index.html#other-preludes)<!-- ignore -->
+לפרטים נוספים אודות דפוס זה.
 
 [ch14-pub-use]: ch14-02-publishing-to-crates-io.html#exporting-a-convenient-public-api-with-pub-use
 [rand]: ch02-00-guessing-game-tutorial.html#generating-a-random-number
