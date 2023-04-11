@@ -1,20 +1,10 @@
-## Separating Modules into Different Files
+## הפרדת מודולים לקבצים שונים
 
-So far, all the examples in this chapter defined multiple modules in one file.
-When modules get large, you might want to move their definitions to a separate
-file to make the code easier to navigate.
+עד כה, כל הדוגמאות בפרק זה הגדירו מספר מודולים בקובץ אחד. כאשר מודולים מתארכים, יתכן ותרצו להעביר את ההגדרות בהם לקובץ נפרד על מנת להקל על הניווט בקוד.
 
-For example, let’s start from the code in Listing 7-17 that had multiple
-restaurant modules. We’ll extract modules into files instead of having all the
-modules defined in the crate root file. In this case, the crate root file is
-*src/lib.rs*, but this procedure also works with binary crates whose crate root
-file is *src/main.rs*.
+למשל, הבה נתחיל עם הקוד ברשימה 7-17, בו יש מספר מודולי מסעדות. אנו נמצה מודולים לתוך קבצים במקום לרכז את כל המודולים בקובץ בסיס המכולה. במקרה זה, בסיס המכולה הוא *src/lib.rs*, אבל פרוצדורה זו אנו מדגימים תקפה גם למכולות בינאריות, בהן קובץ בסיס המכולה הוא *src/main.rs*.
 
-First, we’ll extract the `front_of_house` module to its own file. Remove the
-code inside the curly brackets for the `front_of_house` module, leaving only
-the `mod front_of_house;` declaration, so that *src/lib.rs* contains the code
-shown in Listing 7-21. Note that this won’t compile until we create the
-*src/front_of_house.rs* file in Listing 7-22.
+ראשית, נמצה את המודול `front_of_house` לקובץ משלו. הסירו את הקוד שבתוך הסוגריים המסולסלים של המודול `front_of_house`, והשאירו רק את ההכרזה `mod front_of_house;`, כך ש- *src/lib.rs* יכיל את הקוד המוצג ברשימה 7-21. שימו לב שהקוד לא יעבור קומפילציה עד שניצור את הקובץ *src/front_of_house.rs* ברשימה 7-22.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -22,13 +12,10 @@ shown in Listing 7-21. Note that this won’t compile until we create the
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-21-and-22/src/lib.rs}}
 ```
 
-<span class="caption">Listing 7-21: Declaring the `front_of_house` module whose
-body will be in *src/front_of_house.rs*</span>
 
-Next, place the code that was in the curly brackets into a new file named
-*src/front_of_house.rs*, as shown in Listing 7-22. The compiler knows to look
-in this file because it came across the module declaration in the crate root
-with the name `front_of_house`.
+<span class="caption">רשימה 7-21: הכרזה על המודול `front_of_house` שגופו ימצא בקובץ *src/front_of_house.rs*</span>
+
+עכשיו, צרו קובץ בשם *src/front_of_house.rs* ומקמו בתוכו את הקוד שהיה בסוגריים המסולסלים, כפי שמוצג ברשימה 7-22. הקומפיילר יודע לחפש את הקובץ הזה בגלל שהוא מצא בבסיס המכולה את ההכרזה על המודול `front_of_house`.
 
 <span class="filename">Filename: src/front_of_house.rs</span>
 
@@ -36,25 +23,14 @@ with the name `front_of_house`.
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/listing-07-21-and-22/src/front_of_house.rs}}
 ```
 
-<span class="caption">Listing 7-22: Definitions inside the `front_of_house`
-module in *src/front_of_house.rs*</span>
 
-Note that you only need to load a file using a `mod` declaration *once* in your
-module tree. Once the compiler knows the file is part of the project (and knows
-where in the module tree the code resides because of where you’ve put the `mod`
-statement), other files in your project should refer to the loaded file’s code
-using a path to where it was declared, as covered in the [“Paths for Referring
-to an Item in the Module Tree”][paths]<!-- ignore --> section. In other words,
-`mod` is *not* an “include” operation that you may have seen in other
-programming languages.
+<span class="caption">רשימה 7-22: הגדרות פנימיות של המודול `front_of_house` בקובץ *src/front_of_house.rs*</span>
 
-Next, we’ll extract the `hosting` module to its own file. The process is a bit
-different because `hosting` is a child module of `front_of_house`, not of the
-root module. We’ll place the file for `hosting` in a new directory that will be
-named for its ancestors in the module tree, in this case *src/front_of_house/*.
+שימו לב שיש לטעון קובץ באמצעות הכרזת `mod` רק *פעם אחת* בעץ המודולים שלכם. ברגע שהקומפיילר יודע שהקובץ הוא חלק מהפרוייקט (ויודע את המקום בעץ המודולים בו הקוד נמצא, לפי המיקום של פקודת ה-`mod`), קבצים אחרים בפרוייקט צריכים להפנות לקוד מהקובץ המוטען תוך שימוש במסלול המצביע למקום בו הוא הוגדר, כפי שהוסבר בסעיף ["מסלולים להפניות של עצמים בעץ המודולים"][paths]<!-- ignore --> . במילים אחרות, `mod` היא פקודה *שונה* מ-"include" שמוכרת לכם, אולי, משפות תכנות אחרות.
 
-To start moving `hosting`, we change *src/front_of_house.rs* to contain only the
-declaration of the `hosting` module:
+עכשיו נפנה למיצוי המודול `hosting` לקובץ משלו. התהליך שונה במעט משום ש- `hosting` הוא מודול-בן של `front_of_house`, ולא של מודול הבסיס. נמקם את הקובץ עבור `hosting` בתיקיה חדשה בשם של מודול-האב בעץ המודולים, במקרה זה *src/front_of_house/*.
+
+בכדי להתחיל להעביר את `hosting`, נשנה את *src/front_of_house.rs* כך שיכיל רק את ההכרזה על המודול `hosting`:
 
 <span class="filename">Filename: src/front_of_house.rs</span>
 
@@ -62,8 +38,7 @@ declaration of the `hosting` module:
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/no-listing-02-extracting-hosting/src/front_of_house.rs}}
 ```
 
-Then we create a *src/front_of_house* directory and a file *hosting.rs* to
-contain the definitions made in the `hosting` module:
+ואז ניצור את הספריה *src/front_of_house* ואת הקובץ *hosting.rs* כך שיכיל את ההגדרות במודול `hosting`:
 
 <span class="filename">Filename: src/front_of_house/hosting.rs</span>
 
@@ -71,57 +46,32 @@ contain the definitions made in the `hosting` module:
 {{#rustdoc_include ../listings/ch07-managing-growing-projects/no-listing-02-extracting-hosting/src/front_of_house/hosting.rs}}
 ```
 
-If we instead put *hosting.rs* in the *src* directory, the compiler would
-expect the *hosting.rs* code to be in a `hosting` module declared in the crate
-root, and not declared as a child of the `front_of_house` module. The
-compiler’s rules for which files to check for which modules’ code means the
-directories and files more closely match the module tree.
+אם, במקום זאת, נמקם את *hosting.rs* בתיקייה *src*, הקומפיילר יצפה שהקוד של *hosting.rs* יהיה במודול `hosting` שמוכרז בבסיס המכולה, ולא שמוכרז כמודול-בן של `front_of_house`. כללי הקומפיילר בדבר באלו קצבים לחפש את הקוד עבור מודולים גורמים לכך שמבנה עץ המודולים ומבנה התיקיות דומים זה לזה.
 
-> ### Alternate File Paths
->
-> So far we’ve covered the most idiomatic file paths the Rust compiler uses,
-> but Rust also supports an older style of file path. For a module named
-> `front_of_house` declared in the crate root, the compiler will look for the
-> module’s code in:
->
-> * *src/front_of_house.rs* (what we covered)
-> * *src/front_of_house/mod.rs* (older style, still supported path)
->
-> For a module named `hosting` that is a submodule of `front_of_house`, the
-> compiler will look for the module’s code in:
->
-> * *src/front_of_house/hosting.rs* (what we covered)
-> * *src/front_of_house/hosting/mod.rs* (older style, still supported path)
->
-> If you use both styles for the same module, you’ll get a compiler error. Using
-> a mix of both styles for different modules in the same project is allowed, but
-> might be confusing for people navigating your project.
->
-> The main downside to the style that uses files named *mod.rs* is that your
-> project can end up with many files named *mod.rs*, which can get confusing
-> when you have them open in your editor at the same time.
+> ### מסלולי קבצים אלטרנטיבים
+> 
+> עד כה הצגנו את מסלולי הקבצים האידיאומטים ביותר בשימוש הוקמפיילר של ראסט, אבל ראסט תומכת גם בסגנון ישן יותר של מסלולים. עבור מודול בשם  `front_of_house`  המוכרז בבסיס המכולה, הקומפיילר יחפש את הקוד של המודול במקומות הבאים:
+> 
+> * בקובץ *src/front_of_house.rs* (כפי שכבר ראינו)
+> * בקובץ *src/front_of_house/mod.rs* (סגנון ישן יותר, שעדיין נתמך)
+> 
+> עבור מודול בשם  `hosting` שהוא תת-מודול של `front_of_house`,  הקומפיילר יחפש את הקוד של המודול במקומות האלה:
+> 
+> * בקובץ *src/front_of_house/hosting.rs* (כפי שכבר ראינו)
+> * בקובץ *src/front_of_house/hosting/mod.rs* (סגנון ישן יותר, שעדיין נתמך)
+> 
+> במידה ותשתמשו בשני הסגנונות עבור אותו מודול, תקבלו שגיאת קומפילציה. כן ניתן לערב את שני הסגנונות עבור מודולים שונים באותו הפרוייקט, אבל זה עלול להיות מבלבל עבור מפתחים שינסו לנווט את הקוד שלכם.
+> 
+> המגרעה המרכזית של הסגנון שמשתמש בקבצים בשם  *mod.rs* היא שהפרוייקט שלכם עשוי להכיל הרבה קבצים בשם  *mod.rs*, דבר שעלול לגרום לבלבול כאשר כמה מהקבצים האלה פתוחים לעריכה באדיטור באותו זמן.
 
-We’ve moved each module’s code to a separate file, and the module tree remains
-the same. The function calls in `eat_at_restaurant` will work without any
-modification, even though the definitions live in different files. This
-technique lets you move modules to new files as they grow in size.
+העברנו את הקוד של כל אחד מהמודולים לקובץ נפרד, ועץ המודולים נשאר כשהיה. הקריאות לפונקציות ב-`eat_at_restaurant` ימשיכו לעבוד ללא כל צורך בהתאמות, אפילו שההגדרות נמצאות בקבצים שונים. טכניקה זו מאפשרת לכם להזיז מודולים לקבצים משלהם, במידת הצורך.
 
-Note that the `pub use crate::front_of_house::hosting` statement in
-*src/lib.rs* also hasn’t changed, nor does `use` have any impact on what files
-are compiled as part of the crate. The `mod` keyword declares modules, and Rust
-looks in a file with the same name as the module for the code that goes into
-that module.
+שימו לב שגם הפקודה `pub use crate::front_of_house::hosting` בקובץ *src/lib.rs* לא השתנתה, וכן שלשימוש ב- `use` אין כל השפעה על אלו קבצים עוברים קומפילציה כחלק מהמכולה. מילת המפתח `mod` מכריזה על מודולים, וראסט מחפשת בקובץ בעל אותו שם כמו השם של המודול את הקוד של המודול.
 
-## Summary
+## סיכום
 
-Rust lets you split a package into multiple crates and a crate into modules
-so you can refer to items defined in one module from another module. You can do
-this by specifying absolute or relative paths. These paths can be brought into
-scope with a `use` statement so you can use a shorter path for multiple uses of
-the item in that scope. Module code is private by default, but you can make
-definitions public by adding the `pub` keyword.
+ראסט מאפשרת לכם לפצל חבילה לכמה מכולות, ומכולה לכמה מודולים כך שניתן להפנות לעצמים המוגדרים במודול אחד ממודולים אחרים. ניתן לעשות זאת ע"י ציון מסלולים אבסולוטיים או יחסיים. ניתן להכניס מסלולים אלה למתחכם באמצעות פקודת `use` וכך להשתמש במסלול קצר יותר לשימוש חוזר עבור עצם מסויים במתחם. כברירת מחדל, המתחם של מודול הוא פרטי, אבל ניתן להפוך הגדרות לפומביות ע"י הוספת מילת המפתח `pub`.
 
-In the next chapter, we’ll look at some collection data structures in the
-standard library that you can use in your neatly organized code.
+בפרק הבא נתבונן בכמה מבני נתונים מאגדים (collection data types) שנמצאים בספריה הסטנדרטית וזמינים לשימושכם כחלק מהקוד שלכם, שעכשיו ביכולתכם לארגן למופת.
 
 [paths]: ch07-03-paths-for-referring-to-an-item-in-the-module-tree.html
