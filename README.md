@@ -1,42 +1,15 @@
 # The Rust Programming Language - Hebrew Translation
+This is a translation into Hebrew of the main branch of the GitHub repository of the original book. The translation proceeds by replacing each of the files in the src directory by its translation. In this way, building the translated book is identical to building the original: mdbook build. This would build the entire book, and so the portions that have been translated would be in Hebrew, while the rest would be in the original English. 
 
-Translation Status: Chapters 1-4 have been translated.
+## Translation status and auxiliary files
+Chapters 1-7 have been translated.
 
 A HebEngTerm.txt file in the root directory contains a list of standard Rust-related terminology with the chosen translations into Hebrew. 
 
 ## Style of translation
-The translation aims to preserve the feel of the original text, while ahering to Hebrew idioms. That means that time tenses are mostly preserved, except when sounding very awkward in Hebrew or if deviating from the original style significantly improves clarity. 
+The translation aims to preserve the feel of the original text, while ahering to Hebrew idioms. That means that time tenses are mostly preserved, except when sounding very awkward in Hebrew, or if deviating from the original style significantly improves clarity. 
 
-Contributions are very welcomed. It is recommended to familiarise yourself with the already translated material before translating other chapters, and to strive for a similar style of translation. 
 
-The rest of the this README.md has not been translated yet. 
-
-# Original README.md Starts Here
-
-![Build Status](https://github.com/rust-lang/book/workflows/CI/badge.svg)
-
-This repository contains the source of "The Rust Programming Language" book.
-
-[The book is available in dead-tree form from No Starch Press][nostarch].
-
-[nostarch]: https://nostarch.com/rust
-
-You can also read the book for free online. Please see the book as shipped with
-the latest [stable], [beta], or [nightly] Rust releases. Be aware that issues
-in those versions may have been fixed in this repository already, as those
-releases are updated less frequently.
-
-[stable]: https://doc.rust-lang.org/stable/book/
-[beta]: https://doc.rust-lang.org/beta/book/
-[nightly]: https://doc.rust-lang.org/nightly/book/
-
-See the [releases] to download just the code of all the code listings that appear in the book.
-
-[releases]: https://github.com/rust-lang/book/releases
-
-## Requirements
-
-Building the book requires [mdBook], ideally the same version that
 rust-lang/rust uses in [this file][rust-mdbook]. To get it:
 
 [mdBook]: https://github.com/rust-lang-nursery/mdBook
@@ -79,40 +52,14 @@ To run the tests:
 $ mdbook test
 ```
 
-## Contributing
+## Contributions to the translation effort
+Contributions are very welcomed. It is recommended to familiarise yourself with the already translated material before translating other chapters, and to strive for a similar style of translation. 
 
-We'd love your help! Please see [CONTRIBUTING.md][contrib] to learn about the
-kinds of contributions we're looking for.
+Please follow the following recommended steps in order to contribute:
+1) Identify an improvement and consult the open and closed issues. Seek for an existing discussion about your observation, and contribute to the discussion. Seek to see if it was already propsoed in the past but closed, and understand why. Seek to see if it is currently an open issue, and whether it is being carried out. 
+2) If you are convinced your observation merits opening an issue, do so. 
+3) Use the following naming convention for your issue: start the name with "Ch" followed by two digits for the chapter number, then "Se" followed by two digits for the section number, and then a hyphen followed by the text of the subsection (if it exists). Then double hyphen, and include a short description of the observation. For instance: Ch04Se02-Mutable References -- misspelling of the translation of 'mutable'. If the observation does not fit into this particular structure, use common sense. For instance: All chapters are missing the translation of the seventh word from the top.
+4) If your observation is quick to perform, you may choose to immediate own the issue, make the improvement, and submit a PR. Otherwise, it is recommended that you let the issue stay open for a while to allow a discussion. It would be a shame if you work hard on an improvement, submit a PR, and then the PR is not accepted. 
 
-[contrib]: https://github.com/rust-lang/book/blob/main/CONTRIBUTING.md
-
-Because the book is [printed](https://nostarch.com/rust), and because we want
-to keep the online version of the book close to the print version when
-possible, it may take longer than you're used to for us to address your issue
-or pull request.
-
-So far, we've been doing a larger revision to coincide with [Rust
-Editions](https://doc.rust-lang.org/edition-guide/). Between those larger
-revisions, we will only be correcting errors. If your issue or pull request
-isn't strictly fixing an error, it might sit until the next time that we're
-working on a large revision: expect on the order of months or years. Thank you
-for your patience!
-
-### Translations
-
-We'd love help translating the book! See the [Translations] label to join in
-efforts that are currently in progress. Open a new issue to start working on
-a new language! We're waiting on [mdbook support] for multiple languages
-before we merge any in, but feel free to start!
-
-[Translations]: https://github.com/rust-lang/book/issues?q=is%3Aopen+is%3Aissue+label%3ATranslations
-[mdbook support]: https://github.com/rust-lang-nursery/mdBook/issues/5
-
-## Spellchecking
-
-To scan source files for spelling errors, you can use the `spellcheck.sh`
-script available in the `ci` directory. It needs a dictionary of valid words,
-which is provided in `ci/dictionary.txt`. If the script produces a false
-positive (say, you used word `BTreeMap` which the script considers invalid),
-you need to add this word to `ci/dictionary.txt` (keep the sorted order for
-consistency).
+# Active contributors
+Ittay Weiss, Idan Liberman.

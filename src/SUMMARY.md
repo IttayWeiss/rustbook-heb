@@ -30,9 +30,9 @@
     - [תכנית לדוגמא המשתמשת במבנים](ch05-02-example-structs.md)
     - [תחביר מתודות](ch05-03-method-syntax.md)
 
-- [Enums and Pattern Matching](ch06-00-enums.md)
-    - [Defining an Enum](ch06-01-defining-an-enum.md)
-    - [The `match` Control Flow Construct](ch06-02-match.md)
+- [מבחרים והתאמת דפוסים](ch06-00-enums.md)
+    - [הגדרת מבחרים](ch06-01-defining-an-enum.md)
+    - [המבנה התחבירי `match` לבקרת זרימה](ch06-02-match.md)
     - [Concise Control Flow with `if let`](ch06-03-if-let.md)
 
 ## Basic Rust Literacy
