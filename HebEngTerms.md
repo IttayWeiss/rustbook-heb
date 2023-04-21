@@ -11,6 +11,7 @@
 | cargo                       	| קארגו                         |
 | clone                       	| שיבוט                         |
 | closure                     	| סגור                          |
+| collection data type		| טיפוס נתונים מאגד		|
 | compile (v)                 	| לקמפל                         |
 | compiler                    	| קומפיילר                      |
 | compound (data)             	| מורכב                         |
