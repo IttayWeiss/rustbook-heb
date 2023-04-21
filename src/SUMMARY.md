@@ -41,7 +41,7 @@
 ](ch07-00-managing-growing-projects-with-packages-crates-and-modules.md)
     - [חבילות ומכולות](ch07-01-packages-and-crates.md)
     - [Defining Modules to Control Scope and Privacy](ch07-02-defining-modules-to-control-scope-and-privacy.md)
-    - [Paths for Referring to an Item in the Module Tree](ch07-03-paths-for-referring-to-an-item-in-the-module-tree.md)
+    - [מסלולים להפניה לעצם בתוך עץ המודולים](ch07-03-paths-for-referring-to-an-item-in-the-module-tree.md)
     - [Bringing Paths Into Scope with the `use` Keyword](ch07-04-bringing-paths-into-scope-with-the-use-keyword.md)
     - [Separating Modules into Different Files](ch07-05-separating-modules-into-different-files.md)
 
