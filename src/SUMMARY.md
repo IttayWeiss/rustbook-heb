@@ -33,11 +33,12 @@
 - [מבחרים והתאמת דפוסים](ch06-00-enums.md)
     - [הגדרת מבחרים](ch06-01-defining-an-enum.md)
     - [המבנה התחבירי `match` לבקרת זרימה](ch06-02-match.md)
-    - [Concise Control Flow with `if let`](ch06-03-if-let.md)
+    - [`if let` בקרת זרימה מתומצתת עם](ch06-03-if-let.md)
 
 ## Basic Rust Literacy
 
-- [Managing Growing Projects with Packages, Crates, and Modules](ch07-00-managing-growing-projects-with-packages-crates-and-modules.md)
+- [ניהול פרוייקטים עם חבילות, מכולות, ומודולים
+](ch07-00-managing-growing-projects-with-packages-crates-and-modules.md)
     - [Packages and Crates](ch07-01-packages-and-crates.md)
     - [Defining Modules to Control Scope and Privacy](ch07-02-defining-modules-to-control-scope-and-privacy.md)
     - [Paths for Referring to an Item in the Module Tree](ch07-03-paths-for-referring-to-an-item-in-the-module-tree.md)
