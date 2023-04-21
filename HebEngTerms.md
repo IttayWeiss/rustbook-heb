@@ -34,6 +34,7 @@
 | garbage collector           	| מאסף אשפה                     |
 | generic                     	| גנרי                          |
 | generics                    	| ג'נריקס                       |
+| glob operator			| האופרטור גלוב			|
 | global                      	| גלובאלי                       |
 | hash map                    	| מפת גיבוב                     |
 | heap                        	| ערימה                         |
