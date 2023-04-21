@@ -16,6 +16,7 @@
 | compound (data)             	| מורכב                         |
 | configuration               	| תצורה, קביעת תצורה            |
 | crate                       	| מכולה                         |
+| crate root			| שורש המכולה			|
 | dangling reference          	| הפניה משתלשלת                 |
 | data race                   	| מרוץ דאטה                     |
 | dependencies               	| תלותות                        |
@@ -61,6 +62,7 @@
 | overflow                    	| גלישה                         |
 | owner                       	| בעלים                         |
 | ownership                   	| בעלות                         |
+| package			| חבילה				|
 | panic                       	| להיכנס לפאניקה                |
 | parameter                   	| פרמטר                         |
 | path                        	| מסלול                         |
