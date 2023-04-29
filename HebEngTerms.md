@@ -19,6 +19,7 @@
 | crate                       | מכולה                         |
 | crate root                  | שורש המכולה                   |
 | dangling reference          | הפניה משתלשלת                 |
+| data                        | ('ז) דאטה                     |
 | data race                   | מרוץ דאטה                     |
 | dependencies                | תלותות                        |
 | deref                       | דה-הפניה                      |
@@ -69,7 +70,7 @@
 | path                        | מסלול                         |
 | prelude                     | פרליוד                        |
 | reference                   | הפניה                         |
-| Rust                        | ראסט                          |
+| Rust                        | ('נ) ראסט                     |
 | Rust idiom                  | אידיאומות ראסט                |
 | Rustaceans                  | ראסטיונרים                    |
 | scalar (data)               | סקלארי                        |
