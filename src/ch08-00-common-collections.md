@@ -1,25 +1,13 @@
-# Common Collections
+# אוספים נפוצים
 
-Rust’s standard library includes a number of very useful data structures called
-*collections*. Most other data types represent one specific value, but
-collections can contain multiple values. Unlike the built-in array and tuple
-types, the data these collections point to is stored on the heap, which means
-the amount of data does not need to be known at compile time and can grow or
-shrink as the program runs. Each kind of collection has different capabilities
-and costs, and choosing an appropriate one for your current situation is a
-skill you’ll develop over time. In this chapter, we’ll discuss three
-collections that are used very often in Rust programs:
+הספרייה הסטנדרטית של ראסט כוללת מספר מבני נתונים שימושיים שנקראים *אוספים*. רוב מבני הנתונים מייצגים ערך אחד בעוד אוספים יכולים להכיל ערכים רבים. בניגוד למערך והרצף המובנים, הערכים שהאוספים הללו מצביעים אליהם נמצאים בערימה, כך שכמות הערכים לא צריכה להיות ידועה בזמן הקומפילציה והיא יכולה להתרחב או להתכווץ תוך כדי ריצת התוכנה. לכל סוג של אוסף ישנן יכולות ועלויות שונות, ולבחור את האוסף הנכון עבור כל מצב הוא כישור שמתפתח עם הזמן. בפרק זה, נדון בשלושה סוגי אוספים שתוכנות ראסט משתמשות בהם באופן קבוע:
 
-* A *vector* allows you to store a variable number of values next to each other.
-* A *string* is a collection of characters. We’ve mentioned the `String` type
-  previously, but in this chapter we’ll talk about it in depth.
-* A *hash map* allows you to associate a value with a particular key. It’s a
-  particular implementation of the more general data structure called a *map*.
+* *וקטור* מאפשר לאחסן כמות משתנה של ערכים בסמיכות אחד לשני.
+* *מחרוזת* היא אוסף של תווים. הצגנו אותה בפרקים קודמים, אך בפרק זה נדון בה לעומק.
+* *מפת גיבוב* מאפשרת לקשר בין ערך למפתח מסויים. זהו מימוש ספציפי של מבנה נתונים כללי יותר שמכונה *מפה*.
 
-To learn about the other kinds of collections provided by the standard library,
-see [the documentation][collections].
+כדי ללמוד על סוגי אוספים נוספים שהספרייה הסטנדרטית מספקת, יש לפנות ל[תיעוד][collections].
 
-We’ll discuss how to create and update vectors, strings, and hash maps, as well
-as what makes each special.
+אנחנו נדון ביצירתם ועידכונם של וקטורים, מחרוזות ומפות גיבוב וכן במה שמייחד אותם.
 
 [collections]: ../std/collections/index.html
