@@ -19,6 +19,7 @@
 | crate                       | מכולה                         |
 | crate root                  | שורש המכולה                   |
 | dangling reference          | הפניה משתלשלת                 |
+| data                        | דאטה (ז')                     |
 | data race                   | מרוץ דאטה                     |
 | dependencies                | תלותות                        |
 | deref                       | דה-הפניה                      |
@@ -69,13 +70,13 @@
 | path                        | מסלול                         |
 | prelude                     | פרליוד                        |
 | reference                   | הפניה                         |
-| Rust                        | ראסט                          |
+| Rust                        | (נ') ראסט                     |
 | Rust idiom                  | אידיאומות ראסט                |
 | Rustaceans                  | ראסטיונרים                    |
 | scalar (data)               | סקלארי                        |
 | scope                       | מתחם                          |
 | shadowing                   | האפלה                         |
-| shell                       | shell                         |
+| shell                       | מעטפת                         |
 | slice                       | חיתוך                         |
 | smart pointer               | מצביע חכם                     |
 | stack                       | מחסנית                        |
@@ -88,6 +89,6 @@
 | type                        | טיפוס                         |
 | unicode                     | יוניקוד                       |
 | value is dropped            | ערך נעזב                      |
-| variant                     | ווריאנט (או "סוג")            |
-| vector                      | ווקטור                        |
+| variant                     | וריאנט (או "סוג")             |
+| vector                      | וקטור                         |
 | workspace                   | אזור עבודה                    |
