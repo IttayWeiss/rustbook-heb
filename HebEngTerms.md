@@ -80,7 +80,7 @@
 | slice                       | חיתוך                         |
 | smart pointer               | מצביע חכם                     |
 | stack                       | מחסנית                        |
-| statement                   | פקודה , הַצְהָרָה             |
+| statement                   | פקודה, הַצְהָרָה                  |
 | statically typed            | טיפוסים סטטיים                |
 | struct                      | מבנה                          |
 | trait                       | תכונה                         |
