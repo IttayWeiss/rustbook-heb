@@ -1,48 +1,20 @@
-## Characteristics of Object-Oriented Languages
+## מאפיינים של שפות מונחות-עצמים
 
-There is no consensus in the programming community about what features a
-language must have to be considered object-oriented. Rust is influenced by many
-programming paradigms, including OOP; for example, we explored the features
-that came from functional programming in Chapter 13. Arguably, OOP languages
-share certain common characteristics, namely objects, encapsulation, and
-inheritance. Let’s look at what each of those characteristics means and whether
-Rust supports it.
+אין בנמצא הסכמה רחבה בקרב קהילת המתכנתים בדבר אלו תכונות חייבות להימצא על מנת להכריז על שפה כשפה מונחת-עצמים. ראסט מושפעת מפרדיגמות תכנות רבות, כולל OOP; למשל, כבר בחנו כמה תכונות שמגיעות מעולם התכנות הפונקציונאלי בפרק 13. ניתן לטעון ששפות מונחות-עצמים משתפות כמה מאפיינים נפוצים, קריא עצמים, אפסון, וירושה (inheritance). הבה נביט במשמעות של כל אחד ממאפיינים אלה, ונתהה על רמת התמיכה בהם בראסט.
 
-### Objects Contain Data and Behavior
+### עצמים מכילים דאטה והתנהגות
 
-The book *Design Patterns: Elements of Reusable Object-Oriented Software* by
-Erich Gamma, Richard Helm, Ralph Johnson, and John Vlissides (Addison-Wesley
-Professional, 1994), colloquially referred to as *The Gang of Four* book, is a
-catalog of object-oriented design patterns. It defines OOP this way:
+הספר *Design Patterns: Elements of Reusable Object-Oriented Software* שנכתב על-ידי אריך גאמה, ריצ'ארד הלם, ראלף ג'ונסון, וג'ון ווליסדס (הוצאת Addison-Wesley Proffesional, 1994) אליו מתייחסים בעממיות כספר *חבורת הארבעה*, הינו קטלוג של דפוסי תכנון מונחה-עצמים. הוא מגדיר OOP כך:
 
-> Object-oriented programs are made up of objects. An *object* packages both
-> data and the procedures that operate on that data. The procedures are
-> typically called *methods* or *operations*.
+> תכניות מונחות-עצמים מורכבות מעצמים. *עצם* מאגד דאטה יחד עם הפרוצדורות שפועלות על הדאטה הזה. לפרוצדורות קוראים, בדרך כלל, *מתודות* או *פעולות*.
 
-Using this definition, Rust is object-oriented: structs and enums have data,
-and `impl` blocks provide methods on structs and enums. Even though structs and
-enums with methods aren’t *called* objects, they provide the same
-functionality, according to the Gang of Four’s definition of objects.
+בהתאם להגדרה זו, ראסט היא שפה מונחת-עצמים: למבנים ומבחרים יש דאטה, ובלוקי `impl` מספקים מתודות עבור המבנים והמבחרים. אפילו שמבנים ומבחרים ביחד עם מתודות עליהם לא *נקראים* עצמים, הם מספקים את אותה הפונקציונאליות, לפי ההגדרה של עצמים של חבורת הארבעה.
 
-### Encapsulation that Hides Implementation Details
+### אפסון שמחביא פרטי יישום
 
-Another aspect commonly associated with OOP is the idea of *encapsulation*,
-which means that the implementation details of an object aren’t accessible to
-code using that object. Therefore, the only way to interact with an object is
-through its public API; code using the object shouldn’t be able to reach into
-the object’s internals and change data or behavior directly. This enables the
-programmer to change and refactor an object’s internals without needing to
-change the code that uses the object.
+אספקט נוסף שמשוייך לרוב עם OOP הוא הרעיון של *אפסון*, שמשמעו שפרטי יישומים של עצם אינם נגישים עבור קוד שמשתמש בעצם זה. לכן, הדרך היחידה לבוא במגע עם עצם היא דרך ה-API הפומבי שלו; אסור לקוד שמשתמש בעצם לנבור לעמקי העצם ולשנות ישירות דאטה או התנהגות. כך מתאפשר למתכנת לשנות ולשפר את מנגנוני הפעולה הפנימיים של העצם ללא צורך לשנות קוד שעושה שימוש בעצם.
 
-We discussed how to control encapsulation in Chapter 7: we can use the `pub`
-keyword to decide which modules, types, functions, and methods in our code
-should be public, and by default everything else is private. For example, we
-can define a struct `AveragedCollection` that has a field containing a vector
-of `i32` values. The struct can also have a field that contains the average of
-the values in the vector, meaning the average doesn’t have to be computed
-on demand whenever anyone needs it. In other words, `AveragedCollection` will
-cache the calculated average for us. Listing 17-1 has the definition of the
-`AveragedCollection` struct:
+אודות שליטה באפסון דנו בפרק 7: ניתן להשתמש במילת המפתח `pub` על מנת להחליט אלו מודולים, טיפוסים, פונקציות, ומתודות בקוד שלנו יהיו פומביות, כאשר כל דבר אחר, כברירת מחדל, הוא פרטי. למשל, ניתן להגדיר את המבנה `AveragedCollection` שלו שדה המכיל ווקטור של ערכי `i32`. המבנה יכול גם לכלול שדה שמכיל את הממוצע של הערכים בווקטור, כך שלא יהיה צורך לחשב את הממוצע בכל פעם שמישהו צריך אותו. במילים אחרות, `AveragedCollection` יטמין (cache) עבורנו את הממוצע המחושב. רשימה 17-1 מראה את ההגדרה של המבנה `AveragedCollection`:
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -50,15 +22,10 @@ cache the calculated average for us. Listing 17-1 has the definition of the
 {{#rustdoc_include ../listings/ch17-oop/listing-17-01/src/lib.rs}}
 ```
 
-<span class="caption">Listing 17-1: An `AveragedCollection` struct that
-maintains a list of integers and the average of the items in the
-collection</span>
 
-The struct is marked `pub` so that other code can use it, but the fields within
-the struct remain private. This is important in this case because we want to
-ensure that whenever a value is added or removed from the list, the average is
-also updated. We do this by implementing `add`, `remove`, and `average` methods
-on the struct, as shown in Listing 17-2:
+<span class="caption">רשימה 17-1: מבנה `AveragedCollection` אשר מנהל גם רשימת שלמים וגם את הממוצע שלהם</span>
+
+המבנה מסומן כ-`pub` בכדי שקוד אחר יוכל להשתמש בו, אבל השדות בתוך המבנה נשארים פרטיים. נקודה זו חשובה במקרה זה שכן אנו רוצים להבטיח שבכל פעם שמוסיפים או מסירים ערך מהרשימה, הממוצע מתעדכן. אנו משיגים זאת באמצעות היישומים של המתודות `add`, `remove`, ו-`average` על המבנה, כמוצג ברשימה 17-2:
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -66,87 +33,35 @@ on the struct, as shown in Listing 17-2:
 {{#rustdoc_include ../listings/ch17-oop/listing-17-02/src/lib.rs:here}}
 ```
 
-<span class="caption">Listing 17-2: Implementations of the public methods
-`add`, `remove`, and `average` on `AveragedCollection`</span>
 
-The public methods `add`, `remove`, and `average` are the only ways to access
-or modify data in an instance of `AveragedCollection`. When an item is added
-to `list` using the `add` method or removed using the `remove` method, the
-implementations of each call the private `update_average` method that handles
-updating the `average` field as well.
+<span class="caption">רשימה 17-2: יישומים של המתודות פומביות `add`, `remove`, ו-`average` על המבנה `AveragedCollection`</span>
 
-We leave the `list` and `average` fields private so there is no way for
-external code to add or remove items to or from the `list` field directly;
-otherwise, the `average` field might become out of sync when the `list`
-changes. The `average` method returns the value in the `average` field,
-allowing external code to read the `average` but not modify it.
+המתודות הפומביות `add`, `remove`, ו-`average` מהוות את הדרך היחידה לגשת אל הדאטה במופע של `AveragedCollection`, או לשנות אותו. כאשר מוסיפים ערך לשדה `list` באמצעות המתודה `add`, או כאשר מסירים ערך באמצעות המתודה `remove`, היישום של כל אחת מהן קורא למתודה הפרטית `update_average` אשר מנהלת גם את העדכון של השדה `average`.
 
-Because we’ve encapsulated the implementation details of the struct
-`AveragedCollection`, we can easily change aspects, such as the data structure,
-in the future. For instance, we could use a `HashSet<i32>` instead of a
-`Vec<i32>` for the `list` field. As long as the signatures of the `add`,
-`remove`, and `average` public methods stay the same, code using
-`AveragedCollection` wouldn’t need to change. If we made `list` public instead,
-this wouldn’t necessarily be the case: `HashSet<i32>` and `Vec<i32>` have
-different methods for adding and removing items, so the external code would
-likely have to change if it were modifying `list` directly.
+אנו משאירים את השדות `list` ו-`average` פרטיים כדי שלא תהיה דרך לקוד חיצוני להוסיף את להסירערכים מהשדה `list` באופן ישיר; שאם לא כן, השדה `average` עלול לצאת מסנכרון כאשר `list` עובר שינויים. המתודה `average` מחזירה את הערך שמאוכסן בשדה `average`, ומאפשרת לקוד חיצוני לקרוא את `average` אבל לא לשנות אותו.
 
-If encapsulation is a required aspect for a language to be considered
-object-oriented, then Rust meets that requirement. The option to use `pub` or
-not for different parts of code enables encapsulation of implementation details.
+כיוון שאפסנו את פרטי היישום של המבנה `AveragedCollection`, אנו יכולים בקלות לבצע שינויים מסויימים, כמו שינויים בדרך ייצוג הנתונים, בעתיד. למשל, נוכל להשתמש ב- `HashSet<i32>` במקום ב-`Vec<i32>` עבור השדה `list`. כל עוד החותמים של `add`, `remove`, ו- `average` מצהירים עליהן כמתודות פומביות, לא יהיה צורך לשנות קוד שעושה שימוש במבנה `AveragedCollection`. במידה והיינו הופכים את `list` לפומבי, המצב היה יכול להיות עדין יותר: ל-`HashSet<i32>` ול- `Vec<i32>` יש מתודות שונות להוספת והסרת ערכים, ולכן סביר שיהיה צורך להתאים קוד חיצוני המשתמש במבנה, במידה והוא היה מתייחס לשדה `list` ישירות.
 
-### Inheritance as a Type System and as Code Sharing
+אם אפסון היא דרישה הכרחית על מנת להכריז על שפה במונחת-עצמים, אז ראסט עונה לדרישה זו. האפשרות אם כן או לא להשתמש ב-`pub` עבור חלקים שונים בקוד מאפשרת אפסון פרטי יישום.
 
-*Inheritance* is a mechanism whereby an object can inherit elements from
-another object’s definition, thus gaining the parent object’s data and behavior
-without you having to define them again.
+### ירושה כמערכת טיפוסים וכשיתופיות קוד
 
-If a language must have inheritance to be an object-oriented language, then
-Rust is not one. There is no way to define a struct that inherits the parent
-struct’s fields and method implementations without using a macro.
+*ירושה* היא מנגנון שמאפשר לעצם לרשת אלמנטים מההגדרה של עצם אחר, ובכל לרכוש דאטה והתנהגות מאובייקט האב ללא צורך בשחזור הגדרות.
 
-However, if you’re used to having inheritance in your programming toolbox, you
-can use other solutions in Rust, depending on your reason for reaching for
-inheritance in the first place.
+אם שפה חייבת לתמוך בירושה כדי להיקרא שפה מונחת-עצמים, אז ראסט אינה כזו. אין דרך להגדיר מבנה שיורש שדות או מתודות ממבנה אחר ללא שימוש במאקרו.
 
-You would choose inheritance for two main reasons. One is for reuse of code:
-you can implement particular behavior for one type, and inheritance enables you
-to reuse that implementation for a different type. You can do this in a limited
-way in Rust code using default trait method implementations, which you saw in
-Listing 10-14 when we added a default implementation of the `summarize` method
-on the `Summary` trait. Any type implementing the `Summary` trait would have
-the `summarize` method available on it without any further code. This is
-similar to a parent class having an implementation of a method and an
-inheriting child class also having the implementation of the method. We can
-also override the default implementation of the `summarize` method when we
-implement the `Summary` trait, which is similar to a child class overriding the
-implementation of a method inherited from a parent class.
+אבל, אם מנגנון הירושה הוא כלי חשוב לכם באגז כלי הפיתוח שלכם, תוכלו להשתמש בפתרונות אחרים בראסט, בהתאם לסיבה שגורמת לכם לחפש כלי זה בזמן הפיתוח.
 
-The other reason to use inheritance relates to the type system: to enable a
-child type to be used in the same places as the parent type. This is also
-called *polymorphism*, which means that you can substitute multiple objects for
-each other at runtime if they share certain characteristics.
+בדרך-כלל, ניגשים לירושה משתי סיבות. האחת היא כדי לעשות שימוש חוזר בקוד: ניתן ליישם התנהגות ספציפית עבור טיפוס אחד, ואז ירושה מאפשרת לכם להשתמש שוב ביישום עבור טיפוסים אחרים. ניתן לעשות זאת בצורה מצומצת בראסט על-ידי שימוש ביישומיי ברירת מחדל עבור תכונות, כפי שראיתם ברשימה 10-14 כאשר הוספנו יישום ברירת מחדל עבור המתודה `summarize` בתכונה `Summary`. לכל טיפוס המיישם את התכונה `Summary`, המתודה `summarize` תהיה זמינה ללא צורך בקוד נוסף. מצב זה דומה למצב בו מחלקת אב (parent class) מכילה יישום של מתודה, כך שלמחלקה שיורשת ממחלקה זו יש את אותו היישום. ניתן גם לעקוף את יישום ברירת המחדל של המתודה `summarize` כאשר אנו מיישמים את התכונה `Summary`, בצורה דומה למעקף שמחלקה יורשת יכולה לבצע כדי לעקוף את היישום שמחלקת האב מספקת.
 
-> ### Polymorphism
->
-> To many people, polymorphism is synonymous with inheritance. But it’s
-> actually a more general concept that refers to code that can work with data
-> of multiple types. For inheritance, those types are generally subclasses.
->
-> Rust instead uses generics to abstract over different possible types and
-> trait bounds to impose constraints on what those types must provide. This is
-> sometimes called *bounded parametric polymorphism*.
+הסיבה השניה לשימוש בירושה מתייחסת למערכת הטיפוסים: על מנת לאפשר שימוש בטיפוס בן (child type) באותם המקומות בהם ניתן להשתמש בטיפוס האב. תכונה זו נקראת גם *פולימורפיזם* (polymorphism), ומשמעה היכולת להחליף עצמים בינם לבין עצמם בזמן הריצה במידה והם משתפים תכונות מסויימות.
 
-Inheritance has recently fallen out of favor as a programming design solution
-in many programming languages because it’s often at risk of sharing more code
-than necessary. Subclasses shouldn’t always share all characteristics of their
-parent class but will do so with inheritance. This can make a program’s design
-less flexible. It also introduces the possibility of calling methods on
-subclasses that don’t make sense or that cause errors because the methods don’t
-apply to the subclass. In addition, some languages will only allow single
-inheritance (meaning a subclass can only inherit from one class), further
-restricting the flexibility of a program’s design.
+> ### פולימורפיזם
+> 
+> עבור משתמשים רבים, פולימורפיזם וירושה הם מושגים נרדפים. אבל למעשה פולימורפיזם הוא מושג רחב יותר שמתייחס לקוד שיכול לעבוד עם דאטה מכמה טיפוסים. במושג הירושה, טיפוסים אלה, בדרך כלל, הם תתי-מחלקות.
+> 
+> ראסט, לחילופין, מאפשרת שימוש בג'נריקס כדי לבצע אבסטרקטיזציה על פני טיפוסים שונים ומגבילי תכונות כדי לכפות תנאים על סוגי הטיפוסים שיש לספק. לעיתים קוראים לכך *פולימורפיזם פרמטרי מוגבל* (bounded parametric polymorphism).
 
-For these reasons, Rust takes the different approach of using trait objects
-instead of inheritance. Let’s look at how trait objects enable polymorphism in
-Rust.
+בשנים האחרונות, ירושה איבדה מיוקרתה, בשפות רבות, ככלי לפתירת בעיות בפיתוח מכיוון שבפועל יש סכנה לשיתוף קוד שלא לצורך. תתי-מחלקות לא תמיד צריכות לשתם את כל המאפיינים של מחלקות האב שלהן, אבל זה בדיוק מה שקורה עם ירושה. דבר זה יכול להוביל לתבניות תכנות פחות גמישות. בנוסף, נוצרת גם האפשרות לקריאה למתודות על תתי-מחלקות שעלולת להיות חסרות הגיון או שיכולות ליצור שגיאות בגלל שהמתודות לא באמת רלוונטיות לתתי-המחלקות. בנוסף, שפות מסויימות מאפשרות אך ורק ירושה ישירה (single inheritance, ז"א שמחלקה יכולה לרשת רק ממחלקה אחת), ובכך נוצרת מגבלה נוספת על גמישות התכנון.
+
+מסיבות אלה, ראסט פונה לאובייקטי תכונה (trait objects) במקום לירושה. הבה נראה כיצד אובייקטי תכונה מאפשרים פולימורפיזם בראסט.

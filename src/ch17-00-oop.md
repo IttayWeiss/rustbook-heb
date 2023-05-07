@@ -1,13 +1,3 @@
-# Object-Oriented Programming Features of Rust
+# יכולות של תכנות מונחה-עצמים בראסט
 
-Object-oriented programming (OOP) is a way of modeling programs. Objects as a
-programmatic concept were introduced in the programming language Simula in the
-1960s. Those objects influenced Alan Kay’s programming architecture in which
-objects pass messages to each other. To describe this architecture, he coined
-the term *object-oriented programming* in 1967. Many competing definitions
-describe what OOP is, and by some of these definitions Rust is object-oriented,
-but by others it is not. In this chapter, we’ll explore certain characteristics
-that are commonly considered object-oriented and how those characteristics
-translate to idiomatic Rust. We’ll then show you how to implement an
-object-oriented design pattern in Rust and discuss the trade-offs of doing so
-versus implementing a solution using some of Rust’s strengths instead.
+תכנות מונחה-עצמים (object-oriented programming, OOP) הוא דרך למידול של תכניות. עצמים כקונספט בתכנות הוצגו בשפת התכנות סימולה (Simula) בשנות ה-60 של המאה הקודמת. עצמים אלה השפיעו על ארכיטקטורת התכנות של אלן קיי (Alan Kay) שבה עצמים מעבירים הודעות בינם לבין עצמם. על מנת לתאר ארכיטקטורה זו, הוא ייסד את המונח *תכנות מונחה-עצמים* ב-1967. הגדרות שונות רבות מתחרות בניסיון לתאר OOP מהו, ולפי כמה מהגדרות אלה ראסט היא שפה מונחת-עצמים, ולפי הגדרות אחרות היא אינה כזו. בפרק זה, נתבונן בכמה מאפיינים שלרוב נחשבים כיסודות עקרונות מונחי-עצמים וכיצד מאפיינים אלה באים לידי ביטוי בראסט אידאומטית. לאחר מכן, נראה כיצד ליישם דפוס בעיצוב מונחה-עצמים בראסט ונדון ביתרונות ובחסרונות של יישום זה לאומת יישום פיתרון שמשתמש בחוזקות של ראסט.
