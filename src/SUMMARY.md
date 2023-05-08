@@ -102,10 +102,10 @@
     - [Shared-State Concurrency](ch16-03-shared-state.md)
     - [Extensible Concurrency with the `Sync` and `Send` Traits](ch16-04-extensible-concurrency-sync-and-send.md)
 
-- [Object Oriented Programming Features of Rust](ch17-00-oop.md)
-    - [Characteristics of Object-Oriented Languages](ch17-01-what-is-oo.md)
-    - [Using Trait Objects That Allow for Values of Different Types](ch17-02-trait-objects.md)
-    - [Implementing an Object-Oriented Design Pattern](ch17-03-oo-design-patterns.md)
+- [יכולות של תכנות מונחה-עצמים בראסט](ch17-00-oop.md)
+    - [מאפיינים של שפות מונחות-עצמים](ch17-01-what-is-oo.md)
+    - [שימוש באובייקטי תכונה שמאפשרים ערכים מטיפוסים שונים](ch17-02-trait-objects.md)
+    - [מימוש דפוס תכנון מונחה-עצמים](ch17-03-oo-design-patterns.md)
 
 ## Advanced Topics
 

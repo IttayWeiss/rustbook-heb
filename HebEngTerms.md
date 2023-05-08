@@ -16,6 +16,7 @@
 | compiler                    | קומפיילר                      |
 | compound (data)             | מורכב                         |
 | configuration               | תצורה, קביעת תצורה            |
+| consume (e.g., an iterator) | לכלות                         |
 | crate                       | מכולה                         |
 | crate root                  | שורש המכולה                   |
 | dangling reference          | הפניה משתלשלת                 |
@@ -26,7 +27,9 @@
 | deref coercion              | כפיית דה-הפניה                |
 | derived trait               | תכונה נגזרת                   |
 | destructuring               | פירוק                         |
+| dispatch                    | שיגור                         |
 | double free                 | שחרור כפול                    |
+| dynamic dispatch            | שיגור דינמי                   |
 | encapsulation               | אפסון                         |
 | enum                        | מבחר                          |
 | expression                  | ביטוי                         |
@@ -55,6 +58,7 @@
 | match                       | התאמה                         |
 | match expression            | ביטוי התאמה                   |
 | module                      | מודול                         |
+| monomorphization            | מונומורפיזציה                 |
 | move                        | הזזה                          |
 | multiple threads            | ריבוי פתילים, ריבוי תהליכונים |
 | mutable                     | בר-שינוי                      |
@@ -68,6 +72,7 @@
 | panic                       | להיכנס לפאניקה                |
 | parameter                   | פרמטר                         |
 | path                        | מסלול                         |
+| polymorphism                |                               |
 | prelude                     | פרליוד                        |
 | reference                   | הפניה                         |
 | Rust                        | (נ') ראסט                     |
@@ -80,10 +85,14 @@
 | slice                       | חיתוך                         |
 | smart pointer               | מצביע חכם                     |
 | stack                       | מחסנית                        |
-| statement                   | פקודה, הַצְהָרָה                  |
+| state pattern               | תבנית מצבים                    |
+| statement                   | פקודה , הַצְהָרָה                 |
+| static dispatch             | שיגור סטטי                    |
 | statically typed            | טיפוסים סטטיים                |
 | struct                      | מבנה                          |
 | trait                       | תכונה                         |
+| trait bounds                | מגבילי תכנות                  |
+| train object                | אובייקט תכונה                 |
 | tuple                       | מרצף                          |
 | tuple struct                | מבנה מרצף                     |
 | type                        | טיפוס                         |
