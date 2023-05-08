@@ -20,7 +20,7 @@
 | crate                       | מכולה                         |
 | crate root                  | שורש המכולה                   |
 | dangling reference          | הפניה משתלשלת                 |
-| data                        | ('ז) דאטה                     |
+| data                        | דאטה (ז')                     |
 | data race                   | מרוץ דאטה                     |
 | dependencies                | תלותות                        |
 | deref                       | דה-הפניה                      |
@@ -75,17 +75,17 @@
 | polymorphism                |                               |
 | prelude                     | פרליוד                        |
 | reference                   | הפניה                         |
-| Rust                        | ('נ) ראסט                     |
+| Rust                        | (נ') ראסט                     |
 | Rust idiom                  | אידיאומות ראסט                |
 | Rustaceans                  | ראסטיונרים                    |
 | scalar (data)               | סקלארי                        |
 | scope                       | מתחם                          |
 | shadowing                   | האפלה                         |
-| shell                       | shell                         |
+| shell                       | מעטפת                         |
 | slice                       | חיתוך                         |
 | smart pointer               | מצביע חכם                     |
 | stack                       | מחסנית                        |
-| state pattern               | דפוס מצבים                    |
+| state pattern               | תבנית מצבים                    |
 | statement                   | פקודה , הַצְהָרָה                 |
 | static dispatch             | שיגור סטטי                    |
 | statically typed            | טיפוסים סטטיים                |
@@ -98,6 +98,6 @@
 | type                        | טיפוס                         |
 | unicode                     | יוניקוד                       |
 | value is dropped            | ערך נעזב                      |
-| variant                     | ווריאנט (או "סוג")            |
-| vector                      | ווקטור                        |
+| variant                     | וריאנט (או "סוג")             |
+| vector                      | וקטור                         |
 | workspace                   | אזור עבודה                    |
