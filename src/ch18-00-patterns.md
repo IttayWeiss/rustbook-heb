@@ -1,29 +1,15 @@
-# Patterns and Matching
+# תבניות והתאמות
 
-*Patterns* are a special syntax in Rust for matching against the structure of
-types, both complex and simple. Using patterns in conjunction with `match`
-expressions and other constructs gives you more control over a program’s
-control flow. A pattern consists of some combination of the following:
+*תבניות* הן תחביר מיוחד בראסט שמשמש להתאמות מול המבנה של טיפוסים, מורכבים ופשוטים כאחד. שימוש בתבניות ביחד עם ביטויי `match` ובניות אחריות מגביר את השליטה על זרימת הביצוע של תכניות. תבנית מורכבת מכמה שילובים של האלמנטים הבאים:
 
-* Literals
-* Destructured arrays, enums, structs, or tuples
-* Variables
-* Wildcards
-* Placeholders
+* ביטויים מפורשים
+* פירוקים של מערכים, מבחרים, מבנים, או מרצפים
+* משתנים
+* Wildcards ***
+* שומרי-מקום
 
-Some example patterns include `x`, `(a, 3)`, and `Some(Color::Red)`. In the
-contexts in which patterns are valid, these components describe the shape of
-data. Our program then matches values against the patterns to determine whether
-it has the correct shape of data to continue running a particular piece of code.
+כמה דוגמאות לתבניות כוללות `x`, `(a, 3)`, ו-`Some(Color::Red)`. בהקשר בהם התבניות תקפות, רכיבים אלה מתארים את צורת הדאטה. התכנית שלנו מתאימה ערכים כנגד התבניות על מנת לקבוע האם לדאטה בערך יש את הצורה הנכונה על מנת להמשיך להריץ פיסת קוד מסויימת.
 
-To use a pattern, we compare it to some value. If the pattern matches the
-value, we use the value parts in our code. Recall the `match` expressions in
-Chapter 6 that used patterns, such as the coin-sorting machine example. If the
-value fits the shape of the pattern, we can use the named pieces. If it
-doesn’t, the code associated with the pattern won’t run.
+על מנת להשתמש בתבנית, אנו משווים אותה מול ערך כלשהוא. אם התבנית מתאימה לערך, אנו משתמשים בערך הזה בקוד שלנו. הזכרו כעת בביטויי ה-`match` מפרק 6 שהשתמשו בתבניות, כמו בדוגמא של מכונת מיון המטבעות. אם הערכים מתאימים לצורת התבנית, אנו יכולים להשתמש בפיסות המתאימות. אם אין התאמה, הקוד המשוייך לתבנית לא ירוץ.
 
-This chapter is a reference on all things related to patterns. We’ll cover the
-valid places to use patterns, the difference between refutable and irrefutable
-patterns, and the different kinds of pattern syntax that you might see. By the
-end of the chapter, you’ll know how to use patterns to express many concepts in
-a clear way.
+פרק זה משמש כהפניה לכל האספקטים הקשורים לתבניות. נדון במהם המקומות בהם נכון להשתמש בתבניות, על ההבדל בין תבניות שניתנון להפרכה לאלו שאינן ניתנות להפרכה, ובסוגים השונים של תחביר תבניות בהם אתם עשויים להיתקל. בסוף הפרק תדעו כיצד להשתמש בתבניות כדי לבטא קונספטים רבים בצורה בהירה.

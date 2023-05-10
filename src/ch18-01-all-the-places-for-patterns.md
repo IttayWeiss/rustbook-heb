@@ -1,15 +1,10 @@
-## All the Places Patterns Can Be Used
+## כל המקומות בהם ניתן להשתמש בתבניות
 
-Patterns pop up in a number of places in Rust, and you’ve been using them a lot
-without realizing it! This section discusses all the places where patterns are
-valid.
+תבניות מופיעות במספר מקומות בראסט, וכבר עשיתם שימוש נרחב בהם מבלי לדעת זאת! סעיף זה ידון בכל המקומות בהם לתבניות יכול להיות תוקף.
 
-### `match` Arms
+### זרועות `match`
 
-As discussed in Chapter 6, we use patterns in the arms of `match` expressions.
-Formally, `match` expressions are defined as the keyword `match`, a value to
-match on, and one or more match arms that consist of a pattern and an
-expression to run if the value matches that arm’s pattern, like this:
+כפי שנידון בפרק 6, אנו משתמשים בתבניות בזרועות של ביטויי `match`. באופן פורמלי, ביטויי `match` מוגדרים באמצעות מילת-המפתח `match`, ערך עליו יש לבצע את ההתאמה, ולפחות זרוע התאמה אחת שמורכבת מתבנית וביטוי להרצה במידה והערך תואם את תבנית הזרוע, כמו למשל:
 
 ```text
 match VALUE {
@@ -19,8 +14,7 @@ match VALUE {
 }
 ```
 
-For example, here's the `match` expression from Listing 6-5 that matches on an
-`Option<i32>` value in the variable `x`:
+לדוגמא, הינה ביטוי `match` מרשימה 6-5 שמבצע התאמה על ערך מטיפוס `Option<i32>` שבמשתנה `x`:
 
 ```rust,ignore
 match x {
@@ -29,39 +23,21 @@ match x {
 }
 ```
 
-The patterns in this `match` expression are the `None` and `Some(i)` on the
-left of each arrow.
+התבניות בביטוי `match` זה הן ה- `None` וה-`Some(i)` שבצד שמאל של כל חץ.
 
-One requirement for `match` expressions is that they need to be *exhaustive* in
-the sense that all possibilities for the value in the `match` expression must
-be accounted for. One way to ensure you’ve covered every possibility is to have
-a catchall pattern for the last arm: for example, a variable name matching any
-value can never fail and thus covers every remaining case.
+אחת הדרישות עבור ביטויי `match` היא שהם חייבים להיות *ממצים * במובן שכל האפשרויות של ערכים בביטוי ה- `match` חייבים להיות מובאים בחשבון. דרך אחת לוודא שכיסיתם את כל האפשרויות היא להכליל תבנית תופסת-כל עבור הזרוע האחרונה: למשל, שם משתנה שתואם כל ערך לעולם לא יוכל לא להיות מותאם וכך יכסה את כל האפשרויות שלא הותאמו בזרועות הקודמות.
 
-The particular pattern `_` will match anything, but it never binds to a
-variable, so it’s often used in the last match arm. The `_` pattern can be
-useful when you want to ignore any value not specified, for example. We’ll
-cover the `_` pattern in more detail in the [“Ignoring Values in a
-Pattern”][ignoring-values-in-a-pattern]<!-- ignore --> section later in this
-chapter.
+התבנית `_` תותאם לכל דבר שהוא, אבל היא אף פעם לא נקשרת למשתנה, ולכן משתמשים בו לרוב בזרוע האחרונה בביטויי התאמה. התבנית `_` יכולה להיות שימושית, למשל, כאשר רוצים להתעלם מכל ערך שלא מצויין בפירוש. נדון בתבנית `_` ביתר פירוט בסעיף ["התעלמות מערכים בתבנית"]()<!-- ignore --> מאוחר יותר בפרק הנוכחי.
 
-### Conditional `if let` Expressions
+### ביטויי `if let` מותנים
 
-In Chapter 6 we discussed how to use `if let` expressions mainly as a shorter
-way to write the equivalent of a `match` that only matches one case.
-Optionally, `if let` can have a corresponding `else` containing code to run if
-the pattern in the `if let` doesn’t match.
+בפרק 6 ראינו כיצד להשתמש בביטויי `if let` בעיקר כדרך מקוצרת לכתיבת ביטויי `match` בהם מתבצעת רק התאמה אחת. ביטוי `if let` יכול גם לכלול `else` מתאים שמכיל קוד להרצה במקרה שהתבנית ב-`else` לא מותאמת.
 
-Listing 18-1 shows that it’s also possible to mix and match `if let`, `else
-if`, and `else if let` expressions. Doing so gives us more flexibility than a
-`match` expression in which we can express only one value to compare with the
-patterns. Also, Rust doesn't require that the conditions in a series of `if
-let`, `else if`, `else if let` arms relate to each other.
+רשימה 18-1 מראה שניתן גם לערב ביטויי `if let`, `else
+if`, ו- `else if let`. אפשרות זו משיגה גמישות רבה יותר ממה שביטוי `match` מציע, שכן בביטוי <0>match</0> ניתן לציין רק ערך אחד לצורך ההשואה מול התבניות. בנוסף, ראסט לא דורשת שהתנאים בסדרה של זרועות `if
+let`, `else if`, `else if let` יהיו קשורים אחד אל השני.
 
-The code in Listing 18-1 determines what color to make your background based on
-a series of checks for several conditions. For this example, we’ve created
-variables with hardcoded values that a real program might receive from user
-input.
+הקוד ברשימה 18-1 קובע באיזה צבע יהיה הרקע בהתבסס על סדרת בדיקות של כמה תנאים. עבור דוגמא זו, יצרנו משתנים עם קידוד ישיר של ערכים שיכולים להתקבל מהמשתמש בתכנית אמיתית.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -69,161 +45,106 @@ input.
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/listing-18-01/src/main.rs}}
 ```
 
-<span class="caption">Listing 18-1: Mixing `if let`, `else if`, `else if let`,
-and `else`</span>
 
-If the user specifies a favorite color, that color is used as the background.
-If no favorite color is specified and today is Tuesday, the background color is
-green. Otherwise, if the user specifies their age as a string and we can parse
-it as a number successfully, the color is either purple or orange depending on
-the value of the number. If none of these conditions apply, the background
-color is blue.
+<span class="caption">רשימה 18-1: שילוב `if let`, `else if`, `else if let`, ו-`else`</span>
 
-This conditional structure lets us support complex requirements. With the
-hardcoded values we have here, this example will print `Using purple as the
+במידה והמשתמש מציין צבע מועדף, צבע זה יהיה הצבע של הרקע. אם לא מסופק צבע מועדף והיום יום שלישי, צבע הרקע יהיה ירוק. אחרת, אם המשתמש מציין את גילם כמחרוזת ואנחנו מצליחים לקרוא אותה בהצלחה כמספר, הצבע יהיה או סגול או כתום בתלות בערך של המספר. אם אף אחד מתנאים אלה מתקיים, צבע הרקע יהיה כחול.
+
+בניות מותנות כאלה מאפשרות לנו לתמוך בדרישות מורכבות. עם הערכים המקודדים לעיל, דוגמא זו תדפיס `Using purple as the
 background color`.
 
-You can see that `if let` can also introduce shadowed variables in the same way
-that `match` arms can: the line `if let Ok(age) = age` introduces a new
-shadowed `age` variable that contains the value inside the `Ok` variant. This
-means we need to place the `if age > 30` condition within that block: we can’t
-combine these two conditions into `if let Ok(age) = age && age > 30`. The
-shadowed `age` we want to compare to 30 isn’t valid until the new scope starts
-with the curly bracket.
+כפי שאתם רוצים, ביטוי `if let` יכול גם לבצע האפלה של משתנים באותה הדרך בה זרוע של ביטוי `match` יכולה לעשות זאת: השורה `if let Ok(age) = age` מגדירה משתנה מואפל חדש בשם `age` שמכיל את הערך הפנימי של הווריאנט `Ok`. משמעות הדבר היא שצריך למקם את התנאי `if age > 30` בתוך הבלוק: לא ניתן לשלב שני תנאים אלו לתנאי היחיד `if let Ok(age) = age && age > 30`. המשתנה המואפל `age` שאנו רוצים להשוות מול 30 אינו תקף עד שהמתחם החדש מתחיל בסוגר המסולסל.
 
-The downside of using `if let` expressions is that the compiler doesn’t check
-for exhaustiveness, whereas with `match` expressions it does. If we omitted the
-last `else` block and therefore missed handling some cases, the compiler would
-not alert us to the possible logic bug.
+החסרון שבשימוש בביטויי `if let` הוא שהקומפיילר לא בודק מיצוי של כל הערכים האפשריים, בעוד שעם ביטויי `match` הוא עושה זאת. לו השמטנו את בלוק ה- `else` האחרון, ובכך מפספסים טיפול בכמה מקרים, הקומפיילר לא היה מתריע על הפוטנציאל לבאג לוגי.
 
-### `while let` Conditional Loops
+### לולאות מותנות עם `while let`
 
-Similar in construction to `if let`, the `while let` conditional loop allows a
-`while` loop to run for as long as a pattern continues to match. In Listing
-18-2 we code a `while let` loop that uses a vector as a stack and prints the
-values in the vector in the opposite order in which they were pushed.
+בדומה ל- `if let`, הלולאה המותנית `while let` מאפשרת ללולאת `while` לרוץ כל עוד מותאמת תבנית מסויימת. ברשימה 18-2 אנו מקודדים לולאת `while let` שמשתמשת בווקטור כמחסנית ומדפיסה את הערכים בווקטור בסדר הפוך לזה שבו הם הוכנסו.
 
 ```rust
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/listing-18-02/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 18-2: Using a `while let` loop to print values
-for as long as `stack.pop()` returns `Some`</span>
 
-This example prints 3, 2, and then 1. The `pop` method takes the last element
-out of the vector and returns `Some(value)`. If the vector is empty, `pop`
-returns `None`. The `while` loop continues running the code in its block as
-long as `pop` returns `Some`. When `pop` returns `None`, the loop stops. We can
-use `while let` to pop every element off our stack.
+<span class="caption">רשימה 18-2: שימוש בלולאת `while let` כדי להדפיס ערכים כל עוד `stack.pop()` מחזיר `Some`</span>
 
-### `for` Loops
+דוגמא זו מדפיסה 3, 2, ואז1. המתודה `pop` מוציאה את האלמנט האחרון מהווקטור ומחזירה `Some(value)`. אם הווקטור ריק, `pop` מחזירה `None`. לולאת ה- `while` ממשיכה בהרצת הקוד שבבלוק שלה כל עוד `pop` מחזירה `Some`. כאשר `pop` מחזירה `None`, הלולאה עוצרת. ניתן להשתמש בלולאת `while let` כדי להוציא את כל האלמנטים מהמחסנית.
 
-In a `for` loop, the value that directly follows the keyword `for` is a
-pattern. For example, in `for x in y` the `x` is the pattern. Listing 18-3
-demonstrates how to use a pattern in a `for` loop to destructure, or break
-apart, a tuple as part of the `for` loop.
+### לולאות `for`
+
+בלולאת `for`, הערך שמופיע מייד לאחר מילת המפתח `for` הוא תבנית. למשל, ב- `for x in y` ה- `x` הוא תבנית. רשימה 18-3 מדגימה כיצד להשתמש בתבנית כחלק מלולאת `for` על מנת לפרק מרצף.
 
 ```rust
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/listing-18-03/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 18-3: Using a pattern in a `for` loop to
-destructure a tuple</span>
 
-The code in Listing 18-3 will print the following:
+<span class="caption">רשימה 18-3: שימוש בתבנית כחלק מלולאת `for` על מנת לפרק מרצף</span>
+
+הקוד מרשימה 18-3 יפיק את הפלט הבא:
 
 ```console
 {{#include ../listings/ch18-patterns-and-matching/listing-18-03/output.txt}}
 ```
 
-We adapt an iterator using the `enumerate` method so it produces a value and
-the index for that value, placed into a tuple. The first value produced is the
-tuple `(0, 'a')`. When this value is matched to the pattern `(index, value)`,
-`index` will be `0` and `value` will be `'a'`, printing the first line of the
-output.
+אנו מתאימים איטרטור באמצעות המתודה `enumerate` כדי להפיק ערך יחד עם האינדקס של הערך, ממוקמים בתוך מרצף. הערך הראשון שמופק הוא המרצף `(0, 'a')`. כאשר ערך זה מותאם מול התבנית `(index, value)`, המשתנה `index` יהיה `0` והמשתנה `value` יהיה `'a'`, והשורה הראשונה של הפלט תודפס.
 
-### `let` Statements
+### פקודות `let`
 
-Prior to this chapter, we had only explicitly discussed using patterns with
-`match` and `if let`, but in fact, we’ve used patterns in other places as well,
-including in `let` statements. For example, consider this straightforward
-variable assignment with `let`:
+עד לפרק זה בספר, דיברנו מפורשות על שימושים בתבניות רק עם `match` ו- `if let`, אבל, למעשה, עשינו שימוש בתבניות גם במקומום אחרים, כולל בפקודות `let`. לדוגמא, התבוננו בהשמה פשוטה זו למשתנה באמצעות `let`:
 
 ```rust
 let x = 5;
 ```
 
-Every time you've used a `let` statement like this you've been using patterns,
-although you might not have realized it! More formally, a `let` statement looks
-like this:
+בכל פעם שעשיתם שימוש בפקודת `let` כמו זו בעצם עשיתם שימוש בתבנית, למרות שאולי לא הייתם מודעים לכך! בצורה יותר פורמלית, פקודת `let` נראית כך:
 
 ```text
 let PATTERN = EXPRESSION;
 ```
 
-In statements like `let x = 5;` with a variable name in the `PATTERN` slot, the
-variable name is just a particularly simple form of a pattern. Rust compares
-the expression against the pattern and assigns any names it finds. So in the
-`let x = 5;` example, `x` is a pattern that means “bind what matches here to
-the variable `x`.” Because the name `x` is the whole pattern, this pattern
-effectively means “bind everything to the variable `x`, whatever the value is.”
+בפקודות כמו `let x = 5;` עם שם משתנה בחלק של ה- `PATTERN`, שם המשתנה הוא למעשה תבנית פשוטה מאוד. ראסט משווה את הביטוי מול התבנית ומבצעת השנה עבור השמות שהיא מוצאת. כך, בדוגמא `let x = 5;`, שם המשתנה `x` הוא תבנית שמשמע "קשור למשנתה `x` את מה שמותאם." היות והשם `x` מהווה את התבנית כולה, תבנית זו מבטאת למעשה את ההוראה "קשור כל דבר למשתנה `x`, לא משנה מהו הערך."
 
-To see the pattern matching aspect of `let` more clearly, consider Listing
-18-4, which uses a pattern with `let` to destructure a tuple.
+כדי לראות יותר בבהירות את האספקטים של התאמת תבניות בפקודות `let`, התבוננו ברשימה 18-4, אשר משתמשת בתבנית עם `let` כדי לפרק מרצף.
 
 ```rust
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/listing-18-04/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 18-4: Using a pattern to destructure a tuple and
-create three variables at once</span>
 
-Here, we match a tuple against a pattern. Rust compares the value `(1, 2, 3)`
-to the pattern `(x, y, z)` and sees that the value matches the pattern, so Rust
-binds `1` to `x`, `2` to `y`, and `3` to `z`. You can think of this tuple
-pattern as nesting three individual variable patterns inside it.
+<span class="caption">רשימה 18-4: שימוש בתבנית כדי לפרק מרצף וליצור שלושה משתנים בבת אחת</span>
 
-If the number of elements in the pattern doesn’t match the number of elements
-in the tuple, the overall type won’t match and we’ll get a compiler error. For
-example, Listing 18-5 shows an attempt to destructure a tuple with three
-elements into two variables, which won’t work.
+כאן, אנו מתאימים מרצף מול התבנית. ראסט משווה את הערך `(1, 2, 3)` מול התבנית `(x, y, z)` ורואה שהערך מתאים לתבנית, ולכן ראסט קושרת את `1` ל- `x`, את `2` ל- `y`, ואת `3` ל- `z`. ניתן לחשוב על תבנית מרצף זו כעל שלוש תבניות שמוקננות לתוך תבנית יחידה.
+
+אם מספר האלמנטים בתבנית לא תואם את מספר האלמנטים במרצף, הטיפוס כולו לא יותאם ונקבל שגיאת קומפילציה. למשל, רשימה 18-5 מראה ניסיון לפרק מרצף עם שלושה אלמנטים לתוך שני משתנים, וזה לא עובד.
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/listing-18-05/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 18-5: Incorrectly constructing a pattern whose
-variables don’t match the number of elements in the tuple</span>
 
-Attempting to compile this code results in this type error:
+<span class="caption">רשימה 18-5: פירוק לא תקין של תבנית בה מספר המשתנים לא תואם את מספר האלמנטים במרצף</span>
+
+ניסון לקמפל קוד זה יוביל לשגיאה הבאה:
 
 ```console
 {{#include ../listings/ch18-patterns-and-matching/listing-18-05/output.txt}}
 ```
 
-To fix the error, we could ignore one or more of the values in the tuple using
-`_` or `..`, as you’ll see in the [“Ignoring Values in a
-Pattern”][ignoring-values-in-a-pattern]<!-- ignore --> section. If the problem
-is that we have too many variables in the pattern, the solution is to make the
-types match by removing variables so the number of variables equals the number
-of elements in the tuple.
+על מנת לתקן את הבעיה, נוכל להתעלם מאחד, או יותר, מהערכים במרצף על-ידי שימוש ב-`_` או ב- `..`, כפי ניתן לראות בסעיף ["התעלמות מערכים בתבנית"]()<!-- ignore --> . אם הבעיה היא שיש לנו יותר מידי ערכים בתבנית, הפתרון הוא לוודא שהטיפוסים מתאימים על-ידי הסרת משתנים כך שמספר המתשנים יהיה שווה למספר האלמנטים במרצף.
 
-### Function Parameters
+### פרמטרים לפונקציות
 
-Function parameters can also be patterns. The code in Listing 18-6, which
-declares a function named `foo` that takes one parameter named `x` of type
-`i32`, should by now look familiar.
+פרמטרים לפונקציות יכולים גם הם להיות תבניות. הקוד ברשימה 18-6, שמצהיר על פונקציה בשם `foo` שמקבלת פרמטר אחד בשם `x` מטיפוס `i32`, צהיר להיות לכם מוכר.
 
 ```rust
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/listing-18-06/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 18-6: A function signature uses patterns in the
-parameters</span>
 
-The `x` part is a pattern! As we did with `let`, we could match a tuple in a
-function’s arguments to the pattern. Listing 18-7 splits the values in a tuple
-as we pass it to a function.
+<span class="caption">רשימה 18-6: חותם פונקציה שמשתמש בתבנית ברשימת הפרמטרים</span>
+
+ה- `x` הוא תבנית! כפי שעשינו עם `let`, ניתן להתאים מרצף בארגומנט של פונקציה מול תבנית. רשימה 18-7 מפצלת את הערכים במרצף בעודם מועברים לפונקציה.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -231,20 +152,12 @@ as we pass it to a function.
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/listing-18-07/src/main.rs}}
 ```
 
-<span class="caption">Listing 18-7: A function with parameters that destructure
-a tuple</span>
 
-This code prints `Current location: (3, 5)`. The values `&(3, 5)` match the
-pattern `&(x, y)`, so `x` is the value `3` and `y` is the value `5`.
+<span class="caption">רשימה 18-7: פונקציה עם פרמטרים שמפרקים מרצף</span>
 
-We can also use patterns in closure parameter lists in the same way as in
-function parameter lists, because closures are similar to functions, as
-discussed in Chapter 13.
+קוד זה מדפיס `Current location: (3, 5)`. הערכים `&(3, 5)` מתאימים לתבנית `&(x, y)`, ולכן `x` מקבל את הערך `3` ו- `y` את הערך `5`.
 
-At this point, you’ve seen several ways of using patterns, but patterns don’t
-work the same in every place we can use them. In some places, the patterns must
-be irrefutable; in other circumstances, they can be refutable. We’ll discuss
-these two concepts next.
+ניתן גם להשתמש בתבניות ברשימת הפרמטרים של סגור באותה הדרך כמו ברשימת הפרמטרים של פונקציה, כיוון שסגורים דומים לפונקציות, כפי שנידון בפרק 13.
 
-[ignoring-values-in-a-pattern]:
+בנקודה זה, ראיתם כמה דרכים להשתמש בתבניות, אבל תבניות לא עובדות באותה הדרך בכל מקום בו ניתן להשתמש בהן. במקומות מסויימים על התבניות להיות לא ניתנון להפרכה; בנסיבות אחרות, הן יכולות להיות ניתנות להפרכה. שני מושגים אלה הם נושאי המשך הדיון.
 ch18-03-pattern-syntax.html#ignoring-values-in-a-pattern
