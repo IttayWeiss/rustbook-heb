@@ -7,6 +7,7 @@
 | arm                         | זרוע                          |
 | array                       | מערך                          |
 | associated function         | פונקציה משויכת                |
+| associated type             | טיפוס משוייך                  |
 | borrowing                   | השאלה                         |
 | cargo                       | קארגו                         |
 | clone                       | שיבוט                         |
@@ -35,6 +36,7 @@
 | expression                  | ביטוי                         |
 | ferris                      | פריס, פריס הסרטן              |
 | field                       | שדה                           |
+| fully qualified syntac      | תחביר מוסמך לחלוטין           |
 | function signature          | חותם פונקציה                  |
 | garbage collector           | מאסף אשפה                     |
 | generic                     | גנרי                          |
@@ -84,8 +86,9 @@
 | shell                       | מעטפת                         |
 | slice                       | חיתוך                         |
 | smart pointer               | מצביע חכם                     |
+| supertrait                  | תכנות-על                      |
 | stack                       | מחסנית                        |
-| state pattern               | תבנית מצבים                    |
+| state pattern               | תבנית מצבים                   |
 | statement                   | פקודה , הַצְהָרָה                 |
 | static dispatch             | שיגור סטטי                    |
 | statically typed            | טיפוסים סטטיים                |
@@ -96,7 +99,9 @@
 | tuple                       | מרצף                          |
 | tuple struct                | מבנה מרצף                     |
 | type                        | טיפוס                         |
+| type alias                  | כינוי טיפוס                   |
 | unicode                     | יוניקוד                       |
+| unsafe Rust                 | ראסט לא מאובטח                |
 | value is dropped            | ערך נעזב                      |
 | variant                     | וריאנט (או "סוג")             |
 | vector                      | וקטור                         |
