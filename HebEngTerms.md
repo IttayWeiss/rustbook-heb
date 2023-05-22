@@ -59,7 +59,6 @@
 | lifetime                    | משך חיים                      |
 | linker                      | מקשר                          |
 | Listing                     | רשימה                         |
-| literal                     | מפורש                         |
 | local                       | מקומי                         |
 | loop                        | לולאה                         |
 | macro                       | מאקרו                         |
@@ -99,6 +98,7 @@
 | static dispatch             | שיגור סטטי                    |
 | statically typed            | טיפוסים סטטיים                |
 | string                      | מחרוזת                        |
+| string literal              | מחרוזת מפורשת                 |
 | struct                      | מבנה                          |
 | trait                       | תכונה                         |
 | trait bounds                | מגבילי תכנות                  |
