@@ -8,10 +8,14 @@
 | array                       | מערך                          |
 | associated function         | פונקציה משויכת                |
 | borrowing                   | השאלה                         |
+| borrow checker              | בודק ההשאלות                  |
+| byte                        | בית, בייט                     |
 | cargo                       | קארגו                         |
+| char, character             | תו                            |
 | clone                       | שיבוט                         |
 | closure                     | סגור                          |
 | collection data type        | טיפוס נתונים מאגד             |
+| cluster                     | אשכול                         |
 | compile (v)                 | לקמפל                         |
 | compiler                    | קומפיילר                      |
 | compound (data)             | מורכב                         |
@@ -29,18 +33,21 @@
 | destructuring               | פירוק                         |
 | dispatch                    | שיגור                         |
 | double free                 | שחרור כפול                    |
+| drop (e.g. a vector)        | נעזב                          |
 | dynamic dispatch            | שיגור דינמי                   |
 | encapsulation               | אפסון                         |
 | enum                        | מבחר                          |
 | expression                  | ביטוי                         |
-| ferris                      | פריס, פריס הסרטן              |
+| Ferris                      | פריס, פריס הסרטן              |
 | field                       | שדה                           |
+| function                    | פונקציה                       |
 | function signature          | חותם פונקציה                  |
 | garbage collector           | מאסף אשפה                     |
 | generic                     | גנרי                          |
 | generics                    | ג'נריקס                       |
 | glob operator               | האופרטור גלוב                 |
 | global                      | גלובאלי                       |
+| grapheme                    | גרפמה                         |
 | hash map                    | מפת גיבוב                     |
 | heap                        | ערימה                         |
 | immutable                   | מנוע-שינוי                    |
@@ -52,12 +59,13 @@
 | keyword                     | מילת מפתח                     |
 | lifetime                    | משך חיים                      |
 | linker                      | מקשר                          |
-| literal                     | מפורש                         |
+| Listing                     | רשימה                         |
 | local                       | מקומי                         |
 | loop                        | לולאה                         |
 | macro                       | מאקרו                         |
 | match                       | התאמה                         |
 | match expression            | ביטוי התאמה                   |
+| method                      | מתודה                         |
 | module                      | מודול                         |
 | monomorphization            | מונומורפיזציה                 |
 | move                        | הזזה                          |
@@ -73,7 +81,7 @@
 | panic                       | להיכנס לפאניקה                |
 | parameter                   | פרמטר                         |
 | path                        | מסלול                         |
-| polymorphism                | פולימורפיזם, רב-צורתיות       |
+| polymorphism                | פולימורפיזם, רב־צורתיות       |
 | prelude                     | פרליוד                        |
 | reference                   | הפניה                         |
 | Rust                        | (נ') ראסט                     |
@@ -87,9 +95,11 @@
 | smart pointer               | מצביע חכם                     |
 | stack                       | מחסנית                        |
 | state pattern               | תבנית מצבים                   |
-| statement                   | פקודה , הַצְהָרָה             |
+| statement                   | פקודה , הַצְהָרָה                 |
 | static dispatch             | שיגור סטטי                    |
 | statically typed            | טיפוסים סטטיים                |
+| string                      | מחרוזת                        |
+| string literal              | מחרוזת מפורשת                 |
 | struct                      | מבנה                          |
 | trait                       | תכונה                         |
 | trait bounds                | מגבילי תכונה                  |
