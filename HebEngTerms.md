@@ -53,6 +53,7 @@
 | immutable                   | מנוע-שינוי                    |
 | indent (v)                  | להזיח                         |
 | instance                    | מופע                          |
+| item                        | פריט                          |
 | iteration                   | סבב, איטרציה                  |
 | iterator                    | איטרטור                       |
 | keyword                     | מילת מפתח                     |
@@ -94,14 +95,14 @@
 | smart pointer               | מצביע חכם                     |
 | stack                       | מחסנית                        |
 | state pattern               | תבנית מצבים                   |
-| statement                   | פקודה , הַצְהָרָה             |
+| statement                   | פקודה , הַצְהָרָה                 |
 | static dispatch             | שיגור סטטי                    |
 | statically typed            | טיפוסים סטטיים                |
 | string                      | מחרוזת                        |
 | string literal              | מחרוזת מפורשת                 |
 | struct                      | מבנה                          |
 | trait                       | תכונה                         |
-| trait bounds                | מגבילי תכנות                  |
+| trait bounds                | מגבילי תכונה                  |
 | train object                | אובייקט תכונה                 |
 | tuple                       | מרצף                          |
 | tuple struct                | מבנה מרצף                     |
@@ -110,4 +111,4 @@
 | value is dropped            | ערך נעזב                      |
 | variant                     | וריאנט (או "סוג")             |
 | vector                      | וקטור                         |
-| workspace                   | אזור עבודה                    |
+| workspace                   | מרחב עבודה                    |

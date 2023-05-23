@@ -109,10 +109,10 @@
 
 ## Advanced Topics
 
-- [Patterns and Matching](ch18-00-patterns.md)
-    - [All the Places Patterns Can Be Used](ch18-01-all-the-places-for-patterns.md)
-    - [Refutability: Whether a Pattern Might Fail to Match](ch18-02-refutability.md)
-    - [Pattern Syntax](ch18-03-pattern-syntax.md)
+- [תבניות והתאמות](ch18-00-patterns.md)
+    - [כל המקומות בהם ניתן להשתמש בתבניות](ch18-01-all-the-places-for-patterns.md)
+    - [ניתנות להפרכה: האם התאמה מול תבנית יכולה להיכשל?](ch18-02-refutability.md)
+    - [תחביר תבניות](ch18-03-pattern-syntax.md)
 
 - [Advanced Features](ch19-00-advanced-features.md)
     - [Unsafe Rust](ch19-01-unsafe-rust.md)
