@@ -114,12 +114,12 @@
     - [Refutability: Whether a Pattern Might Fail to Match](ch18-02-refutability.md)
     - [Pattern Syntax](ch18-03-pattern-syntax.md)
 
-- [Advanced Features](ch19-00-advanced-features.md)
-    - [Unsafe Rust](ch19-01-unsafe-rust.md)
-    - [Advanced Traits](ch19-03-advanced-traits.md)
-    - [Advanced Types](ch19-04-advanced-types.md)
-    - [Advanced Functions and Closures](ch19-05-advanced-functions-and-closures.md)
-    - [Macros](ch19-06-macros.md)
+- [נושאים מתקדמים](ch19-00-advanced-features.md)
+    - [ראסט לא מאובטחת](ch19-01-unsafe-rust.md)
+    - [נושאים מתקדמים אודות תכונות](ch19-02-advanced-traits.md)
+    - [נושאים מתקדמים אודות טיפוסים](ch19-03-advanced-types.md)
+    - [נושאים מתקדמים אודות פונקציות וסגורים](ch19-04-advanced-functions-and-closures.md)
+    - [מקרואים](ch19-05-macros.md)
 
 - [Final Project: Building a Multithreaded Web Server](ch20-00-final-project-a-web-server.md)
     - [Building a Single-Threaded Web Server](ch20-01-single-threaded.md)
