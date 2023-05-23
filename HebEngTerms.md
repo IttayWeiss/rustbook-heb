@@ -7,6 +7,7 @@
 | arm                         | זרוע                          |
 | array                       | מערך                          |
 | associated function         | פונקציה משויכת                |
+| backtrace                   | מעקב-לאחור                    |
 | borrowing                   | השאלה                         |
 | borrow checker              | בודק ההשאלות                  |
 | byte                        | בית, בייט                     |
@@ -37,6 +38,9 @@
 | dynamic dispatch            | שיגור דינמי                   |
 | encapsulation               | אפסון                         |
 | enum                        | מבחר                          |
+| error                       | שגיאה                         |
+| error: recoverable          | שגיאה ברת-שיקום               |
+| error: unrecoverable        | שגיאה סופנית                  |
 | expression                  | ביטוי                         |
 | Ferris                      | פריס, פריס הסרטן              |
 | field                       | שדה                           |
@@ -95,7 +99,7 @@
 | smart pointer               | מצביע חכם                     |
 | stack                       | מחסנית                        |
 | state pattern               | תבנית מצבים                   |
-| statement                   | פקודה , הַצְהָרָה                 |
+| statement                   | פקודה , הַצְהָרָה             |
 | static dispatch             | שיגור סטטי                    |
 | statically typed            | טיפוסים סטטיים                |
 | string                      | מחרוזת                        |
