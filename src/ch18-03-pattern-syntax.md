@@ -1,33 +1,20 @@
-## Pattern Syntax
+## תחביר תבניות
 
-In this section, we gather all the syntax valid in patterns and discuss why and
-when you might want to use each one.
+בסעיף זה נדון בכל אפשרויות התחביר סביב תבניות ונדון בסיבות להשתמש בכל אחת מהאפשרויות.
 
-### Matching Literals
+### התאמת ערכים מפורשים
 
-As you saw in Chapter 6, you can match patterns against literals directly. The
-following code gives some examples:
+כפי שראיתם בפרק 6, ניתן להתאים תבניות ישירות מול ערכים מפורשים. הקוד הבא מספק כמה דוגמאות:
 
 ```rust
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/no-listing-01-literals/src/main.rs:here}}
 ```
 
-This code prints `one` because the value in `x` is 1. This syntax is useful
-when you want your code to take an action if it gets a particular concrete
-value.
+קוד זה מדפיס `one` משום שהערך ב- `x` בוא 1. תחביר זה שימושי כאשר רוצים שהקוד יבצע פעולה מסויימת אם הוא מקבל ערך קונקרטי ספציפי.
 
-### Matching Named Variables
+### התאמת משתנים בעלי שמות
 
-Named variables are irrefutable patterns that match any value, and we’ve used
-them many times in the book. However, there is a complication when you use
-named variables in `match` expressions. Because `match` starts a new scope,
-variables declared as part of a pattern inside the `match` expression will
-shadow those with the same name outside the `match` construct, as is the case
-with all variables. In Listing 18-11, we declare a variable named `x` with the
-value `Some(5)` and a variable `y` with the value `10`. We then create a
-`match` expression on the value `x`. Look at the patterns in the match arms and
-`println!` at the end, and try to figure out what the code will print before
-running this code or reading further.
+משתנים בעלי שמות הם תבניות לא ניתנות להפרכה שתואמות כל ערך שהוא, והשתמשנו בהן מספר רב של פעמים במהלך הספר. אבל, ישנו סיבוך מסוים כאשר משתמשים במשתנים בעלי שם בביטויי `match`. כיוון ש- `match` מתחיל מתחם חדש, משתנים שמוגדרים כחלק מתבנית בתוך ביטוי `match` יאפילו על משתנים מחוץ למתחם ה- `match` בעלי אותו שם. ברשימה 18-11, אנו מגדירים משתנה בשם `x` שלו הערך `Some(5)` ומשתנה בשם `y` עם הערך `10`. ואז אנחנו יוצרים ביטוי `match` על הערך `x`. התבוננו בתבניות בזרועות ה-match וב-`println!` שבסוף, ונסו להבין, לפני שתריצו את הקוד או שתמשיכו לקרוא, מה הקוד ידפיס.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -35,89 +22,59 @@ running this code or reading further.
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/listing-18-11/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 18-11: A `match` expression with an arm that
-introduces a shadowed variable `y`</span>
 
-Let’s walk through what happens when the `match` expression runs. The pattern
-in the first match arm doesn’t match the defined value of `x`, so the code
-continues.
+<span class="caption">רשימה 18-11: ביטוי `match` עם זרוע שגורמת להאפלה של המשתנה `y`</span>
 
-The pattern in the second match arm introduces a new variable named `y` that
-will match any value inside a `Some` value. Because we’re in a new scope inside
-the `match` expression, this is a new `y` variable, not the `y` we declared at
-the beginning with the value 10. This new `y` binding will match any value
-inside a `Some`, which is what we have in `x`. Therefore, this new `y` binds to
-the inner value of the `Some` in `x`. That value is `5`, so the expression for
-that arm executes and prints `Matched, y = 5`.
+הבה נעבור צעד-צעד על המתרחש כאשר ביטוי ה- `match` רץ. התבנית בזרוע הראשונה לא מתאימה לערך המוגדר של `x`, ולכן הקוד ממשיך הלאה.
 
-If `x` had been a `None` value instead of `Some(5)`, the patterns in the first
-two arms wouldn’t have matched, so the value would have matched to the
-underscore. We didn’t introduce the `x` variable in the pattern of the
-underscore arm, so the `x` in the expression is still the outer `x` that hasn’t
-been shadowed. In this hypothetical case, the `match` would print `Default
+התבנית בזרוע השניה מגדיר משתנה חדש בשם `y` שמתאים לכל ערך שבתוך ערך מטיפוס `Some`. כיוון שאנו כרגע במתחם חדש בתוך ביטוי ה- `match`, המשתנה `y` הוא משתנה חדש, ובפרט אינו המשתנה `y` שהוגדר בהתחלה עם הערך 10. קישור חדש זה עבור `y` יתאים לבכל ערך שבתוך `Some`, וזה מה שיהיה לנו ב- `x`. לכן, ה- `y` החדש הזה נקשר לערך הפנימי של `Some` ב-`x`. הערך הוא `5`, והביטוי עבור הזרוע מורץ ומדפיס `Matched, y = 5`.
+
+אם `x` היה הערך `None` במקום `Some(5)`, התבניות בשתי הזרועות הראשונות לא היתה מותאמת, ולכן הערך היה מותאם למקף התחתי. לא הכרזנו על משתנה `x` בתבנית של המקף התחתי, ולכן ה- `x` בביטוי הוא עדיין ה- `x` החיצוני, שאינו מואפל. במקרה הופותטי זה, ה-`match` היה מדפיס `Default
 case, x = None`.
 
-When the `match` expression is done, its scope ends, and so does the scope of
-the inner `y`. The last `println!` produces `at the end: x = Some(5), y = 10`.
+כאשר ביטוי ה- `match` מסתיים, המתחם שלו מגיע לקיצו, ואיתו גם המתחם של המשתנה הפנימי `y`. שורת ה-`println!` שבסוף הקוד מפיקה `at the end: x = Some(5), y = 10`.
 
-To create a `match` expression that compares the values of the outer `x` and
-`y`, rather than introducing a shadowed variable, we would need to use a match
-guard conditional instead. We’ll talk about match guards later in the [“Extra
-Conditionals with Match Guards”](#extra-conditionals-with-match-guards)<!--
-ignore --> section.
+כדי ליצור ביטוי `match` שמשווה את הערכים של המשתנים `x` ו-`y` החיצוניים, מבלי להאפיל על משתנים אלה, יש צורך להשתמש במגן התאמה מותנה. נדון במגני התאמה מותנים בסעיף ["התניות נוספות באמצעות מגני התאמה"](#extra-conditionals-with-match-guards)<!--
+ignore --> .
 
-### Multiple Patterns
+### ריבוי תבניות
 
-In `match` expressions, you can match multiple patterns using the `|` syntax,
-which is the pattern *or* operator. For example, in the following code we match
-the value of `x` against the match arms, the first of which has an *or* option,
-meaning if the value of `x` matches either of the values in that arm, that
-arm’s code will run:
+בביטויי `match`, ניתן להתאים מול כמה תבניות באמצעות התחביר `|`, הנקרא אופרטור *האיווי* לתבניות. למשל, בקוד הבא אנו מתאימים את הערך של `x` מול זרועות ההתאמה, ובראשונה שבהן מופיע אופצית *או*, שמשמעה שאם הערך של `x` מתאים לאחת מהערכים בזרוע, אז הקוד בזרוע זו יופעל:
 
 ```rust
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/no-listing-02-multiple-patterns/src/main.rs:here}}
 ```
 
-This code prints `one or two`.
+כתוצאה מקוד זה יודפס `one or two`.
 
-### Matching Ranges of Values with `..=`
+### התאמות טווחי ערכים באמצעות `..=`
 
-The `..=` syntax allows us to match to an inclusive range of values. In the
-following code, when a pattern matches any of the values within the given
-range, that arm will execute:
+התחביר `..=` מאפשר להתאים מול טווח אינקלוסיבי של ערכים. בקוד הבא, כאשר תבנית תואמת כל ערך שהוא בטווח הנתון, הזרועה תבוצע:
 
 ```rust
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/no-listing-03-ranges/src/main.rs:here}}
 ```
 
-If `x` is 1, 2, 3, 4, or 5, the first arm will match. This syntax is more
-convenient for multiple match values than using the `|` operator to express the
-same idea; if we were to use `|` we would have to specify `1 | 2 | 3 | 4 | 5`.
-Specifying a range is much shorter, especially if we want to match, say, any
-number between 1 and 1,000!
+אם `x` הוא 1, 2, 3, 4, או 5, הזרוע הראשונה תבוצע. עבור ערכי התאמה מרובים, תחביר זה נוח יותר מהשימוש באופרטור `|` שמבטא את אותו הרעיון; לו היינו משתמשים ב- `|` היה עלינו לציין `1 | 2 | 3 | 4 | 5`. ציון של טווח הוא קצר יותר, ביחוד כאשר רוצים להתאים, נניח, כל מספר בין 1 ל-1000!
 
-The compiler checks that the range isn’t empty at compile time, and because the
-only types for which Rust can tell if a range is empty or not are `char` and
-numeric values, ranges are only allowed with numeric or `char` values.
+הקומפיילר בודק שהטווח אינו ריק, ומשום שהטיפוסים היחידים עבורם ראסט יכול לקבוע אם טווח הוא ריק או לא הם `char` וערכים נומריים, טווחים מותרים לשימוש רק עבור ערכים נומריים וערכי `char`.
 
-Here is an example using ranges of `char` values:
+הינה דוגמא שמשתשמת בערכי `char`:
 
 ```rust
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/no-listing-04-ranges-of-char/src/main.rs:here}}
 ```
 
-Rust can tell that `'c'` is within the first pattern’s range and prints `early
+ראסט יכולה לזהות כי `'c'` נמצאת בטווח התבנית הראשונה, ומדפיסה `early
 ASCII letter`.
 
-### Destructuring to Break Apart Values
+### פירוק ערכים
 
-We can also use patterns to destructure structs, enums, and tuples to use
-different parts of these values. Let’s walk through each value.
+ניתן גם להשתמש בתבניות כדי לפרק מבנים, מבחרים, ומרצפים כדי להשתמש בחלקים שונים של ערכים אלה. הבה נעבור על אופציות זו אחת אחת.
 
-#### Destructuring Structs
+#### פירוק מבנים
 
-Listing 18-12 shows a `Point` struct with two fields, `x` and `y`, that we can
-break apart using a pattern with a `let` statement.
+רשימה 18-12 מציגה את המבנה `Point` שלו שני שדות, `x` ו- `y`, שניתן לפרק באמצעות תבנית עם פקודת `let`.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -125,20 +82,10 @@ break apart using a pattern with a `let` statement.
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/listing-18-12/src/main.rs}}
 ```
 
-<span class="caption">Listing 18-12: Destructuring a struct’s fields into
-separate variables</span>
 
-This code creates the variables `a` and `b` that match the values of the `x`
-and `y` fields of the `p` struct. This example shows that the names of the
-variables in the pattern don’t have to match the field names of the struct.
-However, it’s common to match the variable names to the field names to make it
-easier to remember which variables came from which fields. Because of this
-common usage, and because writing `let Point { x: x, y: y } = p;` contains a
-lot of duplication, Rust has a shorthand for patterns that match struct fields:
-you only need to list the name of the struct field, and the variables created
-from the pattern will have the same names. Listing 18-13 behaves in the same
-way as the code in Listing 18-12, but the variables created in the `let`
-pattern are `x` and `y` instead of `a` and `b`.
+<span class="caption">רשימה 18-12: פירוק שדות של מבנה למשתנים נפרדים</span>
+
+קוד זה יוצר את המשתנים `a` ו- `b` שתואמים לערכים של השדות `x` ו- `y` של המבנה `p`. דוגמא זו מראה שהשמות של המשתנים בתבנית לא חייבים לתאום את שמות השדות של המבנה. אולם, מקובל כן להתאים את שמות המשתנים לשמות השדות בכדי להקל על זכירת מקור המשתנים. בעקבות שימוש נפוץ זה, וכיוון שכתיבה של קוד מהצורה `let Point { x: x, y: y } = p;` כוללת שכפול רב, ראסט מספקת תחביר מקוצר עבור תבניות שמתאימות שדות של מבנים: צריך לציין ארק את השם של שדה במבנה, ואז השמות של המשתנים שההתאמה לתבנית תיצור יהיו זהים לשמות השדות. רשימה 18-13 מתנהגת באותה צורה כמו הקוד מרשימה 18-12, אבל המשתנים שנוצרים בתבנית ה-`let` הם `x` ו- `y` במקום `a` ו- `b`.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -146,21 +93,14 @@ pattern are `x` and `y` instead of `a` and `b`.
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/listing-18-13/src/main.rs}}
 ```
 
-<span class="caption">Listing 18-13: Destructuring struct fields using struct
-field shorthand</span>
 
-This code creates the variables `x` and `y` that match the `x` and `y` fields
-of the `p` variable. The outcome is that the variables `x` and `y` contain the
-values from the `p` struct.
+<span class="caption">רשימה 18-13: פירוק שדות של מבנה באמצעות תחביר מקוצר לשדות</span>
 
-We can also destructure with literal values as part of the struct pattern
-rather than creating variables for all the fields. Doing so allows us to test
-some of the fields for particular values while creating variables to
-destructure the other fields.
+קוד זה יותר את המשתנים `x` ו- `y` שמותאמים לשדות `x` ו-`y` שבמשתנה `p`. התוצאה היא שהמשתנים`x` ו- `y` מכילים את הערכים מהמבנה `p`.
 
-In Listing 18-14, we have a `match` expression that separates `Point` values
-into three cases: points that lie directly on the `x` axis (which is true when
-`y = 0`), on the `y` axis (`x = 0`), or neither.
+ניתן גם לבצע פירוק עם ערכים מפורשים כחלק מתבנית המבנה במקום ליצור משתנים עבור כל השדות. לעשות כך עוזר לבדוק את הערך של חלק מהשדות מול ערכים ספציפים בזמן שמיצרים משתנים כדי לפרק את השדות האחרים.
+
+ברשימה 18-14, יש לנו ביטוי `match` שמפריד ערכי `Point` לשלושה מקרים: נקודות שנמצאות על ציר ה- `x` (זאת אומרת, כאשר `y = 0`), על ציר ה-`y` (כאשר (`x = 0`), או לא על אף אחד מהצירים.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -168,32 +108,20 @@ into three cases: points that lie directly on the `x` axis (which is true when
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/listing-18-14/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 18-14: Destructuring and matching literal values
-in one pattern</span>
 
-The first arm will match any point that lies on the `x` axis by specifying that
-the `y` field matches if its value matches the literal `0`. The pattern still
-creates an `x` variable that we can use in the code for this arm.
+<span class="caption">רשימה 18-14: פירוק והתאמה עם ערכים מפורשים בתבנית אחת</span>
 
-Similarly, the second arm matches any point on the `y` axis by specifying that
-the `x` field matches if its value is `0` and creates a variable `y` for the
-value of the `y` field. The third arm doesn’t specify any literals, so it
-matches any other `Point` and creates variables for both the `x` and `y` fields.
+הזרוע הראשונה תתאים כל נקודה שנמצאת על ציר ה- `x` על-ידי הדרישה שעל מנת להתאים חובה על השדה `y` להיות שווה לערך המפורש `0`. התבנית עדיין מייצרת את המשתנה `x` בו ניתן להשתמש בקוד של הזרוע הזו.
 
-In this example, the value `p` matches the second arm by virtue of `x`
-containing a 0, so this code will print `On the y axis at 7`.
+באופן דומה, הזרוע השניה תתאים כל נקודה על ציר ה- `y` על-ידי הדרישה שכדי שתהיה התאמה, ערך השדה `x` חייב להיות `0`, ונוצר המשתנה `y` עבור הערך בשדה `y`. הזרוע השלישית אינה כוללת ערכים מפורשים, ולכן היא תואמת כל ערך `Point` אחר ויוצרת את המשתנים `x` ו-`y` עבור השדות המקבילים במבנה.
 
-Remember that a `match` expression stops checking arms once it has found the
-first matching pattern, so even though `Point { x: 0, y: 0}` is on the `x` axis
-and the `y` axis, this code would only print `On the x axis at 0`.
+בדוגמא זו, הערך `p` מתאים לזרוע השניה תודות לכך ש-`x` מכיל את הערך 0, ולכן הקוד הזה ידפיס `On the y axis at 7`.
 
-#### Destructuring Enums
+זכרו שביטוי `match` מפסיק לבדוק מול הזרועות שבו ברגע שהוא מצא את התבנית התואמת הראשונה, כך שאפילו ש- `Point { x: 0, y: 0}` נמצאת על ציר ה- `x` וגם על ציר ה- `y`, קוד זה ידפיס אך ורק `On the x axis at 0`.
 
-We've destructured enums in this book (for example, Listing 6-5 in Chapter 6),
-but haven’t yet explicitly discussed that the pattern to destructure an enum
-corresponds to the way the data stored within the enum is defined. As an
-example, in Listing 18-15 we use the `Message` enum from Listing 6-2 and write
-a `match` with patterns that will destructure each inner value.
+#### פירוק מבחרים
+
+כבר ביצענו פירוקים של מבחרים בספר זה (למשל, ברשימה 6-5 בפרק 6), אבל לא ערכנו דיון מפורש על כך שתבנית לפירוק מבחר מתאימה לדרך שבה הדאטה שמאוכסן במבחר הוגדר. כדוגמא, רשימה 18-15 משתמשת במבחר `Message` מרשימה 6-2 ומציגה `match` עם תבניות שמפרקות כל ערך פנימי.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -201,80 +129,48 @@ a `match` with patterns that will destructure each inner value.
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/listing-18-15/src/main.rs}}
 ```
 
-<span class="caption">Listing 18-15: Destructuring enum variants that hold
-different kinds of values</span>
 
-This code will print `Change the color to red 0, green 160, and blue 255`. Try
-changing the value of `msg` to see the code from the other arms run.
+<span class="caption">רשימה 18-15: פירוק ווריאנטים של מבחר שמאכסנים סוגים שונים של ערכים</span>
 
-For enum variants without any data, like `Message::Quit`, we can’t destructure
-the value any further. We can only match on the literal `Message::Quit` value,
-and no variables are in that pattern.
+קוד זה ידפיס `Change the color to red 0, green 160, and blue 255`. נסו לשנות את הערך של `msg` כדי לראות את תוצאת ריצת הקוד בזרועות האחרות.
 
-For struct-like enum variants, such as `Message::Move`, we can use a pattern
-similar to the pattern we specify to match structs. After the variant name, we
-place curly brackets and then list the fields with variables so we break apart
-the pieces to use in the code for this arm. Here we use the shorthand form as
-we did in Listing 18-13.
+עבור ווריאנטים של מבחרים ללא דאטה, כמו `Message::Quit`, לא ניתן להמשיך ולפרק את הערך. כל שאפשר לעשות הוא להתאים מול הערך המפורש `Message::Quit`, ואין משתנים בתבנית הזו.
 
-For tuple-like enum variants, like `Message::Write` that holds a tuple with one
-element and `Message::ChangeColor` that holds a tuple with three elements, the
-pattern is similar to the pattern we specify to match tuples. The number of
-variables in the pattern must match the number of elements in the variant we’re
-matching.
+עבור ווריאנטים של מבחרי דמויי-מבנים, כמו `Message::Move`, ניתן להשתמש בתבנית דומה לתבנית בה השתמשנו עבור התאמות מבנים. אחרי שם הווריאנט, אנו ממקמים סוגריים מסולסלים ואז את רשימת השדות עם המשתנים ובכך מפרקים את הפיסות לשימוש בקוד של הזרוע. כאן אנו משתמשים בצורה המקוצרת, כפי שעשינו ברשימה 18-13.
 
-#### Destructuring Nested Structs and Enums
+עבור ווריאנטים של מבחרים דמויי-מרצפים, כמו `Message::Write` שמאכסן מרצף עם אלמנט אחד ו-`Message::ChangeColor` שמאכסן מרצף עם שלושה אלמנטים, התבנית דומה לתבנית בה משתמשים עבור מרצפים. מספר הווריאנטים בתבנית חייב להתאים למספר האלמנטים בווריאנט עליו מתאימים.
 
-So far, our examples have all been matching structs or enums one level deep,
-but matching can work on nested items too! For example, we can refactor the
-code in Listing 18-15 to support RGB and HSV colors in the `ChangeColor`
-message, as shown in Listing 18-16.
+#### פירוק מבנים ומבחרים מקוננים
+
+עד כה, הדוגמאות שלנו היו כולן של התאמות מבנים או מבחרים בעומק של רמה אחת, אבל התאמות עובדות גם עם עצמים מקוננים! למשל, ניתן לשכתב את הקוד מרשימה 18-15 כך שיתמוך בצבעים בפורמט RGB ו-HSV בהודעת `ChangeColor`, כמוצג ברשימה 18-16.
 
 ```rust
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/listing-18-16/src/main.rs}}
 ```
 
-<span class="caption">Listing 18-16: Matching on nested enums</span>
+<span class="caption">רשימה 18-16: התאמות על מבחרים מקוננים</span>
 
-The pattern of the first arm in the `match` expression matches a
-`Message::ChangeColor` enum variant that contains a `Color::Rgb` variant; then
-the pattern binds to the three inner `i32` values. The pattern of the second
-arm also matches a `Message::ChangeColor` enum variant, but the inner enum
-matches `Color::Hsv` instead. We can specify these complex conditions in one
-`match` expression, even though two enums are involved.
+התבנית של הזרוע הראשונה בביטוי ה-`match` מתאימה לווריאנט הבמחר `Message::ChangeColor` שמכילה ווריאנט `Color::Rgb`; התבנית מקשרת לשלות ערכי ה- `i32` הפנימיים. התבנית של הזרוע השניה גם מתאימה לווריאנט המבחר `Message::ChangeColor`, אבל הפעם הערך המותאם הוא מבחר ה- `Color::Hsv` הפנימי. אנו מציינים תנאים מורכבים אלה באמצעות ביטוי `match` יחיד, אפילו שמעורבים כאן שני מבחרים.
 
-#### Destructuring Structs and Tuples
+#### פירוק מבנים ומרצפים
 
-We can mix, match, and nest destructuring patterns in even more complex ways.
-The following example shows a complicated destructure where we nest structs and
-tuples inside a tuple and destructure all the primitive values out:
+ניתן לשלב ולקנן תבניות פירוק בדרכים מורכבות עוד יותר. הדוגמא הבאה מראה פירוק מורכב בו אנו מקננים מבנים ומרצפים בתוך מרצף, ומפרקים ממנו את כל הרכיבים היסודיים שבו:
 
 ```rust
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/no-listing-05-destructuring-structs-and-tuples/src/main.rs:here}}
 ```
 
-This code lets us break complex types into their component parts so we can use
-the values we’re interested in separately.
+קוד זה מאפשר לנו לפרק טיפוסים מורכבים לרכיביהם, וכך יש באפשרותנו להשתמש בערכים המעניינים אותנו בנפרד.
 
-Destructuring with patterns is a convenient way to use pieces of values, such
-as the value from each field in a struct, separately from each other.
+פירוק באמצעות תבניות הוא דרך נוחה לגשת לפיסות של ערכים, כמו הערך של שדה במבנה, ולהפריד אותם לשימושנו.
 
-### Ignoring Values in a Pattern
+### התעלמות מערכים בתבנית
 
-You’ve seen that it’s sometimes useful to ignore values in a pattern, such as
-in the last arm of a `match`, to get a catchall that doesn’t actually do
-anything but does account for all remaining possible values. There are a few
-ways to ignore entire values or parts of values in a pattern: using the `_`
-pattern (which you’ve seen), using the `_` pattern within another pattern,
-using a name that starts with an underscore, or using `..` to ignore remaining
-parts of a value. Let’s explore how and why to use each of these patterns.
+כבר ראיתם שלעיתים נוח להתעלם מערכים מסויימים בתבנית, כמו למשל בזרוע האחרונה של `match`, כדי ליצור התנהגות תופסת-כל שלא באמת מבצעת פעולה כלשהיא, אלה רק מטפלת בכל הערכים שלא טופלו בזרועות קודמות. ישנן כמה דרכים להתעלם מערכים, או מחלקי ערכים, בתבנית: שימוש בתבנית `_` (שכבר ראיתם), שימוש בתבנית `_` כחלק מתבנית אחרת, שימוש בשם שמתחיל עם מקף-תחתי, או שימוש ב- `..` כדי להתעלם משארית החלקים בערך מסויים. הבה נבין כיצד ומתי להתשמש בתבניות אלה.
 
-#### Ignoring an Entire Value with `_`
+#### התעלמות מלאה מערך באמצעות `_`
 
-We’ve used the underscore as a wildcard pattern that will match any value but
-not bind to the value. This is especially useful as the last arm in a `match`
-expression, but we can also use it in any pattern, including function
-parameters, as shown in Listing 18-17.
+כבר השתמשנו במקף-תחתי כתבנית ג'וקר שמתאימה כל ערך אבל לא קושרת אותו. זה שימושי במיוחד בזרוע האחרונה של ביטוי `match`, אבל ניתן לעשות זאת בכל תבנית, כולל בפרמטים של פונקציות, כמוצג ברשימה 18-17.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -282,69 +178,40 @@ parameters, as shown in Listing 18-17.
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/listing-18-17/src/main.rs}}
 ```
 
-<span class="caption">Listing 18-17: Using `_` in a function signature</span>
+<span class="caption">רשימה 18-17: שימוש ב- `_` בחותם פונקציה</span>
 
-This code will completely ignore the value `3` passed as the first argument,
-and will print `This code only uses the y parameter: 4`.
+קוד זה יתעלם לחלוטין מהערך `3` שמועבר לפונקציה כארגומנט הראשון, והוא ידפיס `This code only uses the y parameter: 4`.
 
-In most cases when you no longer need a particular function parameter, you
-would change the signature so it doesn’t include the unused parameter. Ignoring
-a function parameter can be especially useful in cases when, for example,
-you're implementing a trait when you need a certain type signature but the
-function body in your implementation doesn’t need one of the parameters. You
-then avoid getting a compiler warning about unused function parameters, as you
-would if you used a name instead.
+ברוב המקרים בהם לפונקציה אין צורך באחד הפרמטרים שלה, משנים את חותם הפונקציה כדי להסיר את הפרמטר המיותר. התעלמות מפרמטר של פונקציה יכול להיות יעיל במיחוד במקרים בהם, לדוגמא, אתם מיישמים תכונה, ולכן חייבים להתייחס לחותם הקיים, אבל מימוש גוף הפונקציה שלכם לא משתמש באחד הפרמטרים. מתן שם לפרמט כזה יגרום לקומפיילר לספק אזהרה אודות פרמט שלא בשימוש. התעלמות מהפרמטר, במקרה זה, תעלים את האזהרה.
 
-#### Ignoring Parts of a Value with a Nested `_`
+#### התעלמות מחלקים מערך באמצעות קינון `_`
 
-We can also use `_` inside another pattern to ignore just part of a value, for
-example, when we want to test for only part of a value but have no use for the
-other parts in the corresponding code we want to run. Listing 18-18 shows code
-responsible for managing a setting’s value. The business requirements are that
-the user should not be allowed to overwrite an existing customization of a
-setting but can unset the setting and give it a value if it is currently unset.
+ניתן גם להשתמש `_` בתוך תבנית אחרת כדי להתעלם רק מחלק זה או אחר של הערך, למשל, כאשר רוצים לגשת רק לחלק אחד בערך ובקוד המשוייך אין צורך בחלקים האחרים. רשימה 18-8 מציגה קוד האחראי על ניהול ערך שעוקב אחר השמה. הדרישות מהקוד הן שהמשתמש לא יוכל לעקוף ערך קיים, אבל כן יוכל לבצע השמה במידה והערך עוד לא הושם.
 
 ```rust
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/listing-18-18/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 18-18: Using an underscore within patterns that
-match `Some` variants when we don’t need to use the value inside the
-`Some`</span>
 
-This code will print `Can't overwrite an existing customized value` and then
-`setting is Some(5)`. In the first match arm, we don’t need to match on or use
-the values inside either `Some` variant, but we do need to test for the case
-when `setting_value` and `new_setting_value` are the `Some` variant. In that
-case, we print the reason for not changing `setting_value`, and it doesn’t get
-changed.
+<span class="caption">רשימה 18-8: שימוש במקף-תחתי בתוך תבנייות שמתאימות ווריאנטי `Some` כאשר אין צורך לגשת לערך הפנימי ב-`Some`</span>
 
-In all other cases (if either `setting_value` or `new_setting_value` are
-`None`) expressed by the `_` pattern in the second arm, we want to allow
-`new_setting_value` to become `setting_value`.
+קוד זה ידפיס `Can't overwrite an existing customized value` ואז `setting is Some(5)`. בזרוע הראשונה, אין צורך להתאים מול, או להשתמש, בערכים הפנימיים של ווריאנטי ה- `Some`, אבל כן צריך לבדוק עבור המקרה ש-`setting_value` ו-`new_setting_value` הם ווריאנטים של `Some`. במקרה זה אנו מדפיסים את הסיבה לכך ש-`setting_value` לא עובר שינוי.
 
-We can also use underscores in multiple places within one pattern to ignore
-particular values. Listing 18-19 shows an example of ignoring the second and
-fourth values in a tuple of five items.
+בכל המקרים האחרים (דהיינו אם לפחות אחד מ-`setting_value` ו-`new_setting_value` הוא הערך `None`) המבוטאים על-ידי התבנית `_` בזרוע השניה, אנחנו רוצים ש-`new_setting_value` יקבל את הערך `setting_value`.
+
+ניתן גם להשתמש במקף-תחתי בכמה מקומות בו-זמנית בתוך תבנית אחת כדי להתעלם מערכים מסויימים. רשימה 18-19 מציגה דוגמא להתעלמות מהערך השני והרביעי במרצף בן חמישה אלמנטים.
 
 ```rust
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/listing-18-19/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 18-19: Ignoring multiple parts of a tuple</span>
+<span class="caption">רשימה 18-19: התעלמות מכמה חלקים של מרצף</span>
 
-This code will print `Some numbers: 2, 8, 32`, and the values 4 and 16 will be
-ignored.
+קוד זה ידפיס `Some numbers: 2, 8, 32`, בעודו מתעלם מהערכים 4 ו-16.
 
-#### Ignoring an Unused Variable by Starting Its Name with `_`
+#### התעלמות ממשתנים שלא בשימוש על-ידי התחלת שמם עם `_`
 
-If you create a variable but don’t use it anywhere, Rust will usually issue a
-warning because an unused variable could be a bug. However, sometimes it’s
-useful to be able to create a variable you won’t use yet, such as when you’re
-prototyping or just starting a project. In this situation, you can tell Rust
-not to warn you about the unused variable by starting the name of the variable
-with an underscore. In Listing 18-20, we create two unused variables, but when
-we compile this code, we should only get a warning about one of them.
+אם תיצרו משתמש אבל לא תשתמשו בו, ראסט בדרך-כלל תספק אזהרה, שכן משתמש שאינו בשימוש עלול להיות באג. אבל, לעיתים דווקא נוח להיות מסוגלים ליצור משתמש ולא להשתמש בו עדיין, למשל בזמן יצירת פרוטוטייפ או בשלבים הראשונים של פרוייקט. במקרה כזה, ניתן לאמר לראסט לא להזהיר אודות משתנה מסויים שאינו בשימוש על-ידי התחלת שמו של המשתנה עם מקף-תחתי. ברשימה 18-20, אנו יוצרים שני משתנים שאינם בשימוש, אבל כאשר מקמפלים את הקוד, נקבל הודעת אזהרה רק בקשר לאחד מהם.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -352,62 +219,45 @@ we compile this code, we should only get a warning about one of them.
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/listing-18-20/src/main.rs}}
 ```
 
-<span class="caption">Listing 18-20: Starting a variable name with an
-underscore to avoid getting unused variable warnings</span>
 
-Here we get a warning about not using the variable `y`, but we don’t get a
-warning about not using `_x`.
+<span class="caption">רשימה 18-20: התחלת שם משתנה עם מקף-תחתי בכדי להימנע מקבלת אזהרות אודות משתנים שאינם בשימוש</span>
 
-Note that there is a subtle difference between using only `_` and using a name
-that starts with an underscore. The syntax `_x` still binds the value to the
-variable, whereas `_` doesn’t bind at all. To show a case where this
-distinction matters, Listing 18-21 will provide us with an error.
+כאן אנחנו מקבלים הודעה על כך שלא נעשה שימוש במשתנה `y`, אבל אנחנו לא מקבלים אזהרה בקשר לאי-שימוש ב-`_x`.
+
+שימו לב שיש הבדל עדין בין שימוש ב-`_` לבין שימוש בשם שמתחיל במקף-תחתי. התחביר `_x` עדיין קושר את הערך למשתנה, בעוד ש- `_` לא מבצע שום קישור. כדי להראות מקרה בו אבחנה זו חשובה, רשימה 18-21 מספקת שגיאה.
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/listing-18-21/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 18-21: An unused variable starting with an
-underscore still binds the value, which might take ownership of the value</span>
 
-We’ll receive an error because the `s` value will still be moved into `_s`,
-which prevents us from using `s` again. However, using the underscore by itself
-doesn’t ever bind to the value. Listing 18-22 will compile without any errors
-because `s` doesn’t get moved into `_`.
+<span class="caption">רשימה 18-21: משתנה שאינו בשימוש ששמו מתחיל עם מקף-תחתי עדיין מקושר לערך, וכך עשוי לקחת בעלות על הערך</span>
+
+נקבל כאן הודעת שגיאה כיוון שהערך `s` עדיין מועבר לתוך `_s`, וזה מונע מאיתנו מלהשתמש ב-`s` שוב. אולם, שימוש במקף-תחתי בפני עצמו לא מקושר לערך. רשימה 18-22 תעבור קומפילציה ללא שגיאות משום ש- `s` לא מועבר ל-`_`.
 
 ```rust
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/listing-18-22/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 18-22: Using an underscore does not bind the
-value</span>
 
-This code works just fine because we never bind `s` to anything; it isn’t moved.
+<span class="caption">רשימה 18-22: שימוש במקף-תחתי לא מקשר לערך</span>
 
-#### Ignoring Remaining Parts of a Value with `..`
+קוד זה עובד מצויין כי הערך `s` לא נקשר לשום דבר; הוא כלל לא מוזז.
 
-With values that have many parts, we can use the `..` syntax to use specific
-parts and ignore the rest, avoiding the need to list underscores for each
-ignored value. The `..` pattern ignores any parts of a value that we haven’t
-explicitly matched in the rest of the pattern. In Listing 18-23, we have a
-`Point` struct that holds a coordinate in three-dimensional space. In the
-`match` expression, we want to operate only on the `x` coordinate and ignore
-the values in the `y` and `z` fields.
+#### התעלמות מחלקים נותרים של ערך באמצעות `..`
+
+עבור ערכים שמורכבים מכמה רכיבים, ניתן להשתמש בתחביר `..` כדי להשתמש בחלקים מסויימים ולהתעלם מהשאר, תוך הימנעות מהצורך לספק רשימה של מקפים-תחתיים לכל ערך ממנו אנו מעוניינים להתעלם. התבנית `..` מתעלמת מכל חלק של ערך שלא הותאם מפורשות בשאר התבנית. ברשימה 18-23, יש לנו את המבנה `Point` שמאכסן קואורדינטות במרחב תלת-ממדי. בביטוי ה-`match`, אנחנו רוצים לפעול רק על קואורדינטת ה-`x` ולהתעלם מהערכים בשדות `y` ו-`z`.
 
 ```rust
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/listing-18-23/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 18-23: Ignoring all fields of a `Point` except
-for `x` by using `..`</span>
 
-We list the `x` value and then just include the `..` pattern. This is quicker
-than having to list `y: _` and `z: _`, particularly when we’re working with
-structs that have lots of fields in situations where only one or two fields are
-relevant.
+<span class="caption">רשימה 18-23: התעלמות מכל השדות של `Point` חוץ מהשדה `x` באמצעות `..`</span>
 
-The syntax `..` will expand to as many values as it needs to be. Listing 18-24
-shows how to use `..` with a tuple.
+אנו רושמים את הערך `x`, מוסיפים את התבנית `..`, וזהו. זה מהיר יותר מאשר להצטרך לרשום `y: _` and `z: _`, בעיקר כאשר עובדים עם מבנים שיש להם שדות רבים בעוד אנו מתעניינים רק באחד או שניים מהם.
+
+התחביר `..` יכסה כל כמות של ערכים שצריך. רשימה 18-24 מציגה כיצד להשתמש ב- `..` עובר מרצף.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -415,16 +265,12 @@ shows how to use `..` with a tuple.
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/listing-18-24/src/main.rs}}
 ```
 
-<span class="caption">Listing 18-24: Matching only the first and last values in
-a tuple and ignoring all other values</span>
 
-In this code, the first and last value are matched with `first` and `last`. The
-`..` will match and ignore everything in the middle.
+<span class="caption">רשימה 18-24: התאמה של האלמנטים הראשון והאחרון במרצף, והתעלמות בכל שאר הערכים</span>
 
-However, using `..` must be unambiguous. If it is unclear which values are
-intended for matching and which should be ignored, Rust will give us an error.
-Listing 18-25 shows an example of using `..` ambiguously, so it will not
-compile.
+בקוד זה, שני ערכים, הראשון והאחרון, מותאמים עם `first` ו-`last`. ה-`..` תותאם ותתעלם מכל הערכים שבאמצע.
+
+אולם, שימוש ב-`..` חייב להיות חד-משמעי. במידה ויש חוסר בהירות מהם הערכים הרצויים ומאלו יש להתעלם, ראסט תספק שגיאה. רשימה 18-25 מראה דוגמא לשימוש ארטילעי ב-`..`, ולכן קוד זה לא יעבור קומפילציה.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -432,60 +278,36 @@ compile.
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/listing-18-25/src/main.rs}}
 ```
 
-<span class="caption">Listing 18-25: An attempt to use `..` in an ambiguous
-way</span>
 
-When we compile this example, we get this error:
+<span class="caption">רשימה 18-25: ניסיון לשימוש ב-`..` בצורה שאינה חד-משמעית</span>
+
+כאשר מקמפלים דוגמא זו, מקבלים את השגיאה:
 
 ```console
 {{#include ../listings/ch18-patterns-and-matching/listing-18-25/output.txt}}
 ```
 
-It’s impossible for Rust to determine how many values in the tuple to ignore
-before matching a value with `second` and then how many further values to
-ignore thereafter. This code could mean that we want to ignore `2`, bind
-`second` to `4`, and then ignore `8`, `16`, and `32`; or that we want to ignore
-`2` and `4`, bind `second` to `8`, and then ignore `16` and `32`; and so forth.
-The variable name `second` doesn’t mean anything special to Rust, so we get a
-compiler error because using `..` in two places like this is ambiguous.
+ראסט לא יכולה לקבוע מכמה משתנים במרצף להתעלם לפני שיותאם ערך למשתנה `second` ואז מכמה ערכים נוספים להתעלם אחר-כך. קוד זה יכול להתכוון להתעלם מ- `2`, לקשור את `second` ל- `4`, ואז להתעלם מ- `8`, `16`, ו- `32`; או דווקא להתעלם מ-`2` ומ `4`, לקשור את `second` ל-`8`, ואז להתעלם מ-`16` ומ- `32`. ויש, כמובן, עוד פירושים אפשריים אחרים. העובדה ששם המשתנה הוא `second` אינה מציינת דבר לראסט, ולכן מקבלים שגיאת קומפילציה `..` בשני מקומות בצורה זו אינו ניתן לפירוש חד-משמעי.
 
-### Extra Conditionals with Match Guards
+### התניות נוספות באמצעות מגני התאמות
 
-A *match guard* is an additional `if` condition, specified after the pattern in
-a `match` arm, that must also match for that arm to be chosen. Match guards are
-useful for expressing more complex ideas than a pattern alone allows.
+*מגן התאמה* (match guard) הוא תנאי `if` נוסף, המצויין אחרי התבנית בזרוע של `match`, וכדי שהזרוע תיבחר גם תנאי זה חייב להתקיים. מגני התאמה הם שימושיים עבור ביטויים מורכבים יותר משתבנית לבדה יכולה לבטא.
 
-The condition can use variables created in the pattern. Listing 18-26 shows a
-`match` where the first arm has the pattern `Some(x)` and also has a match
-guard of `if x % 2 == 0` (which will be true if the number is even).
+התנאי יכול להשתמש במשתנים שנוצרו בתבנית. רשימה 18-26 מציגה ביטוי `match` בו בזרוע הראשונה יש את התבנית `Some(x)` וגם את מגן ההתאמה `if x % 2 == 0` (שמתקיים אם המספר זוגי).
 
 ```rust
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/listing-18-26/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 18-26: Adding a match guard to a pattern</span>
+<span class="caption">רשימה 18-26: הוספת מגן התאמה לתבנית</span>
 
-This example will print `The number 4 is even`. When `num` is compared to the
-pattern in the first arm, it matches, because `Some(4)` matches `Some(x)`. Then
-the match guard checks whether the remainder of dividing `x` by 2 is equal to
-0, and because it is, the first arm is selected.
+דוגמא זו תדפיס `The number 4 is even`. כאשר `num` מושווה לתבנית בזרוע הראשונה, הוא מתאים כיוון ש-`Some(4)` מתאים ל-`Some(x)`. בשלב זה, מגן ההתאמה בודק אם השארית בחלוקה של `x` ב-2 שווה ל-0, וכיוון שאכן זה המצב, הזרוע הראשונה מתבצעת.
 
-If `num` had been `Some(5)` instead, the match guard in the first arm would
-have been false because the remainder of 5 divided by 2 is 1, which is not
-equal to 0. Rust would then go to the second arm, which would match because the
-second arm doesn’t have a match guard and therefore matches any `Some` variant.
+אם, במקום זאת, `num` היה שווה לערך `Some(5)`, מגן ההתאמה בזרוע הראשונה לא היה מתקיים כיוון שהשארית בחלוקת 5 ב-2 היא 1, ולא 0. ראסט תמשיך אז לזרוע השניה, וזו כן מתאימה היות ובזרוע השניה אין מגן התאמה ולכן מתאימה לכל ווריאנט של `Some`.
 
-There is no way to express the `if x % 2 == 0` condition within a pattern, so
-the match guard gives us the ability to express this logic. The downside of
-this additional expressiveness is that the compiler doesn't try to check for
-exhaustiveness when match guard expressions are involved.
+אין דרך לבטא את התנאי `if x % 2 == 0` כחלק מהתבנית. מגן ההתאמה מאפשר לנו יכולת ביטוי לוגית עשירה יותר. החיסרון שמגיע עם שיפור יכולת הביטוי הזו הוא שהקומפיילר לא מנסה לבדוק שכל הערכים ממוצים ברגע שמעורבים מגני התאמות.
 
-In Listing 18-11, we mentioned that we could use match guards to solve our
-pattern-shadowing problem. Recall that we created a new variable inside the
-pattern in the `match` expression instead of using the variable outside the
-`match`. That new variable meant we couldn’t test against the value of the
-outer variable. Listing 18-27 shows how we can use a match guard to fix this
-problem.
+ברשימה 18-11 הערנו שיכולנו להשתמש במגני התאמות כדי לפתור את בעיית האפלת התבנית. זכרו שיצרנו משתנה חדש בתוך התבנית בביטוי ה-`match` במקום להשתמש במשתנה מחוץ ל-`match`. משתנה חדש זה גרם לכך שלא יכולנו לבדוק כנגד הערך של המשתנה החיצוני. רשימה 18-27 מראה כיצד ניתן להשתמש במגן התאמה כדי לפתור את הבעיה.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -493,102 +315,57 @@ problem.
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/listing-18-27/src/main.rs}}
 ```
 
-<span class="caption">Listing 18-27: Using a match guard to test for equality
-with an outer variable</span>
 
-This code will now print `Default case, x = Some(5)`. The pattern in the second
-match arm doesn’t introduce a new variable `y` that would shadow the outer `y`,
-meaning we can use the outer `y` in the match guard. Instead of specifying the
-pattern as `Some(y)`, which would have shadowed the outer `y`, we specify
-`Some(n)`. This creates a new variable `n` that doesn’t shadow anything because
-there is no `n` variable outside the `match`.
+<span class="caption">רשימה 18-27: שימוש במגן התאמה כדי לבדוק שוויון עם משתנה חיצוני</span>
 
-The match guard `if n == y` is not a pattern and therefore doesn’t introduce
-new variables. This `y` *is* the outer `y` rather than a new shadowed `y`, and
-we can look for a value that has the same value as the outer `y` by comparing
-`n` to `y`.
+כעת, קוד זה ידפיס `Default case, x = Some(5)`. התבנית בזרוע השניה לא מכריזה על משתנה חדש `y` שמאפיל על המשתנה החיצוני `y`, ולכן ניתן להשתמש ב-`y` החיצוני במגן ההתאמה. במקום לציין את התבנית כ-`Some(y)`, שהיה גורם להאפלה של ה-`y` החיצוני, אנו רושמים `Some(n)`. בכך אנו יוצרים משתנה חדש `n` שלא מאפיל על כלום משום שאין משתנה בשם `n` מחוץ ל-`match`.
 
-You can also use the *or* operator `|` in a match guard to specify multiple
-patterns; the match guard condition will apply to all the patterns. Listing
-18-28 shows the precedence when combining a pattern that uses `|` with a match
-guard. The important part of this example is that the `if y` match guard
-applies to `4`, `5`, *and* `6`, even though it might look like `if y` only
-applies to `6`.
+מגן ההתאמה `if n == y` אינו תבנית ולכן לא מכריז על משתנים חדשים. ה-`y` הזה *הוא* ה-`y` החיצוני, והוא אינו משתנה חדש, ולכן ההשוואה בין `n` ל- `y` משיגה את מטרה.
+
+ניתן גם להשתמש באופרטור `|`, המייצג את הפעול הלוגית *או*, במגן התאמה כדי לציין כמה תבניות; מגן ההתאמה יהיה תקף עבור על התבניות. רשימה 18-28 מציגה את חוקי הקדימות כאשר משלבים מגן התאמה עם תבנית שכוללת `|`. החלק החשוב בדוגמא זו הוא שמגן ההתאמה `if y` תקף ל-`4`, `5`, *וגם* ל-`6`, אפילו שיכול להראות כאילו `if y` תקף רק ל-`6`.
 
 ```rust
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/listing-18-28/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 18-28: Combining multiple patterns with a match
-guard</span>
 
-The match condition states that the arm only matches if the value of `x` is
-equal to `4`, `5`, or `6` *and* if `y` is `true`. When this code runs, the
-pattern of the first arm matches because `x` is `4`, but the match guard `if y`
-is false, so the first arm is not chosen. The code moves on to the second arm,
-which does match, and this program prints `no`. The reason is that the `if`
-condition applies to the whole pattern `4 | 5 | 6`, not only to the last value
-`6`. In other words, the precedence of a match guard in relation to a pattern
-behaves like this:
+<span class="caption">רשימה 18-28: שילוב ריבוי תבניות עם מגן התאמה</span>
+
+תנאי ההתאמה מציין שהזרוע תותאם רק אם הערך של `x` שווה ל-`4`, `5`, או `6` *וגם* אם `y` הוא `true`. כאשר קוד זה רץ, התבנית של הזרוע הראשונה מתאימה כיוון ש-`x` הוא `4`, אבל מגן ההתאמה `if y` הוא <0>false</0>, ולכן הזרוע הראשונה לא מתבצעת. הקוד עובר הלאה לזרוע השניה, שכן מתאימה, והתכנית מדפיסה `no`. הסיבה היא שתנאי ה-`if` תקף לכל התבנית `4 | 5 | 6`, ולא רק לערך האחרון `6`. במילים אחרות, הקדימות של מגן התאמה ביחס לתבנית מתנהג כך:
 
 ```text
 (4 | 5 | 6) if y => ...
 ```
 
-rather than this:
+ולא כך:
 
 ```text
 4 | 5 | (6 if y) => ...
 ```
 
-After running the code, the precedence behavior is evident: if the match guard
-were applied only to the final value in the list of values specified using the
-`|` operator, the arm would have matched and the program would have printed
-`yes`.
+לאחר הרצת הקוד, התנהגות הקדימות מובנת מעליה: אם מגן ההתאמה היה תקף רק לערך האחרון ברשימת הערכים עם האופרטור `|`, אז הזרוע היתה מתאימה והתכנית היתה מדפיסה `yes`.
 
-### `@` Bindings
+### `@` קישורים
 
-The *at* operator `@` lets us create a variable that holds a value at the same
-time as we’re testing that value for a pattern match. In Listing 18-29, we want
-to test that a `Message::Hello` `id` field is within the range `3..=7`. We also
-want to bind the value to the variable `id_variable` so we can use it in the
-code associated with the arm. We could name this variable `id`, the same as the
-field, but for this example we’ll use a different name.
+האופרטור `@` נקרא *at* והוא מאפשר ליצור משתנה שמאכסן ערך באותו הזמן בו בודקים אם הערך מתאים לתבנית. ברשימה 18-29 אנו רוצים לבדוק שהשדה `Message::Hello` `id` נמצא בטווח `3..=7`. אנחנו גם מעוניינים לקשור את הערך למשתנה `id_variable` כדי שנוכל להשתמש בו בקוד המשוייך לזרוע. היינו יכולים לקרוא למשתנה הזה `id`, כמו שם השדה, אבל בדוגמא זו אנו משתמשים בשם אחר.
 
 ```rust
 {{#rustdoc_include ../listings/ch18-patterns-and-matching/listing-18-29/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 18-29: Using `@` to bind to a value in a pattern
-while also testing it</span>
 
-This example will print `Found an id in range: 5`. By specifying `id_variable
-@` before the range `3..=7`, we’re capturing whatever value matched the range
-while also testing that the value matched the range pattern.
+<span class="caption">רשימה 18-29: שימוש ב-`@` כדי לקשור לערך בתבנית בזמן בדיקת התאמה</span>
 
-In the second arm, where we only have a range specified in the pattern, the code
-associated with the arm doesn’t have a variable that contains the actual value
-of the `id` field. The `id` field’s value could have been 10, 11, or 12, but
-the code that goes with that pattern doesn’t know which it is. The pattern code
-isn’t able to use the value from the `id` field, because we haven’t saved the
-`id` value in a variable.
+דוגמא זו תדפיס `Found an id in range: 5`. על-ידי ציון `id_variable @` לפני הטווח `3..=7`, אנו תופסים את הערך שמותאם לטווח באותו הזמן בו אנו בודקים את ההתאמה לטווח.
 
-In the last arm, where we’ve specified a variable without a range, we do have
-the value available to use in the arm’s code in a variable named `id`. The
-reason is that we’ve used the struct field shorthand syntax. But we haven’t
-applied any test to the value in the `id` field in this arm, as we did with the
-first two arms: any value would match this pattern.
+בזרוע השניה, שם יש רק ציון של טווח בתבנית, לקוד המשוייך לזרוע אין משתנה שמכיל את הערך עצמו של השדה `id`. ערך השדה `id` יכול להיות 10, 11, או 12, אבל לקוד המשוייך לזרוע אין גישה לערך עצמו. הקוד המשוייך כאן לא יכול לגשת אל הערך של השדה `id`, משום שלא שמרנו את הערך הזה למשתנה.
 
-Using `@` lets us test a value and save it in a variable within one pattern.
+בזרוע האחרונה, שם מצויין משתנה ללא טווח, לקוד המשוייך כן יש את הערך עצמו מוכן לשימוש במשתנה בשם `id`. הסיבה היא שהשתמשנו כאן בתחביר המקוצר עבור שדות במבנים. אבל בזרוע הזו לא הוספנו שום תנאי על הערך בשדה `id`, כפי שעשינו בשתי הזרועות הראשונות: כל ערך יתאים לתבנית זו.
 
-## Summary
+שימוש ב-`@` מאפשר לנו לבדוק ערך ולשמור אותו במשתנה כחלק מתבנית אחת.
 
-Rust’s patterns are very useful in distinguishing between different kinds of
-data. When used in `match` expressions, Rust ensures your patterns cover every
-possible value, or your program won’t compile. Patterns in `let` statements and
-function parameters make those constructs more useful, enabling the
-destructuring of values into smaller parts at the same time as assigning to
-variables. We can create simple or complex patterns to suit our needs.
+## סיכום
 
-Next, for the penultimate chapter of the book, we’ll look at some advanced
-aspects of a variety of Rust’s features.
+תבניות בראסט הן כלי מאוד יעיל לאבחנה בין סוגים שונים של דאטה. כשמשתמשים בהן בביטויי `match`, ראסט מוודאת שהתבניות מכסות את כל הערכים האפשריים, ואם לא אז התכנית לא לעבור קומפילציה. תבניות בפקודות `let` ובפרמטרים של פונקציות הופכות בניות אלה ליותר שימושיות שכן הן מאפשרות לפרק את הערכים לפיסות קטנות יותר באותו הזמן שההשמה מתבצעת. ניתן ליצור תבניות פשוטות או מורכבות, בהתאם לצורך.
+
+בצעד הבא, עבור הפרק הלפני אחרון של הספר, נתבונן באספקטים מתקדמים של מכלול של תכונות של ראסט.

@@ -1,242 +1,132 @@
-## Storing Keys with Associated Values in Hash Maps
+## אחסון מפתחות עם ערכים משויכים במפות גיבוב
 
-The last of our common collections is the *hash map*. The type `HashMap<K, V>`
-stores a mapping of keys of type `K` to values of type `V` using a
-*hashing function*, which determines how it places these keys and values into
-memory. Many programming languages support this kind of data structure, but
-they often use a different name, such as hash, map, object, hash table,
-dictionary, or associative array, just to name a few.
+האחרון מבין האוספים הנפוצים שלנו הוא _מפת הגיבוב_. הטיפוס `HashMap<K, V>` מאחסן מיפוי של מפתחות מטיפוס `K` לערכים מטיפוס `V` באמצעות _פונקציית גיבוב_, שקובעת כיצד יוצבו המפתחות ביחס לערכים הללו בזיכרון. שפות תכנות רבות תומכות במבנה נתונים מסוג זה, אך לעיתים קרובות הוא מופיע בשם אחר, כגון גיבוב, מפה, אובייקט, טבלת גיבוב, מילון, מערך אסוציאטיבי, או כל מונח דומה.
 
-Hash maps are useful when you want to look up data not by using an index, as
-you can with vectors, but by using a key that can be of any type. For example,
-in a game, you could keep track of each team’s score in a hash map in which
-each key is a team’s name and the values are each team’s score. Given a team
-name, you can retrieve its score.
+מפות גיבוב שימושיות כאשר אתה רוצה לגשת לנתונים שלא באמצעות אינדקס, כמו במקרה של וקטורים, אלא באמצעות מפתח שיכול להיות מכל טיפוס שהוא. אם, לדוגמה, יש לנו משחק כלשהו, אנו יכולים לעקוב אחר הניקוד של כל קבוצה באמצעות מפת גיבוב בה כל מפתח הוא שם הקבוצה, והערכים הם הניקוד שלהן. בהינתן שם קבוצה, אתה יכול לאחזר בקלות את הניקוד שלה.
 
-We’ll go over the basic API of hash maps in this section, but many more goodies
-are hiding in the functions defined on `HashMap<K, V>` by the standard library.
-As always, check the standard library documentation for more information.
+בסעיף זה נעבור על ה-API הבסיסי של מפות גיבוב, אבל דברים טובים רבים אחרים מסתתרים במתודות המוגדרות על 'HashMap<K,V>' על-ידי הספרייה הסטנדרטית. כמו תמיד, למידע נוסף, עיין בתיעוד הספרייה הסטנדרטית.
 
-### Creating a New Hash Map
+### יצירת מפת גיבוב חדשה
 
-One way to create an empty hash map is using `new` and adding elements with
-`insert`. In Listing 8-20, we’re keeping track of the scores of two teams whose
-names are *Blue* and *Yellow*. The Blue team starts with 10 points, and the
-Yellow team starts with 50.
+אחת הדרכים ליצור מפת גיבוב ריקה היא שימוש במילת המפתח 'new' והוספת פריטים אליה עם 'insert'. ברשימה 8-20 אנו עוקבים אחר התוצאות של שתי קבוצות ששמותיהן _כחול_ ו*צהוב*. הקבוצה הכחולה פותחת עם 10 נקודות, והצהובה פותחת עם 50.
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-20/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 8-20: Creating a new hash map and inserting some
-keys and values</span>
+<span class="caption">רשימה 8-20: יצירת מפת גיבוב חדשה והכנסת מפתחות וערכים</span>
 
-Note that we need to first `use` the `HashMap` from the collections portion of
-the standard library. Of our three common collections, this one is the least
-often used, so it’s not included in the features brought into scope
-automatically in the prelude. Hash maps also have less support from the
-standard library; there’s no built-in macro to construct them, for example.
+שימו לב שעלינו קודם להשתמש במילת המפתח 'use' להכנסת ה-'HashMap' למתחם מן קטגורית האוספים של הספרייה הסטנדרטית. מבין שלושת האוספים הנפוצים שלנו, מפת הגיבוב לא נמצאת בשימוש תדיר, כך שהיא אינה נכללת במתחם באופן אוטומטי, כחלק מן הפרליוד. הספרייה הסטנדרטית מעניקה למפות גיבוב תמיכה מופחתת; לא קיים מאקרו מובנה כדי לאתחל אחת, למשל.
 
-Just like vectors, hash maps store their data on the heap. This `HashMap` has
-keys of type `String` and values of type `i32`. Like vectors, hash maps are
-homogeneous: all of the keys must have the same type as each other, and all of
-the values must have the same type.
+בדיוק כמו וקטורים, מפות גיבוב מאחסנות את הנתונים שלהן בזיכרון הערימה. ל-`HashMap` המסוים הזה מפתחות מסוג `String` וערכים מסוג `i32`. בדומה לווקטורים, מפות גיבוב הן הומוגניות: המפתחות כולם חייבים להיות מאותו הטיפוס, והערכים כולם חייבים להיות מאותו הטיפוס.
 
-### Accessing Values in a Hash Map
+### גישה לערכים במפת גיבוב
 
-We can get a value out of the hash map by providing its key to the `get`
-method, as shown in Listing 8-21.
+נוכל לגשת לערך במפת הגיבוב באמצעות העברת המפתח שלה למתודה `get`, כפי שמציגה רשימה8-21.
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-21/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 8-21: Accessing the score for the Blue team
-stored in the hash map</span>
+<span class="caption">רשימה 8-21: גישה לניקוד של הצוות הכחול המאוחסן במפת הגיבוב</span>
 
-Here, `score` will have the value that’s associated with the Blue team, and the
-result will be `10`. The `get` method returns an `Option<&V>`; if there’s no
-value for that key in the hash map, `get` will return `None`. This program
-handles the `Option` by calling `copied` to get an `Option<i32>` rather than an
-`Option<&i32>`, then `unwrap_or` to set `score` to zero if `scores` doesn't
-have an entry for the key.
+כאן, ל-'score' יועתק הערך המשויך לצוות הכחול, והתוצאה תהיה '10'. המתודה `get` מחזירה `Option<&V>`; אם מפת הגיבוב אינו מכילה ערך התואם למפתח זה, המתודה 'get' תחזיר 'None'. תוכנית זו מטפלת ב-'Option' על-ידי קריאה למתודה 'copied' כדי לקבל 'Option<i32>' במקום 'Option<&i32>'. אז, נקרא למתודה 'unwrap_or' בכדי להגדיר את 'score' כ-0 במקרה שלמפה `scores` אין ערך התואם למפתח שהועבר.
 
-We can iterate over each key/value pair in a hash map in a similar manner as we
-do with vectors, using a `for` loop:
+אנו יכולים לעבור על כל צמד מפתח-ערך במפת גיבוב כפי שאנו עושים עם וקטורים, באמצעות לולאת `for`:
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/no-listing-03-iterate-over-hashmap/src/main.rs:here}}
 ```
 
-This code will print each pair in an arbitrary order:
+קוד זה ידפיס כל צמד בסדר שרירותי:
 
 ```text
 Yellow: 50
 Blue: 10
 ```
 
-### Hash Maps and Ownership
+### מפות גיבוב ובעלות
 
-For types that implement the `Copy` trait, like `i32`, the values are copied
-into the hash map. For owned values like `String`, the values will be moved and
-the hash map will be the owner of those values, as demonstrated in Listing 8-22.
+עבור טיפוסים המיישמים את התכונה 'copy', כפי שעושה 'i32', הערכים מועתקים למפת הגיבוב. עם זאת, עבור ערכים שנמצאים בבעלות, כגון הטיפוס `String`, הערכים יועברו, ומפת הגיבוב תהפוך לבעלים של הערכים הללו, כפי שמדגימה רשימה 8-22.
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-22/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 8-22: Showing that keys and values are owned by
-the hash map once they’re inserted</span>
+<span class="caption">רשימה 8-22: מפתחות וערכים נמצאים בבעלות מפת הגיבוב לאחר הכנסתם אליה</span>
 
-We aren’t able to use the variables `field_name` and `field_value` after
-they’ve been moved into the hash map with the call to `insert`.
+הקריאה למתודה `add` מעבירה את הבעלות על המשתנים `field_name` ו-`field_value` למפת הגיבוב, ולכן אין אנו יכולים להשתמש במשתנים אלה יותר.
 
-If we insert references to values into the hash map, the values won’t be moved
-into the hash map. The values that the references point to must be valid for at
-least as long as the hash map is valid. We’ll talk more about these issues in
-the [“Validating References with
-Lifetimes”][validating-references-with-lifetimes]<!-- ignore --> section in
-Chapter 10.
+אם נכניס למפת הגיבוב הפניות לערכים, הערכים לא יועברו למפת הגיבוב. עם זאת, הערכים אליהם מצביעות ההפניות חייבים להיות תקפים לפחות כל עוד מפת הגיבוב עצמה תקפה. נדון בבעיות הללו עוד בפרק 10, בסעיף [“Validating References with Lifetimes”][validating-references-with-lifetimes]<!-- ignore -->
 
-### Updating a Hash Map
+### עדכון מפת גיבוב
 
-Although the number of key and value pairs is growable, each unique key can
-only have one value associated with it at a time (but not vice versa: for
-example, both the Blue team and the Yellow team could have value 10 stored in
-the `scores` hash map).
+ניתן להגדיל ללא הגבלה את מספר צמדי מפתח-ערך המאוחסנים במפת הגיבוב. עם זאת, בכל זמן נתון, לכל מפתח יחודי יכול להיות רק ערך אחד המשויך אליו. (אך, יש לציין, לא להיפך: לדוגמה, הערך 10 יכול להיות מאוחסן ב-`scores` גם עבור הצוות הכחול וגם עבור הצוות הצהוב).
 
-When you want to change the data in a hash map, you have to decide how to
-handle the case when a key already has a value assigned. You could replace the
-old value with the new value, completely disregarding the old value. You could
-keep the old value and ignore the new value, only adding the new value if the
-key *doesn’t* already have a value. Or you could combine the old value and the
-new value. Let’s look at how to do each of these!
+כאשר ברצונך לשנות או לעדכן את הנתונים במפת הגיבוב עבור מפתח נתון, עלינו להחליט כיצד לטפל במקרה בו למפתח קיים כבר ערך. אנו יכולים, למשל, להחליף את הערך הקיים בערך החדש, תוך התעלמות מוחלטת מהערך הקיים; או, אנו יכולים לשמור את הערך הקיים ולהתעלם מהערך החדש, ולהוסיף את הערך החדש רק אם למפתח _אין_ כבר ערך קיים; או, אנו יכולים לשלב את הערך הישן והערך החדש באופן כזה או אחר. בואו נראה כיצד לעשות כל אחד מאלה!
 
-#### Overwriting a Value
+#### החלפת ערך
 
-If we insert a key and a value into a hash map and then insert that same key
-with a different value, the value associated with that key will be replaced.
-Even though the code in Listing 8-23 calls `insert` twice, the hash map will
-only contain one key/value pair because we’re inserting the value for the Blue
-team’s key both times.
+אם נכניס מפתח וערך למפת גיבוב, ואז נכניס את אותו המפתח בשנית עם ערך אחר, יוחלף הערך המשויך לאותו המפתח. למרות שהקוד ברישום 8-23 קורא ל-'add' פעמיים, מפת הגיבוב תכיל רק צמד מפתח-ערך אחד, כיוון שבשתי הפעמים אנו מכניסים ערך עבור המפתח של הצוות הכחול.
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-23/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 8-23: Replacing a value stored with a particular
-key</span>
+<span class="caption">רשימה 8-23: החלפת ערך קיים המשויך למפתח נתון</span>
 
-This code will print `{"Blue": 25}`. The original value of `10` has been
-overwritten.
+קוד זה ידפיס `{"Blue": 25}`; הערך המקורי, '10', הוחלף.
 
 <!-- Old headings. Do not remove or links may break. -->
+
 <a id="only-inserting-a-value-if-the-key-has-no-value"></a>
 
-#### Adding a Key and Value Only If a Key Isn’t Present
+#### הוספת מפתח וערך רק אם המפתח אינו קיים במפה
 
-It’s common to check whether a particular key already exists in the hash map
-with a value then take the following actions: if the key does exist in the hash
-map, the existing value should remain the way it is. If the key doesn’t exist,
-insert it and a value for it.
+נוהג מקובל הוא לבדוק אם מפתח מסוים כבר קיים במפת הגיבוב, ולבצע את הפעולות הבאות: אם המפתח אכן קיים במפת הגיבוב, אין לבצע אף שינוי בערך הקיים; אך אם המפתח אינו קיים, יש להכניס למפה אותו ואת הערך המשויך אליו.
 
-Hash maps have a special API for this called `entry` that takes the key you
-want to check as a parameter. The return value of the `entry` method is an enum
-called `Entry` that represents a value that might or might not exist. Let’s say
-we want to check whether the key for the Yellow team has a value associated
-with it. If it doesn’t, we want to insert the value 50, and the same for the
-Blue team. Using the `entry` API, the code looks like Listing 8-24.
+למפות גיבוב קיים API מיוחד לזה למטרה זו בשם `entry`, שמקבל כפרמטר את המפתח שברצונכם לבדוק. ערך ההחזרה של מתודת ה-'entry' הוא מבחר בשם 'Entry' שמייצג ערך שייתכן וקיים. נניח שאנו רוצים לבדוק האם למפתח של הצוות הצהוב קיים ערך משויך. אם לא, אנחנו רוצים להכניס את הערך 50, ואותו הדבר עבור הצוות הכחול. בשימוש ה-API של 'entry', הקוד יראה כדוגמת רשימה 8-24.
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-24/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 8-24: Using the `entry` method to only insert if
-the key does not already have a value</span>
+<span class="caption">רשימה 8-24: שימוש במתודה `entry` להוספת צמד רק אם למפתח הנתון לא קיים כבר ערך</span>
 
-The `or_insert` method on `Entry` is defined to return a mutable reference to
-the value for the corresponding `Entry` key if that key exists, and if not,
-inserts the parameter as the new value for this key and returns a mutable
-reference to the new value. This technique is much cleaner than writing the
-logic ourselves and, in addition, plays more nicely with the borrow checker.
+כאשר היא מופעלת על מבחר מטיפוס `Entry`, המתודה `or_insert` מוגדרת כמחזירה הפניה ברת-שינוי לערך המשויך למפתח של אותו המבחר, אם הוא אכן קיים. אם אינו קיים, המתודה תכניס את הפרמטר שהועבר לה כערך החדש המשויך למפתח זה, ותחזיר הפניה ברת-שינוי לערך החדש. טכניקה זו נקייה הרבה יותר מאשר כתיבת ההיגיון בעצמנו, ואף עובדת טוב יותר בשילוב בודק ההשאלה.
 
-Running the code in Listing 8-24 will print `{"Yellow": 50, "Blue": 10}`. The
-first call to `entry` will insert the key for the Yellow team with the value
-50 because the Yellow team doesn’t have a value already. The second call to
-`entry` will not change the hash map because the Blue team already has the
-value 10.
+הקוד ברשימה 8-24 ידפיס `{"Yellow": 50, "Blue": 10}`. הקריאה הראשונה ל-'entry' תכניס את המפתח לצוות הצהוב עם הערך 50, כי לצוות הצהוב אין ערך קיים. עם זאת, הקריאה השנייה ל-'entry' לא תשנה את מפת הגיבוב, כיוון שהערך `10` כבר קיים עבור הצוות הכחול.
 
-#### Updating a Value Based on the Old Value
+#### עדכון ערך בהתבסס על הערך הישן
 
-Another common use case for hash maps is to look up a key’s value and then
-update it based on the old value. For instance, Listing 8-25 shows code that
-counts how many times each word appears in some text. We use a hash map with
-the words as keys and increment the value to keep track of how many times we’ve
-seen that word. If it’s the first time we’ve seen a word, we’ll first insert
-the value 0.
+מקרה נפוץ נוסף עבור מפות גיבוב הוא הצורך לאתר ערך של מפתח נתון, ולאחר מכן לעדכנו בהתבסס על הערך הקיים. לדוגמה, רשימה 8-25 מציגה קוד שסופר כמה פעמים כל מילה מופיעה בטקסט נתון. אנו משתמשים במפת גיבוב עם המילים כמפתחות, ומגדילים כל פעם את הערך המשויך לכל מילה בכדי לספור כמה פעמים הופיעה. אם זו הפעם הראשונה שאנו רואים מילה, נכניס עבורה את הערך 0.
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-25/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 8-25: Counting occurrences of words using a hash
-map that stores words and counts</span>
+<span class="caption">רשימה 8-25: ספירת מופעי מילים באמצעות מפת גיבוב המאחסנת מילים כמפתחות, ואת הספירה עבורן כערכים משויכים </span>
 
-This code will print `{"world": 2, "hello": 1, "wonderful": 1}`. You might see
-the same key/value pairs printed in a different order: recall from the
-[“Accessing Values in a Hash Map”][access]<!-- ignore --> section that
-iterating over a hash map happens in an arbitrary order.
+קוד זה ידפיס `{"world": 2, "hello": 1, "wonderful": 1}`. יתכן שתראו את אותם צמדי מפתח-ערך מודפסים בסדר שונה: זכרו מהסעיף [“Accessing Values in a Hash Map”][access]<!-- ignore --> שאיטרציה על מפת Hash מתרחשת בסדר שרירותי.
 
-The `split_whitespace` method returns an iterator over sub-slices, separated by
-whitespace, of the value in `text`. The `or_insert` method returns a mutable
-reference (`&mut V`) to the value for the specified key. Here we store that
-mutable reference in the `count` variable, so in order to assign to that value,
-we must first dereference `count` using the asterisk (`*`). The mutable
-reference goes out of scope at the end of the `for` loop, so all of these
-changes are safe and allowed by the borrowing rules.
+שיטת `split_whitespace` מחזירה איטרטור על תתי-חיתוכים, מופרדים בתו רווח-לבן (whitespace), של הטקסט המאוחסן במשתנה `text`. המתודה `or_insert` מחזירה הפניה ברת-שינוי (`&mut V`) לערך המשויך למפתח שצוין. כאן אנו מאחסנים את ההפניה ברת-השינוי במשתנה `count`. כעת, כדי לעדכן ערך זה, עלינו תחילה לבצע דה-הפניה באמצעות אופרטור הכוכבית (`*`). ההפניה ברת-השינוי יוצאת מהמתחם בסוף לולאת ה-'for', כך שכל השינויים הללו בטוחים ומותרים על פי כללי ההשאלה.
 
-### Hashing Functions
+### פונקציות גיבוב
 
-By default, `HashMap` uses a hashing function called *SipHash* that can provide
-resistance to Denial of Service (DoS) attacks involving hash
-tables[^siphash]<!-- ignore -->. This is not the fastest hashing algorithm
-available, but the trade-off for better security that comes with the drop in
-performance is worth it. If you profile your code and find that the default
-hash function is too slow for your purposes, you can switch to another function
-by specifying a different hasher. A *hasher* is a type that implements the
-`BuildHasher` trait. We’ll talk about traits and how to implement them in
-Chapter 10. You don’t necessarily have to implement your own hasher from
-scratch; [crates.io](https://crates.io/)<!-- ignore --> has libraries shared by
-other Rust users that provide hashers implementing many common hashing
-algorithms.
-
+כברירת מחדל, `HashMap` מסתמכת על פונקצית גיבוב בשם _SipHash_ שמעניקה הגנה מפני מתקפות מניעת שירות (DoS) המערבות טבלאות גיבוב[^siphash]<!-- ignore -->. זה אמנם לא אלגוריתם הגיבוב המהיר ביותר בנמצא, אך בתמורה לירידה בביצועים, מקבלים אבטחת נתונים טובה יותר. אם תבדקו את הקוד שלכם ותגלו שפונקציית הגיבוב המוגדרת כברירת-המחדל איטית מדי עבורכם, תוכלו לעבור לפונקציה אחרת על ידי ציון מגבב אחר. מגבב - _hasher_ - הוא טיפוס שמיישם את התכונה 'BuildHasher'. נדבר על תכונות וכיצד ליישם אותן בפרק 10. לא מן ההכרח שתידרשו לממש את פונקצית הגיבוב שלכם מאפס; קיימות ספריות רבות המספקות מימושי אלגוריתמי גיבוב נפוצים רבים. תוכלו למצוא אותן ב-[crates.io](https://crates.io/)<!-- ignore -->
 [^siphash]: [https://en.wikipedia.org/wiki/SipHash](https://en.wikipedia.org/wiki/SipHash)
 
-## Summary
+## סיכום
 
-Vectors, strings, and hash maps will provide a large amount of functionality
-necessary in programs when you need to store, access, and modify data. Here are
-some exercises you should now be equipped to solve:
+וקטורים, מחרוזות ומפות גיבוב מעניקות רבות מן הפונקציונליות הדרושה לאחסון, גישה, ועדכון נתונים. כעת יש בידיכם את כל הכלים הדרושים בכדי לפתור את התרגילים הבאים:
 
-* Given a list of integers, use a vector and return the median (when sorted,
-  the value in the middle position) and mode (the value that occurs most often;
-  a hash map will be helpful here) of the list.
-* Convert strings to pig latin. The first consonant of each word is moved to
-  the end of the word and “ay” is added, so “first” becomes “irst-fay.” Words
-  that start with a vowel have “hay” added to the end instead (“apple” becomes
-  “apple-hay”). Keep in mind the details about UTF-8 encoding!
-* Using a hash map and vectors, create a text interface to allow a user to add
-  employee names to a department in a company. For example, “Add Sally to
-  Engineering” or “Add Amir to Sales.” Then let the user retrieve a list of all
-  people in a department or all people in the company by department, sorted
-  alphabetically.
+- בהינתן רשימה של מספרים שלמים, השתמשו בווקטור בכדי להחזיר את החציון (באוסף ממוין, זהו הערך במיקום האמצעי), ואת השכיח (הערך המופיע בתדירות הגבוהה ביותר; מפת גיבוב תעזור כאן) ברשימה.
+- המרת מחרוזות לפיג לטין (Pig Latin): העיצור הראשון של כל מילה יועבר לסוף המילה, ולאחר תתווסף התנועה "ay", כך שהמילה "first" תהפוך ל-”irst-fay”. עבור מילים שמתחילות בתנועה, יתווסף "hay" לסוף המילה ("apple" תהפוך כך ל-"apple-hay"). זכרו את מה שלמדתם אודות קידוד UTF-8!
+- באמצעות מפת גיבוב ו-וקטורים, צרו ממשק טקסט שיאפשר למשתמש להוסיף שמות עובדים למחלקה בחברה. לדוגמה “,Add Sally to Engineering” או “Add Amir to Sales.” לאחר מכן, אפשר למשתמש לאחזר רשימה של כל האנשים במחלקה או כל האנשים בחברה לפי מחלקה, ממוינת בסדר אלפביתי.
 
-The standard library API documentation describes methods that vectors, strings,
-and hash maps have that will be helpful for these exercises!
+תיעוד ה-API של הספרייה הסטנדרטית כולל שיטות המשויכות לווקטורים, למחרוזות ולמפות גיבוב שיעזרו לכם.
 
-We’re getting into more complex programs in which operations can fail, so, it’s
-a perfect time to discuss error handling. We’ll do that next!
-
+אנחנו מגיעים כעת לדון בתוכניות מורכבות יותר, בהן פעולות עלולות להיכשל. זהו, אפוא, הזמן המושלם לדון בטיפול בשגיאות. נעשה זאת בפרק הבא!
 [validating-references-with-lifetimes]:
 ch10-03-lifetime-syntax.html#validating-references-with-lifetimes
 [access]: #accessing-values-in-a-hash-map

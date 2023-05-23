@@ -9,10 +9,14 @@
 | associated function         | פונקציה משויכת                |
 | associated type             | טיפוס משוייך                  |
 | borrowing                   | השאלה                         |
+| borrow checker              | בודק ההשאלות                  |
+| byte                        | בית, בייט                     |
 | cargo                       | קארגו                         |
+| char, character             | תו                            |
 | clone                       | שיבוט                         |
 | closure                     | סגור                          |
 | collection data type        | טיפוס נתונים מאגד             |
+| cluster                     | אשכול                         |
 | compile (v)                 | לקמפל                         |
 | compiler                    | קומפיילר                      |
 | compound (data)             | מורכב                         |
@@ -30,35 +34,43 @@
 | destructuring               | פירוק                         |
 | dispatch                    | שיגור                         |
 | double free                 | שחרור כפול                    |
+| drop (e.g. a vector)        | נעזב                          |
 | dynamic dispatch            | שיגור דינמי                   |
 | encapsulation               | אפסון                         |
 | enum                        | מבחר                          |
 | expression                  | ביטוי                         |
-| ferris                      | פריס, פריס הסרטן              |
+| Ferris                      | פריס, פריס הסרטן              |
 | field                       | שדה                           |
+<<<<<<< HEAD
 | fully qualified syntac      | תחביר מוסמך לחלוטין           |
+=======
+| function                    | פונקציה                       |
+>>>>>>> main
 | function signature          | חותם פונקציה                  |
 | garbage collector           | מאסף אשפה                     |
 | generic                     | גנרי                          |
 | generics                    | ג'נריקס                       |
 | glob operator               | האופרטור גלוב                 |
 | global                      | גלובאלי                       |
+| grapheme                    | גרפמה                         |
 | hash map                    | מפת גיבוב                     |
 | heap                        | ערימה                         |
 | immutable                   | מנוע-שינוי                    |
 | indent (v)                  | להזיח                         |
 | instance                    | מופע                          |
+| item                        | פריט                          |
 | iteration                   | סבב, איטרציה                  |
 | iterator                    | איטרטור                       |
 | keyword                     | מילת מפתח                     |
 | lifetime                    | משך חיים                      |
 | linker                      | מקשר                          |
-| literal                     | מפורש                         |
+| Listing                     | רשימה                         |
 | local                       | מקומי                         |
 | loop                        | לולאה                         |
 | macro                       | מאקרו                         |
 | match                       | התאמה                         |
 | match expression            | ביטוי התאמה                   |
+| method                      | מתודה                         |
 | module                      | מודול                         |
 | monomorphization            | מונומורפיזציה                 |
 | move                        | הזזה                          |
@@ -74,7 +86,7 @@
 | panic                       | להיכנס לפאניקה                |
 | parameter                   | פרמטר                         |
 | path                        | מסלול                         |
-| polymorphism                |                               |
+| polymorphism                | פולימורפיזם, רב־צורתיות       |
 | prelude                     | פרליוד                        |
 | reference                   | הפניה                         |
 | Rust                        | (נ') ראסט                     |
@@ -92,9 +104,11 @@
 | statement                   | פקודה , הַצְהָרָה                 |
 | static dispatch             | שיגור סטטי                    |
 | statically typed            | טיפוסים סטטיים                |
+| string                      | מחרוזת                        |
+| string literal              | מחרוזת מפורשת                 |
 | struct                      | מבנה                          |
 | trait                       | תכונה                         |
-| trait bounds                | מגבילי תכנות                  |
+| trait bounds                | מגבילי תכונה                  |
 | train object                | אובייקט תכונה                 |
 | tuple                       | מרצף                          |
 | tuple struct                | מבנה מרצף                     |
@@ -105,4 +119,4 @@
 | value is dropped            | ערך נעזב                      |
 | variant                     | וריאנט (או "סוג")             |
 | vector                      | וקטור                         |
-| workspace                   | אזור עבודה                    |
+| workspace                   | מרחב עבודה                    |

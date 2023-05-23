@@ -43,17 +43,17 @@
     - [Defining Modules to Control Scope and Privacy](ch07-02-defining-modules-to-control-scope-and-privacy.md)
     - [מסלולים להפניה לעצם בתוך עץ המודולים](ch07-03-paths-for-referring-to-an-item-in-the-module-tree.md)
     - [הכנסת מסלולים למתחם באמצעות מילת המפתח `use`](ch07-04-bringing-paths-into-scope-with-the-use-keyword.md)
-    - [Separating Modules into Different Files](ch07-05-separating-modules-into-different-files.md)
+    - [הפרדת מודולים לקבצים שונים](ch07-05-separating-modules-into-different-files.md)
 
 - [Common Collections](ch08-00-common-collections.md)
     - [Storing Lists of Values with Vectors](ch08-01-vectors.md)
     - [Storing UTF-8 Encoded Text with Strings](ch08-02-strings.md)
     - [Storing Keys with Associated Values in Hash Maps](ch08-03-hash-maps.md)
 
-- [Error Handling](ch09-00-error-handling.md)
-    - [Unrecoverable Errors with `panic!`](ch09-01-unrecoverable-errors-with-panic.md)
-    - [Recoverable Errors with `Result`](ch09-02-recoverable-errors-with-result.md)
-    - [To `panic!` or Not to `panic!`](ch09-03-to-panic-or-not-to-panic.md)
+- [טיפול בשגיאות](ch09-00-error-handling.md)
+    - [שגיאות סופניות ופאניקה](ch09-01-unrecoverable-errors-with-panic.md)
+    - [שגיאות ברות-שיקום ו-`Result`](ch09-02-recoverable-errors-with-result.md)
+    - [להיכנס לפאניקה -- כן או לא](ch09-03-to-panic-or-not-to-panic.md)
 
 - [Generic Types, Traits, and Lifetimes](ch10-00-generics.md)
     - [Generic Data Types](ch10-01-syntax.md)
@@ -109,10 +109,10 @@
 
 ## Advanced Topics
 
-- [Patterns and Matching](ch18-00-patterns.md)
-    - [All the Places Patterns Can Be Used](ch18-01-all-the-places-for-patterns.md)
-    - [Refutability: Whether a Pattern Might Fail to Match](ch18-02-refutability.md)
-    - [Pattern Syntax](ch18-03-pattern-syntax.md)
+- [תבניות והתאמות](ch18-00-patterns.md)
+    - [כל המקומות בהם ניתן להשתמש בתבניות](ch18-01-all-the-places-for-patterns.md)
+    - [ניתנות להפרכה: האם התאמה מול תבנית יכולה להיכשל?](ch18-02-refutability.md)
+    - [תחביר תבניות](ch18-03-pattern-syntax.md)
 
 - [נושאים מתקדמים](ch19-00-advanced-features.md)
     - [ראסט לא מאובטחת](ch19-01-unsafe-rust.md)

@@ -1,14 +1,11 @@
-## Recoverable Errors with `Result`
+## שגיאות ברות-שיקום ו-`Result`
 
-Most errors aren’t serious enough to require the program to stop entirely.
-Sometimes, when a function fails, it’s for a reason that you can easily
-interpret and respond to. For example, if you try to open a file and that
-operation fails because the file doesn’t exist, you might want to create the
-file instead of terminating the process.
+רוב השגיאות אינן חמורות דיין כדי להצדיק את עצירת התכנית כליל. לעיתים, כאשר פונקציה נכשלת, סיבת הכישלון ניתנת לפירוש מועיל וניתן להגיב בצורה מתאימה. לדוגמא, אם מנסים לפתוח קובץ והפעולה נכשלת בגלל שהקובץ אינו קיים, יתכן שתרצו ליצור את הקובץ במקום לסיים את כל התהליך.
 
-Recall from [“Handling Potential Failure with `Result`”][handle_failure]<!--
-ignore --> in Chapter 2 that the `Result` enum is defined as having two
-variants, `Ok` and `Err`, as follows:
+זכרו המסעיף ["טיפול בשגיאות אפשריות באמצעות `Result`"][handle_failure]<!--
+ignore --> מפרק 2 שהמבחר 
+
+`Result` מוגדר כך שיש לו שני ווריאנטים, `Ok` ו- `Err`, כדלהלן:
 
 ```rust
 enum Result<T, E> {
@@ -17,17 +14,9 @@ enum Result<T, E> {
 }
 ```
 
-The `T` and `E` are generic type parameters: we’ll discuss generics in more
-detail in Chapter 10. What you need to know right now is that `T` represents
-the type of the value that will be returned in a success case within the `Ok`
-variant, and `E` represents the type of the error that will be returned in a
-failure case within the `Err` variant. Because `Result` has these generic type
-parameters, we can use the `Result` type and the functions defined on it in
-many different situations where the successful value and error value we want to
-return may differ.
+הטיפוסים `T` ו-`E` הם פרמטרי טיפוסים גנריים: נדון בג'נריקס ביתר פירוט בפרק 10. כל שאתם צריכים לדעת בשלב זה הוא כי `T` מייצג את טיפוס הערך שמוחזר במקרה של הצלחה בתוך הווריאנט `Ok`, בעוד `E` מייצג את טיפוס השגיאה שתוחזר במקרה של כשלון בתוך הווריאנט `Err`. כיוון של- `Result` יש את פרמטרי הטיפוסים הגנריים האלה, ניתן להשתמש בטיפוס `Result` ובפונקציות שמוגדרות עבורו בסיטואציות רבות בהן ערכי ההצלחה וערכי הכשלון בהם אנו מעוניינים שונים זה מזה.
 
-Let’s call a function that returns a `Result` value because the function could
-fail. In Listing 9-3 we try to open a file.
+הבה נקרא לפונקציה שיכולה להיכשל ולכן מחזירה ערך `Result`. ברשימה 9-3 אנו מנסים לפתוח קובץ.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -35,29 +24,13 @@ fail. In Listing 9-3 we try to open a file.
 {{#rustdoc_include ../listings/ch09-error-handling/listing-09-03/src/main.rs}}
 ```
 
-<span class="caption">Listing 9-3: Opening a file</span>
+<span class="caption">רשימה 9-3: פתיחה של קובץ</span>
 
-The return type of `File::open` is a `Result<T, E>`. The generic parameter `T`
-has been filled in by the implementation of `File::open` with the type of the
-success value, `std::fs::File`, which is a file handle. The type of `E` used in
-the error value is `std::io::Error`. This return type means the call to
-`File::open` might succeed and return a file handle that we can read from or
-write to. The function call also might fail: for example, the file might not
-exist, or we might not have permission to access the file. The `File::open`
-function needs to have a way to tell us whether it succeeded or failed and at
-the same time give us either the file handle or error information. This
-information is exactly what the `Result` enum conveys.
+הטיפוס המוחזר מ-`File::open` הוא `Result<T, E>`. הפרמטר הגנרי `T` הוחלף על-ידי המימוש של `File::open` בטיפוס של ערך ההצלחה, דהיינו `std::fs::File`, שהוא מנהל קובץ. הטיפוס עבור `E`, שהוא טיפוס ערך השגיאה, הוא `std::io::Error`. טיפוס ערך מוחזר זה משמעו שקריאה לפונקציה `File::open` יכולה להצליח ולהחזיר מנהל קובץ ממנו נוכל לקרוא ולכתוב. הפונקציה יכולה גם להיכשל: למשל, אם הקובץ לא קיים, או אם אין לנו הרשאות מתאימות לגישה לקובץ. לפונקציה `File::open` צריכה להיות דרך לאמר לנו האם היא הצליחה או נכשלה, ובאותו זמן לתת לנו או מנהל לקובץ, או מידע אודות השגיאה. מידע זה הוא בדיוק מה שהמבחר `Result` מבטא.
 
-In the case where `File::open` succeeds, the value in the variable
-`greeting_file_result` will be an instance of `Ok` that contains a file handle.
-In the case where it fails, the value in `greeting_file_result` will be an
-instance of `Err` that contains more information about the kind of error that
-happened.
+במקרה בו הקריאה ל- `File::open` מצליחה, הערך במשתנה `greeting_file_result` יהיה מופע של `Ok` שבתוכו נמצא מנהל הקובץ. במקרה של כישלון, הערך ב- `greeting_file_result` יהיה מופע של `Err` ובתוכו מידע נוסף אודות השגיאה שארעה.
 
-We need to add to the code in Listing 9-3 to take different actions depending
-on the value `File::open` returns. Listing 9-4 shows one way to handle the
-`Result` using a basic tool, the `match` expression that we discussed in
-Chapter 6.
+עלינו להוסיף את הקוד ברשימה 9-3 על מנת לנקוט בפעולות שונות בתלות בערך ש- `File::open` מחזירה. רשימה 9-4 מראה דרך אחת לטפל ב-`Result` תוך שימוש בכלי בסיסי -- ביטוי `match` בו דנו בפרק 6.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -65,38 +38,24 @@ Chapter 6.
 {{#rustdoc_include ../listings/ch09-error-handling/listing-09-04/src/main.rs}}
 ```
 
-<span class="caption">Listing 9-4: Using a `match` expression to handle the
-`Result` variants that might be returned</span>
 
-Note that, like the `Option` enum, the `Result` enum and its variants have been
-brought into scope by the prelude, so we don’t need to specify `Result::`
-before the `Ok` and `Err` variants in the `match` arms.
+<span class="caption">רשימה 9-4: שימוש בביטוי `match` על מנת לטפל בווריאנים של `Result` שיכולים להיות מוחזרים</span>
 
-When the result is `Ok`, this code will return the inner `file` value out of
-the `Ok` variant, and we then assign that file handle value to the variable
-`greeting_file`. After the `match`, we can use the file handle for reading or
-writing.
+שימו לב, כמו המבחר `Option`, גם המבחר `Result`, והווריאנטים שלו, הובאו אל המתחם על-ידי הפרליוד, ולכן אין צורך לציין `Result::` לפני הווריאנטים `Ok` או `Err` בזרועות ה-`match`.
 
-The other arm of the `match` handles the case where we get an `Err` value from
-`File::open`. In this example, we’ve chosen to call the `panic!` macro. If
-there’s no file named *hello.txt* in our current directory and we run this
-code, we’ll see the following output from the `panic!` macro:
+כאשר התוצאה היא `Ok`, קוד זה יחזיר, מתוך הווריאנט `Ok`, את הערך הפנימי `file`, ואז אנו מבצעים השמה של ערך זה למשתנה `greeting_file`. לאחר ה- `match`, ניתן להשתמש במנהל הקובץ כדי לקרוא ולכתוב.
+
+הזרוע האחרת של ה- `match` מטפלת במקרה בו אנו מקבלים ערך `Err` מהקריאה ל-`File::open`. בדוגמא זו, בחרנו להשתמש בקריאה למאקרו `panic!`. במידה ואין קובץ בשם *hello.txt* בתיקיה הנוכחית, ומריצים את הקוד, נראה את הפלט הבא מהקריאה למאקרו `panic!`:
 
 ```console
 {{#include ../listings/ch09-error-handling/listing-09-04/output.txt}}
 ```
 
-As usual, this output tells us exactly what has gone wrong.
+כרגיל, פלט זה אומר לנו בדיוק מה השתבש.
 
-### Matching on Different Errors
+### התאמות על שגיאות שונות
 
-The code in Listing 9-4 will `panic!` no matter why `File::open` failed.
-However, we want to take different actions for different failure reasons: if
-`File::open` failed because the file doesn’t exist, we want to create the file
-and return the handle to the new file. If `File::open` failed for any other
-reason—for example, because we didn’t have permission to open the file—we still
-want the code to `panic!` in the same way as it did in Listing 9-4. For this we
-add an inner `match` expression, shown in Listing 9-5.
+הקוד ברשימה 9-14 יכנס לפאניקה ללא תלות בסיבה לכשלון של `File::open`. אבל, אנחנו רוצים לנקוט בפעולות שונות עבור סיבות כשלון שונות: אם הקריאה ל- `File::open` נכשלה בגלל שהקובץ אינו קיים, נרצה ליצור את הקובץ ולהחזיר מנהל לקובץ החדש. אם `File::open` נכשלה מכל סיבה אחרת -- למשל, משום שלא היתה לנו הרשאה לפתיחת הקובץ -- עדיין נרצה שהקוד יכנס לפאניקה באותה דרך כמו שקרה ברשימה 9-4. לשם כך נוסיף ביטוי `match` פנימי, כמוצג ברשימה 9-5.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -107,42 +66,25 @@ tests to fail lol -->
 {{#rustdoc_include ../listings/ch09-error-handling/listing-09-05/src/main.rs}}
 ```
 
-<span class="caption">Listing 9-5: Handling different kinds of errors in
-different ways</span>
 
-The type of the value that `File::open` returns inside the `Err` variant is
-`io::Error`, which is a struct provided by the standard library. This struct
-has a method `kind` that we can call to get an `io::ErrorKind` value. The enum
-`io::ErrorKind` is provided by the standard library and has variants
-representing the different kinds of errors that might result from an `io`
-operation. The variant we want to use is `ErrorKind::NotFound`, which indicates
-the file we’re trying to open doesn’t exist yet. So we match on
-`greeting_file_result`, but we also have an inner match on `error.kind()`.
+<span class="caption">רשימה 9-5: טיפול בסוגים שונים של שגיאות בדרכים שונות</span>
 
-The condition we want to check in the inner match is whether the value returned
-by `error.kind()` is the `NotFound` variant of the `ErrorKind` enum. If it is,
-we try to create the file with `File::create`. However, because `File::create`
-could also fail, we need a second arm in the inner `match` expression. When the
-file can’t be created, a different error message is printed. The second arm of
-the outer `match` stays the same, so the program panics on any error besides
-the missing file error.
+הטיפוס של הערך ש- `File::open` מחזירה בתוך הווריאנט `Err` הוא `io::Error`, שהוא מבנה שמסופק על-ידי הספריה הסטנדרטית. למבנה זה יש את המתודה `kind` שלה ניתן לקרוא כדי לקבל ערך מטיפוס `io::ErrorKind`. המבחר `io::ErrorKind` מסופק על-ידי הספריה הסטנדרטית ויש לו ווריאנטים שמייצגים את סוגי השגיאות שעלולות להתרחש בעקבות פעולת `io`. הווריאנט בו אנו רוצים להשתמש הוא `ErrorKind::NotFound`, שמשמעותו היא שהקובץ שניסינו לפתוח אינו קיים. לכן, אנו מתאימים מול `greeting_file_result`, אבל יש לנו גם התאמה פנימית על `error.kind()`.
 
-> ### Alternatives to Using `match` with `Result<T, E>`
->
-> That’s a lot of `match`! The `match` expression is very useful but also very
-> much a primitive. In Chapter 13, you’ll learn about closures, which are used
-> with many of the methods defined on `Result<T, E>`. These methods can be more
-> concise than using `match` when handling `Result<T, E>` values in your code.
->
-> For example, here’s another way to write the same logic as shown in Listing
-> 9-5, this time using closures and the `unwrap_or_else` method:
->
+התנאי שאנו רוצים לבדוק בהתאמה הפנימית הוא האם הערך המוחזר על-ידי `error.kind()` הוא הווריאנט `NotFound` של המבחר `ErrorKind`. אם זה המצב, אנו מנסים ליצור את הקובץ באמצעות `File::create`. אבל, משום שגם `File::create` עלול להכשל, אנו צריכים זרוע שניה בביטוי ה-`match` הפנימי. כאשר לא ניתן ליצור את הקובץ, מודפסת הודעת שגיאה אחרת. הזרוע השניה של ה- `match` החיצוני נשארת ללא שינוי, כך שהתכנית תיכנס לפאניקה בעקבות כל שגיאה חוץ משגיאה הנובעת מכך שהקובץ אינו קיים.
+
+> ### חלופות לשימוש ב-`match` עם `Result<T, E>`
+> 
+> אנחנו מתעסקים כאן עם הרבה מאוד ביטויי `match`! ביטוי `match` הוא יעיל מאוד אבל גם מאוד פרימיטיבי. בפרק 13, תלמדו על סגורים, בהם משתמשים עם רבות מהמתודות המוגדרות עבור `Result<T, E>`. מתודות אלה יכולות להיות יותר תמציתיות `match` כאשר מטפלים בערכי  `Result<T, E>`.
+> 
+> לדוגמא, הינה דרך אחרת לכתוב את אותה הלוגיקה התפעולית מרשימה 9-4, הפעם תוך שימוש בסגורים ובמתודה  `unwrap_or_else`:
+> 
 > <!-- CAN'T EXTRACT SEE https://github.com/rust-lang/mdBook/issues/1127 -->
->
+> 
 > ```rust,ignore
 > use std::fs::File;
 > use std::io::ErrorKind;
->
+> 
 > fn main() {
 >     let greeting_file = File::open("hello.txt").unwrap_or_else(|error| {
 >         if error.kind() == ErrorKind::NotFound {
@@ -155,22 +97,12 @@ the missing file error.
 >     });
 > }
 > ```
->
-> Although this code has the same behavior as Listing 9-5, it doesn’t contain
-> any `match` expressions and is cleaner to read. Come back to this example
-> after you’ve read Chapter 13, and look up the `unwrap_or_else` method in the
-> standard library documentation. Many more of these methods can clean up huge
-> nested `match` expressions when you’re dealing with errors.
+> 
+> למרות שלקוד זה התנהגות זהה לקוד מרשימה 9-5, הוא אינו כולל אף לא ביטוי `match`  אחד, הוא נקיא יותר, וקל יותר לקריאה. אתם מוזמנים לחזור לקוד זה אחרי שתקראו את פרק 13, ולאחר שתקראו על המתודה  `unwrap_or_else` בתיעוד של הספריה הסטנדרטית. מתודות רבות נוספות, כדוגמת זו, יכולות להוביל לקוד נקיא מקינונים של ביטויי `match` כשכותבים קוד לטיפול  בשגיאות.
 
-### Shortcuts for Panic on Error: `unwrap` and `expect`
+### קיצורים לפאניקה בעקבות שגיאה: `unwrap` ו- `expect`
 
-Using `match` works well enough, but it can be a bit verbose and doesn’t always
-communicate intent well. The `Result<T, E>` type has many helper methods
-defined on it to do various, more specific tasks. The `unwrap` method is a
-shortcut method implemented just like the `match` expression we wrote in
-Listing 9-4. If the `Result` value is the `Ok` variant, `unwrap` will return
-the value inside the `Ok`. If the `Result` is the `Err` variant, `unwrap` will
-call the `panic!` macro for us. Here is an example of `unwrap` in action:
+שימוש ב-`match` עובד היטב, אבל יכול להוביל לכתיבה רבת-מלל שאינה תמיד מתקשרת בבהירות את כוונת הקוד. לטיפוס `Result<T, E>` יש מתודות-עזר רבות שמוגדרות עבורו על מנת לבצע פעולות מגוונות. המתודה `unwrap` היא מתודת קיצור-דרך שממומשת בדיוק כמו ביטוי ה-`match` שכתבנו ברשימה 9-4. אם ערך ה-`Result` הוא הווריאנט `Ok`, אז `unwrap` תחזיר את הערך שבתוך ה-`Ok`. אם ערך ה-`Result` הוא הווריאנט `Err`, אז `unwrap` תקרא עבורנו למקרו `panic!`. הינה דוגמא ל- `unwrap` בפעולה:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -178,8 +110,7 @@ call the `panic!` macro for us. Here is an example of `unwrap` in action:
 {{#rustdoc_include ../listings/ch09-error-handling/no-listing-04-unwrap/src/main.rs}}
 ```
 
-If we run this code without a *hello.txt* file, we’ll see an error message from
-the `panic!` call that the `unwrap` method makes:
+אם נריץ קוד זה כשהקובץ *hello.txt* אינו קיים, נראה הודעת שגיאה מהקריאה ל- `panic!` שהמתודה `unwrap` בצעה:
 
 <!-- manual-regeneration
 cd listings/ch09-error-handling/no-listing-04-unwrap
@@ -193,10 +124,7 @@ code: 2, kind: NotFound, message: "No such file or directory" }',
 src/main.rs:4:49
 ```
 
-Similarly, the `expect` method lets us also choose the `panic!` error message.
-Using `expect` instead of `unwrap` and providing good error messages can convey
-your intent and make tracking down the source of a panic easier. The syntax of
-`expect` looks like this:
+באופן דומה, המתודה `expect` מאפשרת לנו לבחור את הודעת הפאניקה שתודפס. לשימוש ב- `expect` במקום ב- `unwrap`, בתוספת הודעות שגיאה מועילות, יש פוטנציאל גם לתקשר את כוונת הקוד וגם להקל על איתור מקורות פאניקה. התחביר של `expect` נראה כך:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -204,10 +132,7 @@ your intent and make tracking down the source of a panic easier. The syntax of
 {{#rustdoc_include ../listings/ch09-error-handling/no-listing-05-expect/src/main.rs}}
 ```
 
-We use `expect` in the same way as `unwrap`: to return the file handle or call
-the `panic!` macro. The error message used by `expect` in its call to `panic!`
-will be the parameter that we pass to `expect`, rather than the default
-`panic!` message that `unwrap` uses. Here’s what it looks like:
+אנו משתמשים ב-`expect` לאותה המטרה בה אנו משתמשים ב-`unwrap`: על מנת להחזיר מנהל לקובץ או לקרוא למקרו `panic!`. הודעת השגיאה ש- `expect` מעביר לקריאה ל- `panic!` היא הפרמטר שאנו מעבירים ל- `expect`, והיא תחליף את הודעת ברירת המחדל של `panic!` בה `unwrap` משתמשת. כך זה נראה למעשה:
 
 <!-- manual-regeneration
 cd listings/ch09-error-handling/no-listing-05-expect
@@ -221,23 +146,13 @@ code: 2, kind: NotFound, message: "No such file or directory" }',
 src/main.rs:5:10
 ```
 
-In production-quality code, most Rustaceans choose `expect` rather than
-`unwrap` and give more context about why the operation is expected to always
-succeed. That way, if your assumptions are ever proven wrong, you have more
-information to use in debugging.
+בקוד מוכן להשקה, רוב הראסטיונרים בוחרים להשתמש ב-`expect` ולא ב-`unwrap`, ולספק הקשר רחב יותר מדוע הפעולה צפויה תמיד להצליח. בדרך זו, אם ההנחות שלכם מתגלות כשגויות, יש בידכם יותר מידע בזמן איתור באגים.
 
-### Propagating Errors
+### השנעת שגיאות
 
-When a function’s implementation calls something that might fail, instead of
-handling the error within the function itself, you can return the error to the
-calling code so that it can decide what to do. This is known as *propagating*
-the error and gives more control to the calling code, where there might be more
-information or logic that dictates how the error should be handled than what
-you have available in the context of your code.
+כאשר מימוש של פונקציה קורא לדבר מה שעלול להכשל, במקום לטפל בשגיאה בפונקציה עצמה, ניתן להחזיר את השגיאה לקוד הקורא כדי שהוא יוכל לחליט מה לעשות. טכניקה זו ידועה כשינוע של שגיאות והיא נותנת לקוד הקורא יותר שליטה, שכן יתכן שבקוד הקורא יש יותר מידע או לוגיקה תפעולית שמכתיבה כיצד יש לטפל בשגיאה, בעוד שבאזור בו נוצרה השגיאה, יש פחות מידע נגיש.
 
-For example, Listing 9-6 shows a function that reads a username from a file. If
-the file doesn’t exist or can’t be read, this function will return those errors
-to the code that called the function.
+לדוגמא, רשימה 9-6 מציגה פונקציה שקוראת שם משתמש מקובץ. אם הקובץ אינו קיים או לא ניתן לקריאה, הפונקציה מחזירה שגיאות אלה לקוד שקרא לפונקציה.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -249,65 +164,24 @@ don't want to include it for rustdoc testing purposes. -->
 {{#include ../listings/ch09-error-handling/listing-09-06/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 9-6: A function that returns errors to the
-calling code using `match`</span>
 
-This function can be written in a much shorter way, but we’re going to start by
-doing a lot of it manually in order to explore error handling; at the end,
-we’ll show the shorter way. Let’s look at the return type of the function
-first: `Result<String, io::Error>`. This means the function is returning a
-value of the type `Result<T, E>` where the generic parameter `T` has been
-filled in with the concrete type `String`, and the generic type `E` has been
-filled in with the concrete type `io::Error`.
+<span class="caption">רשימה 9-6: פונקציה שמחזירה שגיאות לקוד הקורא תוך שימוש ב-`match`</span>
 
-If this function succeeds without any problems, the code that calls this
-function will receive an `Ok` value that holds a `String`—the username that
-this function read from the file. If this function encounters any problems, the
-calling code will receive an `Err` value that holds an instance of `io::Error`
-that contains more information about what the problems were. We chose
-`io::Error` as the return type of this function because that happens to be the
-type of the error value returned from both of the operations we’re calling in
-this function’s body that might fail: the `File::open` function and the
-`read_to_string` method.
+ניתן לכתוב פונקציה זו בצורה קצרה הרבה יותר, אבל נתחיל בביצוע ידני על מנת להבין טיפול בשגיאות; בסוף, נראה את הדרך הקצרה. הבה נתבונן תחילה בטיפוס הערך המוחזר של הפונקציה: `Result<String, io::Error>`. זאת אומרת שהפונקציה מחזירה ערך מטיפוס `Result<T, E>` בו הפרמטר הגנרי `T` הוחלף בטיפוס הקונקרטי `String`, והטיפוס הגנרי `E` הוחלף בטיפוס הקונקרטי `io::Error`.
 
-The body of the function starts by calling the `File::open` function. Then we
-handle the `Result` value with a `match` similar to the `match` in Listing 9-4.
-If `File::open` succeeds, the file handle in the pattern variable `file`
-becomes the value in the mutable variable `username_file` and the function
-continues. In the `Err` case, instead of calling `panic!`, we use the `return`
-keyword to return early out of the function entirely and pass the error value
-from `File::open`, now in the pattern variable `e`, back to the calling code as
-this function’s error value.
+אם פונקציה זו מצליחה ללא בעיות, הקוד שקורא לפונקציה יקבל ערך `Ok` ובתוכו מופע של `String` -- שם המשתמש שהפונקציה קראה מהקובץ. אם הפונקציה נתקלת בבעיות כלשהן, הקוד הקורא יקבל ערך `Err` ובתוכו מופע של `io::Error` שמכיל עוד מידע אודות הבעיות. בחרנו את `io::Error` כטיפוס הערך המוחזר מפונקציה זו כי זה הטיפוס של ערך השגיאה שמוחזר משתי הפעולות שעלולות להכשל להן אנו קוראים בגוף הפונקציה: הפונקציה `File::open` והמתודה `read_to_string`.
 
-So if we have a file handle in `username_file`, the function then creates a new
-`String` in variable `username` and calls the `read_to_string` method on
-the file handle in `username_file` to read the contents of the file into
-`username`. The `read_to_string` method also returns a `Result` because it
-might fail, even though `File::open` succeeded. So we need another `match` to
-handle that `Result`: if `read_to_string` succeeds, then our function has
-succeeded, and we return the username from the file that’s now in `username`
-wrapped in an `Ok`. If `read_to_string` fails, we return the error value in the
-same way that we returned the error value in the `match` that handled the
-return value of `File::open`. However, we don’t need to explicitly say
-`return`, because this is the last expression in the function.
+גוף הפונקציה מתחיל בקריאה לפונקציה `File::open`. אחר-כך, אנו מטפלים בערך ה- `Result` באמצעות `match` בדומה ל- `match` שברשימה 9-4. אם `File::open` מתבצע בהצלחה, מנהל הקובץ במשתנה התבנית `file` מקבל את הערך שבמשתנה בר-השינוי `username_file`, והפונקציה ממשיכה. במקרה של `Err`, במקום לקרוא ל- `panic!`, אנו משתמשים במילת המפתח `return` כדי לחזור מוקדם מהפונקציה ולהחזיר את ערך השגיאה מ- `File::open`, שעכשיו נמצא במשתנה התבנית `e`, בחזרה לקוד הקורא, בדמות ערך השגיאה המוחזר מפונקציה זו.
 
-The code that calls this code will then handle getting either an `Ok` value
-that contains a username or an `Err` value that contains an `io::Error`. It’s
-up to the calling code to decide what to do with those values. If the calling
-code gets an `Err` value, it could call `panic!` and crash the program, use a
-default username, or look up the username from somewhere other than a file, for
-example. We don’t have enough information on what the calling code is actually
-trying to do, so we propagate all the success or error information upward for
-it to handle appropriately.
+בצורה זו, אם יש לנו מנהל קובץ ב- `username_file`, הפונקציה תיצור מופע חדש של `String` במשתנה `username` ותקרא למתודה `read_to_string` על מנהל הקובץ ב- `username_file` כדי לקרוא את תוכן הקובץ לתוך `username`. המתודה `read_to_string` מחזירה `Result` גם היא כיוון שהיא עלולה להכשל, אפילו אם `File::open` הצליחה. לכן אנו צריכים ביטוי `match` נוסף כדי לטפל בערך `Result` זה: אם `read_to_string` מצליחה, אז הפונקציה שלנו הצליחה גם היא, ואנחנו מחזירים את שם המשתמש מהקובץ שנמצא ב-`username`, עטוף בתוך `Ok`. אם `read_to_string` נכשלה, אנו מחזירים את ערך השגיאה באותה דרך בה החזרנו את ערך השגיאה ב- `match` שטיפל בערך המוחזר של `File::open`. אולם, אין צורך לרשום `return` במפורש, שכן זהו הביטוי האחרון בפונקציה.
 
-This pattern of propagating errors is so common in Rust that Rust provides the
-question mark operator `?` to make this easier.
+הקוד שקורא לקוד זה יטפל בקבלת או ערך `Ok` שמכיל שם משתמש, או ערך `Err` שמכיל ערך `io::Error`. הקוד הקורא הוא שמחלטי כיצד לטפל בערכים אלה. אם הקוד הקורא מקבל ערך `Err`, הוא יוכל לקרוא ל- `panic!` ולהקריס את התכנית, להשתמש בברירת מחדל עבור שם המשתמש, או לחפש את שם המשתמש במקום אחר מחוץ לקובץ, למשל. אין לנו מספיק מידע בדבר מה בדיוק הקוד הקורא מנסה לעשות, ולכן אנו משנעים את כל ההצלחות והכשלונות במעלה מחסנית הקריאות, שם הן ינוהלו.
 
-#### A Shortcut for Propagating Errors: the `?` Operator
+תבנית זו של שינוע שגיאות היא כל-כך נפוצה בראסט שראסט מספקת את האופרטור `?` כדי להקל על התהליך.
 
-Listing 9-7 shows an implementation of `read_username_from_file` that has the
-same functionality as in Listing 9-6, but this implementation uses the
-`?` operator.
+#### קיצור דרך לשינוע שגיאות: האופרטור `?`
+
+רשימה 9-7 מראה מימוש של `read_username_from_file` עם אותה הפונקציונאליות כמו ברשימה 9-6, אלה שמימוש `?`.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -319,43 +193,18 @@ don't want to include it for rustdoc testing purposes. -->
 {{#include ../listings/ch09-error-handling/listing-09-07/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 9-7: A function that returns errors to the
-calling code using the `?` operator</span>
 
-The `?` placed after a `Result` value is defined to work in almost the same way
-as the `match` expressions we defined to handle the `Result` values in Listing
-9-6. If the value of the `Result` is an `Ok`, the value inside the `Ok` will
-get returned from this expression, and the program will continue. If the value
-is an `Err`, the `Err` will be returned from the whole function as if we had
-used the `return` keyword so the error value gets propagated to the calling
-code.
+<span class="caption">רשימה 9-7: פונקציה שמחזירה שגיאות לקוד הקורא באמצעות האופרטור `?`</span>
 
-There is a difference between what the `match` expression from Listing 9-6 does
-and what the `?` operator does: error values that have the `?` operator called
-on them go through the `from` function, defined in the `From` trait in the
-standard library, which is used to convert values from one type into another.
-When the `?` operator calls the `from` function, the error type received is
-converted into the error type defined in the return type of the current
-function. This is useful when a function returns one error type to represent
-all the ways a function might fail, even if parts might fail for many different
-reasons.
+סימן השאלה `?` הממוקם אחרי ערך ה-`Result` פועל כמעט באותו אופן כמו ביטויי ה- `match` שהגדרנו כדי לטפל `Result` ברשימה 9-6. אם ערך ה-`Result` הוא `Ok`, הערך בתוך ה- `Ok` יוחזר מהביטוי, והתכנית תמשיך בריצתה. אם הערך הוא `Err`, ערך `Err` זה יוחזר מהפונקציה בדיוק כאילו נעשה שימוש במילת המפתח `return`, וכך ערך השגיאה משונע מעלה לקוד הקורא.
 
-For example, we could change the `read_username_from_file` function in Listing
-9-7 to return a custom error type named `OurError` that we define. If we also
-define `impl From<io::Error> for OurError` to construct an instance of
-`OurError` from an `io::Error`, then the `?` operator calls in the body of
-`read_username_from_file` will call `from` and convert the error types without
-needing to add any more code to the function.
+ישנו הבדל בין מה שביטוי ה-`match` ברשימה 9-6 עושה, למה שהאופרטור `?` עושה: ערכי שגיאה עליהם מפעילים את האופרטור `?` מועברים דרך הפונקציה `from`, שמוגדרת בתכונה `From` שבספריה הסטנדרטית, שמשמשת כדי להמיר ערכים מטיפוס אחד לאחר. כאשר האופרטור `?` קורא לפונקציה `from`, טיפוס השגיאה שמתקבל מומר לטיפוס השגיאה בערך המוחזר של הפונקציה הנוכחית. תכונה זו שימושית כאשר פונקציה מחזירה טיפוס שגיאה אחד כדי לייצג את כל האופנים בהם הפונקציה יכולה להכשל, אפילו אם חלקים שלה יכולים להכשל בשל סיבות רבות אחרות.
 
-In the context of Listing 9-7, the `?` at the end of the `File::open` call will
-return the value inside an `Ok` to the variable `username_file`. If an error
-occurs, the `?` operator will return early out of the whole function and give
-any `Err` value to the calling code. The same thing applies to the `?` at the
-end of the `read_to_string` call.
+לדוגמא, ניתן לשנות את הפונקציה `read_username_from_file` ברשימה 9-7 כך שתחזיר את טיפוס השגיאה המותאם `OurError`, אותו אנו מגדירים בעצמנו. אם נוסיף גם את המימוש `impl From<io::Error> for OurError` כדי לבנות מופע של `OurError` מ- `io::Error`, אז הפעלות האופרטור `?` בגוף של `read_username_from_file` יקראו ל- `from` וימירו את טיפוסי השגיאה ללא צורך להוסיף עוד קוד לפונקציה.
 
-The `?` operator eliminates a lot of boilerplate and makes this function’s
-implementation simpler. We could even shorten this code further by chaining
-method calls immediately after the `?`, as shown in Listing 9-8.
+בהקשר של רשימה 9-7, האופרטור `?` בסוף הקריאה ל- `File::open` תחזיר את הערך בתוך ה-`Ok` למשתנה `username_file`. אם מתקבלת שגיאה `?` יחזור מוקדם מהפונקציה ויעביר כל ערך `Err` שהוא לקוד הקורא. אותו העקרון תקף עבור `?` בסוף הקריאה ל-`read_to_string`.
+
+האופרטור `?` מונע את הצורך ליצור הרבה קוד סתמי והופך את המימוש של הפונקציה הזו לפשוט יותר. ניתן אפילו לקצר את הקוד עוד יותר על-ידי שרשור קריאות למתודות מייד אחרי ה-`?`, כמוצג ברשימה 9-8.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -367,19 +216,12 @@ don't want to include it for rustdoc testing purposes. -->
 {{#include ../listings/ch09-error-handling/listing-09-08/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 9-8: Chaining method calls after the `?`
-operator</span>
 
-We’ve moved the creation of the new `String` in `username` to the beginning of
-the function; that part hasn’t changed. Instead of creating a variable
-`username_file`, we’ve chained the call to `read_to_string` directly onto the
-result of `File::open("hello.txt")?`. We still have a `?` at the end of the
-`read_to_string` call, and we still return an `Ok` value containing `username`
-when both `File::open` and `read_to_string` succeed rather than returning
-errors. The functionality is again the same as in Listing 9-6 and Listing 9-7;
-this is just a different, more ergonomic way to write it.
+<span class="caption">רשימה 9-8: שרשור קריאות למתודות לאחר שימוש באופרטור `?`</span>
 
-Listing 9-9 shows a way to make this even shorter using `fs::read_to_string`.
+העברנו את יצירת המופע החדש של `String` ב- `username` לתחילת הפונקציה; חלק זה לא שונה. במקום ליצור את המשתנה `username_file`, שרשרנו את הקריאה ל- `read_to_string` ישירות על התוצאה של `File::open("hello.txt")?`. עדיין יש `?` בסוף הקריאה ל-`read_to_string`, ואנחנו עדיין מחזירים ערך `Ok` שמכיל `username` כאשר גם `File::open` וגם `read_to_string` מצליחים, במקום להחזיר שגיאות. הפונקציונאליות, שוב, זהה לזאת שברשימה 9-6 וברשימה 9-7; פה אנו רואים דרך שונה, יותר נעימה, להשיג את אותה ההתנהגות.
+
+רשימה 9-9 מראה דרך לעשות זאת עוד יותר בקצרה באמצעות `fs::read_to_string`.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -391,29 +233,16 @@ don't want to include it for rustdoc testing purposes. -->
 {{#include ../listings/ch09-error-handling/listing-09-09/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 9-9: Using `fs::read_to_string` instead of
-opening and then reading the file</span>
 
-Reading a file into a string is a fairly common operation, so the standard
-library provides the convenient `fs::read_to_string` function that opens the
-file, creates a new `String`, reads the contents of the file, puts the contents
-into that `String`, and returns it. Of course, using `fs::read_to_string`
-doesn’t give us the opportunity to explain all the error handling, so we did it
-the longer way first.
+<span class="caption">רשימה 9-9: שימוש ב- `fs::read_to_string` במקום לפתוח קובץ, ואז לקרוא ממנו</span>
 
-#### Where The `?` Operator Can Be Used
+קריאת קובץ למחרוזת היא פעולה שכיחה למדי, ולכן הספריה הסטנדרטית מספקת את הפונקציה `fs::read_to_string` שפותחת קובץ, יוצרת מופע חדש של `String`, קוראת את תוכן הקובץ, מאכסנת את התוכן לתוך מופע ה-`String`, ומחזירה אותו. ההמנעות, לעיל, מהשימוש ב-`fs::read_to_string` סיפקה לנו הזדמנות להדגים בפירוט רב את מלאכת הטיפול בשגיאות בארסט.
 
-The `?` operator can only be used in functions whose return type is compatible
-with the value the `?` is used on. This is because the `?` operator is defined
-to perform an early return of a value out of the function, in the same manner
-as the `match` expression we defined in Listing 9-6. In Listing 9-6, the
-`match` was using a `Result` value, and the early return arm returned an
-`Err(e)` value. The return type of the function has to be a `Result` so that
-it’s compatible with this `return`.
+#### מקומות בהם ניתן להשתמש באופרטור `?`
 
-In Listing 9-10, let’s look at the error we’ll get if we use the `?` operator
-in a `main` function with a return type incompatible with the type of the value
-we use `?` on:
+באופרטור `?` ניתן להשתמש רק בפונקציות בהן טיפוס הערך המוחזר קומפטבילי עם הערך עליו מפעילים את `?`. זאת משום שהאופרטור `?` מוגדר לבצע החזרה מוקדמת של ערך מהפונקציה, באותו אופן כמו ביטוי ה-`match` שהגדרנו ברשימה 9-6. ברשימה 9-6, ה-`match` השתמש בערך `Result`, והזרוע של ההחזרה המוקדמת החזריה ערך מטיפוס `Err(e)`. טיפוס הערך המוחזר של הפונקציה חייב להיות `Result` כדי להיות קומפטיבילי עם פקודת `return` זו.
+
+ברשימה 9-10, הבה נתבונן בשגיאה שנקבל אם נשתמש באופרטור `?` בפונקציה `main` שבה טיפוס הערך המוחזר אינו קומפטבילי עם הטיפוס של הערך עליו אנו מפעילים את `?`:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -421,116 +250,52 @@ we use `?` on:
 {{#rustdoc_include ../listings/ch09-error-handling/listing-09-10/src/main.rs}}
 ```
 
-<span class="caption">Listing 9-10: Attempting to use the `?` in the `main`
-function that returns `()` won’t compile</span>
 
-This code opens a file, which might fail. The `?` operator follows the `Result`
-value returned by `File::open`, but this `main` function has the return type of
-`()`, not `Result`. When we compile this code, we get the following error
-message:
+<span class="caption">רשימה 9-10: ניסיון להשתמש ב-`?` בפונקציה `main` שמחזירה `()` לא יעבור קומפילציה</span>
+
+קוד זה פותח את הקובץ, וזו פעולה שעלולה להכשל. האופרטור `?` פועל על ערך ה-`Result` שמוחזר על-ידי `File::open`, אבל הפונקציה `main` מחזירה ערך מטיפוס `()`, לא `Result`. כאשר נקמפל קוד זה, נקבל את הודעת השגיאה הבאה:
 
 ```console
 {{#include ../listings/ch09-error-handling/listing-09-10/output.txt}}
 ```
 
-This error points out that we’re only allowed to use the `?` operator in a
-function that returns `Result`, `Option`, or another type that implements
-`FromResidual`.
+שגיאה זו מבהירה שניתן להפעיל את האופרטור `?` בתוך פונקציות שמחזירואת `Result`, `Option`, או כל טיפוס אחר שמממש את `FromResidual`.
 
-To fix the error, you have two choices. One choice is to change the return type
-of your function to be compatible with the value you’re using the `?` operator
-on as long as you have no restrictions preventing that. The other technique is
-to use a `match` or one of the `Result<T, E>` methods to handle the `Result<T,
-E>` in whatever way is appropriate.
+יש בידכם שתי אפשרויות כדי לפתור את הבעיה. אפשרות אחת היא לשנות את טיפוס הערך המוחזר של הפונקציה כך שהוא יהיה קומפטבילי עם הערך עליו אתם מפעילים את האופרטור `?`, כל עוד אין מגבלות שמונעות ממכם לעשות זאת. הטכניקה השניה היא להשתמש ב-`match` על אחת מהמתודות של `Result<T, E>` כדי לטפל ב-`Result<1>` בדרך נאותה.
 
-The error message also mentioned that `?` can be used with `Option<T>` values
-as well. As with using `?` on `Result`, you can only use `?` on `Option` in a
-function that returns an `Option`. The behavior of the `?` operator when called
-on an `Option<T>` is similar to its behavior when called on a `Result<T, E>`:
-if the value is `None`, the `None` will be returned early from the function at
-that point. If the value is `Some`, the value inside the `Some` is the
-resulting value of the expression and the function continues. Listing 9-11 has
-an example of a function that finds the last character of the first line in the
-given text:
+הודעת השגיאה מזכירה שניתן להפעיל את `?` גם על ערכי `Option<T>`. כמו במקרה של הפעלת `?` על `Result`, ניתן להפעיל את `?` עם על `Option` בגוף של פונקציה שמחזירה `Option`. ההתנהגות של האופרטור `?` כאשר מפעילים אותו על `Option<T>` דומה להתנהגות כאשר הוא מופעל על `Result<T, E>`: אם הערך הוא `None`, ה- `None` יוחזר מהפונקציה בנקודה זו. אם הערך הוא `Some`, הערך הפנימי של ה- `Some` i יהיה הערך של הביטוי, והפונקציה תמשיך בריצה. ברשימה 9-11 יש דוגמא לפונקציה שמוצאת את התו האחרון של השורה הראשונה בטקסט נתון:
 
 ```rust
 {{#rustdoc_include ../listings/ch09-error-handling/listing-09-11/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 9-11: Using the `?` operator on an `Option<T>`
-value</span>
 
-This function returns `Option<char>` because it’s possible that there is a
-character there, but it’s also possible that there isn’t. This code takes the
-`text` string slice argument and calls the `lines` method on it, which returns
-an iterator over the lines in the string. Because this function wants to
-examine the first line, it calls `next` on the iterator to get the first value
-from the iterator. If `text` is the empty string, this call to `next` will
-return `None`, in which case we use `?` to stop and return `None` from
-`last_char_of_first_line`. If `text` is not the empty string, `next` will
-return a `Some` value containing a string slice of the first line in `text`.
+<span class="caption">רשימה 9-11: שימוש באופרטור `?` על ערך `Option<T>`</span>
 
-The `?` extracts the string slice, and we can call `chars` on that string slice
-to get an iterator of its characters. We’re interested in the last character in
-this first line, so we call `last` to return the last item in the iterator.
-This is an `Option` because it’s possible that the first line is the empty
-string, for example if `text` starts with a blank line but has characters on
-other lines, as in `"\nhi"`. However, if there is a last character on the first
-line, it will be returned in the `Some` variant. The `?` operator in the middle
-gives us a concise way to express this logic, allowing us to implement the
-function in one line. If we couldn’t use the `?` operator on `Option`, we’d
-have to implement this logic using more method calls or a `match` expression.
+פונקציה זו מחזירה `Option<char>` כיוון שיתכן ויש תו להחזרה, אבל יתכן גם שאין. קוד זה לוקח את חיתוך המחרוזת בארגומנט `text` וקורא עליו למתודה `lines`, שמחזירה איטרטור למעבר על שורות המחרוזת. משום שפונקציה זו רוצה לבחון את השורה הראשונה, היא קוראת ל-`next` על האיטרטור על מנת לקבל את הערך הראשון מהאיטרטור. אם `text` הוא מחרוזת ריקה, קריאה זו ל-`text` תחזיר `None`, ובמקרה זה `?` יגרום לעצירת הפונקציה והחזרת הערך `None` מ-`last_char_of_first_line`. אם `text` i אינה מחרוזת ריקה, `next` תחזיר ערך `Some` שמכיל חיתוך מחרוזת של השורה הראשונה ב-`text`.
 
-Note that you can use the `?` operator on a `Result` in a function that returns
-`Result`, and you can use the `?` operator on an `Option` in a function that
-returns `Option`, but you can’t mix and match. The `?` operator won’t
-automatically convert a `Result` to an `Option` or vice versa; in those cases,
-you can use methods like the `ok` method on `Result` or the `ok_or` method on
-`Option` to do the conversion explicitly.
+האופרטור `?` ממצה את חיתוך המחרוזת, ואז ניתן לקרוא ל-`chars` על חיתוך זה כדי לקבל איטרטור על התווים שבו. אנו מעוניינים בתו האחרון בשורה ראשונה זו, ולכן אנו קוראים ל-`last` כדי להחזיר את הפריט האחרון באיטרטור. זהו ערך מטיפוס `Option` כיוון שיתכן שהשורה הראשונה היא מחרוזת ריקה, למשל אם `text` מתחיל עם שורה ריקה ולאחריה כמה שורות לא ריקות, כמו `"\nhi"`. אבל, אם יש תו אחרון בשורה הראשונה, הוא יוחזר בתוך הווריאנט `Some`. האופרטור `?` באמצע מאפשר לנו דרך תמציתית לבטא לוגיקה תפעולית זו, ובכך מתאפשר לנו לממש פונקציה זו בשורה בודדת. אם לא היינו משתמשים באופרטור `?` על `Option`, היה עלינו לממש את הלוגיקה התפעולית הרצויע תוך שימוש במתודות נוספות או עם ביטוי `match`.
 
-So far, all the `main` functions we’ve used return `()`. The `main` function is
-special because it’s the entry and exit point of executable programs, and there
-are restrictions on what its return type can be for the programs to behave as
-expected.
+שימו לב `?` על `Result` בפונקציה שמחזירה `Result`, וניתן להשתמש באופרטור `?` על `Option` בפונקציה שמחזירה `Option`, אבל לא ניתן לערבב אפשרויות אלה. האופרטור `?` לא ממיר אוטומטית בין `Result` ל-`Option`; במקרים כאלה, ניתן להשתמש במתודות כמו `ok` על `Result` או המתודה `ok_or` על `Option` כדי לבצע המרות בצורה מפורשת.
 
-Luckily, `main` can also return a `Result<(), E>`. Listing 9-12 has the
-code from Listing 9-10 but we’ve changed the return type of `main` to be
-`Result<(), Box<dyn Error>>` and added a return value `Ok(())` to the end. This
-code will now compile:
+עד כה, כל פונקציות ה-`main` החזירו `()`. `main` היא פונקציה מיוחדת כיוון שהיא נקודת הפתיחה והסיום של תכניות הרצה, וישנן מגבלות על סוגי הערך המוחזר כדי לתכניות יהיו התנהגויות צפויות.
+
+למרבה המזל, `main` יכולה להחזיר את הטיפוס `Result<(), E>`. ברשימה 9-12 יש קוד מרשימה 9-10, אבל שינינו את טיפוס הערך המוחזר של `main` להיות `Result<(), Box<dyn Error>>` והוספנו את הערך `Ok(())` בסוף. קוד זה עובר קומפילציה:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch09-error-handling/listing-09-12/src/main.rs}}
 ```
 
-<span class="caption">Listing 9-12: Changing `main` to return `Result<(), E>`
-allows the use of the `?` operator on `Result` values</span>
 
-The `Box<dyn Error>` type is a *trait object*, which we’ll talk about in the
-[“Using Trait Objects that Allow for Values of Different
-Types”][trait-objects]<!-- ignore --> section in Chapter 17. For now, you can
-read `Box<dyn Error>` to mean “any kind of error.” Using `?` on a `Result`
-value in a `main` function with the error type `Box<dyn Error>` is allowed,
-because it allows any `Err` value to be returned early. Even though the body of
-this `main` function will only ever return errors of type `std::io::Error`, by
-specifying `Box<dyn Error>`, this signature will continue to be correct even if
-more code that returns other errors is added to the body of `main`.
+<span class="caption">רשימה 9-12: שינוי `main` כך שתחזיר `Result<(), E>` מאפשר שימוש באופרטור `?` על ערכי `Result`</span>
 
-When a `main` function returns a `Result<(), E>`, the executable will
-exit with a value of `0` if `main` returns `Ok(())` and will exit with a
-nonzero value if `main` returns an `Err` value. Executables written in C return
-integers when they exit: programs that exit successfully return the integer
-`0`, and programs that error return some integer other than `0`. Rust also
-returns integers from executables to be compatible with this convention.
+הטיפוס `Box<dyn Error>` הוא *אובייקט תכונה*, נושא בו נדון בסעיף ["שימוש באובייקטי תכונה שמאפשרים ערכים מטיפוסים שונים"][trait-objects]<!-- ignore --> בפרק 17. לעכשיו, תוכלו לחשוב על `Box<dyn Error>` כעל "כל סוג שהוא של שגיאה." שימוש ב- `?` על ערך `Result` בפונקציה `main` עם טיפוס השגיאה `Box<dyn Error>` מותר, כי הוא מאפשר לכל ערך `Err` להיות מוחזר מיידית. למרות שהגוף של פונקצית `main` זו תמיד יחזיר שגיאות מטיפוס `std::io::Error`, על-ידי ציון `Box<dyn Error>`, חותם זה ימשיך להיות תקף גם אם יוסף קוד נוסף, שמחזיר שגיאות אחרות, לגוף ה-`main`.
 
-The `main` function may return any types that implement [the
-`std::process::Termination` trait][termination]<!-- ignore -->, which contains
-a function `report` that returns an `ExitCode`. Consult the standard library
-documentation for more information on implementing the `Termination` trait for
-your own types.
+כאשר פונקצית `main` מחזירה `Result<(), E>`, קובץ ההרצה יסיים עם ערך `0` אם `main` מחזירה `Ok(())`, ויסיים עם ערך שונה מ-0 אם `main` החזירה ערך `Err`. קבצי הרצה שכתובים ב-C מחזירים שלמים כאשר הם מסיימים: תכניות שמסיימות בהצלחה מחזירות `0`, ותכניות בהן ארעה שגיאה מחזירות ערך שלם כלשהו שונה מ-`0`. גם ראסט מחזירה שלמים מקבצי הרצה על מנת לשמר תאימות עם מוסכמה זו.
 
-Now that we’ve discussed the details of calling `panic!` or returning `Result`,
-let’s return to the topic of how to decide which is appropriate to use in which
-cases.
+הפונקציה `main` רשאית להחזיר כל טיפוס שמממש את [the `std::process::Termination` trait][termination]<!-- ignore -->, שכולל את הפונקציה `report` that returns an `ExitCode`. פנו לתיעוד של הספריה הסטנדרטית לעוד מידע אודות מימוש התכונה `Termination` עבור טיפוסים משלכם.
+
+לאחר שדנו בפרטים של קריאה ל-`panic!` והחזרת `Result`, הבה נחזור לנושא של בחירה נאותה בין שתי אפשרויות אלה.
 
 [handle_failure]: ch02-00-guessing-game-tutorial.html#handling-potential-failure-with-result
 [trait-objects]: ch17-02-trait-objects.html#using-trait-objects-that-allow-for-values-of-different-types

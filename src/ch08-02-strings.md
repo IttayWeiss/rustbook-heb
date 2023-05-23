@@ -1,329 +1,201 @@
-## Storing UTF-8 Encoded Text with Strings
+## אחסון טקסט בקידוד UTF-8 כמחרוזת
 
-We talked about strings in Chapter 4, but we’ll look at them in more depth now.
-New Rustaceans commonly get stuck on strings for a combination of three
-reasons: Rust’s propensity for exposing possible errors, strings being a more
-complicated data structure than many programmers give them credit for, and
-UTF-8. These factors combine in a way that can seem difficult when you’re
-coming from other programming languages.
+דיברנו מעט על מחרוזות בפרק 4, אבל כעת נדון בהן לעמקן. ראסטיונרים מסתבכים לרוב עם מחרוזות משלוש סיבות: ראשית, הנטייה של ראסט לחשוף מראש שגיאות אפשריות; שנית, היות מחרוזות מבנה נתונים מסובך יותר ממה שמתכנתים רבים נוטים לחשוב; ושלישית, קידוד UTF-8. כאשר אתה מגיע משפות תכנות אחרות, סיבות אלו עלולות לשלוב יחדיו לכדי קושי אמיתי.
 
-We discuss strings in the context of collections because strings are
-implemented as a collection of bytes, plus some methods to provide useful
-functionality when those bytes are interpreted as text. In this section, we’ll
-talk about the operations on `String` that every collection type has, such as
-creating, updating, and reading. We’ll also discuss the ways in which `String`
-is different from the other collections, namely how indexing into a `String` is
-complicated by the differences between how people and computers interpret
-`String` data.
+אנו דנים כאן במחרוזות בהקשר של אוספים כיוון שמחרוזות בראסט אינם אלא אוסף של בתים (bytes), בתוספת מתודות שימושיות המאפשרות לבצע מניפולציה על אותם בתים כאשר הם מתפרשים כטקסט. בחלק זה נדון בפעולות על הטיפוס `String` שניתן לבצע על כל סוג אוסף, כגון יצירה, עדכון, וקריאה. נדון גם בדרכים בהן 'String' שונה מאוספים אחרים, כלומר כיצד גישה באינדקס ל-'String' היא מורכבת יותר ממה שנדמה, עקב האופן השונה-בתכלית בו בו אנשים ומחשבים מפרשים נתוני 'String'.
 
-### What Is a String?
+### מהי מחרוזת?
 
-We’ll first define what we mean by the term *string*. Rust has only one string
-type in the core language, which is the string slice `str` that is usually seen
-in its borrowed form `&str`. In Chapter 4, we talked about *string slices*,
-which are references to some UTF-8 encoded string data stored elsewhere. String
-literals, for example, are stored in the program’s binary and are therefore
-string slices.
+תחילה נגדיר למה אנחנו מתכוונים במונח _מחרוזת_. בבסיס השפה, לראסט יש רק סוג מחרוזת אחד, וזהו חיתוך המחרוזת `str`, הנפוץ לרוב בצורתו המושאלת `&str`. בפרק 4, דיברנו על _חיתוכי מחרוזות_, שאינם אלא הפניות לנתוני מחרוזת בקידוד UTF-8, המאוחסנים במקום כזה או אחר בזיכרון. מחרוזות מפורשות (string literals), למשל, מאוחסנות בבינארי של התוכנית, נחשבות לחיתוכי מחרוזת.
 
-The `String` type, which is provided by Rust’s standard library rather than
-coded into the core language, is a growable, mutable, owned, UTF-8 encoded
-string type. When Rustaceans refer to “strings” in Rust, they might be
-referring to either the `String` or the string slice `&str` types, not just one
-of those types. Although this section is largely about `String`, both types are
-used heavily in Rust’s standard library, and both `String` and string slices
-are UTF-8 encoded.
+הטיפוס `String`, מסופק על ידי הספרייה הסטנדרטית של ראסט, ואינו מקודד בשפת הליבה. זהו טיפוס מחרוזת בקידוד UTF-8 המסוגל לשנות את גודלו, ושניתן לשינוי ולבעלות. כאשר ראסטיונרים מדברים על "מחרוזות", ייתכן שהם מתייחסים לטיפוס `String` או לטיפוס '&str' של חיתוך המחרוזת. למרות שסעיף זה עוסק בעיקר בטיפוס `String`, שני הטיפוסים נמצאים בשימוש תדיר בספרייה הסטנדרטית של ראסט, ושניהם מקודדים בפורמט UTF-8.
 
-### Creating a New String
+### יצירת מחרוזת חדשה
 
-Many of the same operations available with `Vec<T>` are available with `String`
-as well, because `String` is actually implemented as a wrapper around a vector
-of bytes with some extra guarantees, restrictions, and capabilities. An example
-of a function that works the same way with `Vec<T>` and `String` is the `new`
-function to create an instance, shown in Listing 8-11.
+רבות מאותן פעולות הזמינות לשימוש עם `Vec<T>` זמינות גם עם `String`. הרי, `String` למעשה ממומשת כעטיפה סביב וקטור של בתים בתוספת ערבויות, הגבלות, ויכולות נוספות. דוגמה לפונקציה שפועלת באופן דומה עבור `Vec<T>` ו-`String` היא הפונקציה `new` היוצרת מופע חדש, כפי שמציגה רשימה 8-11.
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-11/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 8-11: Creating a new, empty `String`</span>
+<span class="caption">רשימה 8-11: יצירת `String` חדשה וריקה</span>
 
-This line creates a new empty string called `s`, which we can then load data
-into. Often, we’ll have some initial data that we want to start the string
-with. For that, we use the `to_string` method, which is available on any type
-that implements the `Display` trait, as string literals do. Listing 8-12 shows
-two examples.
+שורה זו יוצרת מחרוזת ריקה חדשה בשם `s`, אליה נוכל לטעון נתונים. לעתים קרובות, יהיו לנו נתונים ראשוניים איתם נרצה להתחיל את המחרוזת. לשם כך, אנו משתמשים במתודה 'to_string'. זוהי מתודה הזמינה עבור כל טיפוס המיישם את תכונת ה-'Display', בכלל זאת מחרוזות מפורשות. רשימה 8-12 מציגה שתי דוגמאות.
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-12/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 8-12: Using the `to_string` method to create a
-`String` from a string literal</span>
+<span class="caption">רשימה 8-12: שימוש בשיטת `to_string` ליצירת `String` ממחרוזת מפורשת </span>
 
-This code creates a string containing `initial contents`.
+קוד זה יוצר מחרוזת המכילה את התוכן `initial contents`.
 
-We can also use the function `String::from` to create a `String` from a string
-literal. The code in Listing 8-13 is equivalent to the code from Listing 8-12
-that uses `to_string`.
+נוכל גם להשתמש בפונקציה `String::from` כדי ליצור `String` ממחרוזת מפורשת. הקוד ברשימה 8-13 שקול לקוד מרשימה 8-12 שמשתמש ב-'to_string'.
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-13/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 8-13: Using the `String::from` function to create
-a `String` from a string literal</span>
+<span class="caption">רשימה 8-13: שימוש בפונקציה `String::from` כדי ליצור `String` ממחרוזת מפורשת </span>
 
-Because strings are used for so many things, we can use many different generic
-APIs for strings, providing us with a lot of options. Some of them can seem
-redundant, but they all have their place! In this case, `String::from` and
-`to_string` do the same thing, so which you choose is a matter of style and
-readability.
+מכיוון שמחרוזות משמשות לכל-כך הרבה דברים, אנחנו יכולים להשתמש בשלל ממשקי API גנריים המספקים לנו אפשרויות רבות. חלקם עשוים להיראות מיותרים, אך כולם ראויים! במקרה זה, `String::from` ו-`to_string` מבצעים את אותה הפעולה, כך שבחירתכם תהיה בעיקרה סוגיה של סגנון וקריאות.
 
-Remember that strings are UTF-8 encoded, so we can include any properly encoded
-data in them, as shown in Listing 8-14.
+יש לזכור שמחרוזות מקודדות בקידוד UTF-8, כך שנוכל לכלול בהן כל נתונים המקודדים כיאות, כפי שמציגה רשימה 8-14.
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-14/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 8-14: Storing greetings in different languages in
-strings</span>
+<span class="caption">רישום 8-14: אחסון ברכות בשפות שונות במחרוזות</span>
 
-All of these are valid `String` values.
+כל אלה הם ערכי `String` חוקיים.
 
-### Updating a String
+### עדכון מחרוזת
 
-A `String` can grow in size and its contents can change, just like the contents
-of a `Vec<T>`, if you push more data into it. In addition, you can conveniently
-use the `+` operator or the `format!` macro to concatenate `String` values.
+`String` יכולה לגדול והתוכן שלה יכול להשתנות, בדיוק כמו `Vec<T>` לאחר שדוחפים לתוכו נתונים נוספים. כמו-כן, ניתן להשתמש באופרטור `+` או במאקרו `format!` כדי לשרשר זה לזה כמה ערכי `String`.
 
-#### Appending to a String with `push_str` and `push`
+#### הוספה לסוף מחרוזת עם המתודות `push_str` ו-`push`
 
-We can grow a `String` by using the `push_str` method to append a string slice,
-as shown in Listing 8-15.
+אנו יכולים לצרף חיתוך מחרוזת לסוף `String` קיים באמצעות המתודה `push_str`, ובכך להגדילו. רשימה 8-15 מדגימה זאת.
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-15/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 8-15: Appending a string slice to a `String`
-using the `push_str` method</span>
+<span class="caption">רשימה 8-15: צירוף חיתוך מחרוזת ל-`String` עם מתודת `push_str`</span>
 
-After these two lines, `s` will contain `foobar`. The `push_str` method takes a
-string slice because we don’t necessarily want to take ownership of the
-parameter. For example, in the code in Listing 8-16, we want to be able to use
-`s2` after appending its contents to `s1`.
+בתום שתי שורות אלה, `s` יכיל את `foobar`. מתודת `push_str` מקבלת כארגומנט חיתוך מחרוזת, כיוון שלא בהכרח נרצה לקחת בעלות על הפרמטר המועבר. לדוגמה, ברשימה 8-16, אנו רוצים להיות מסוגלים להשתמש ב-'s2' גם לאחר הוספת התוכן שלו ל-'s1'.
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-16/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 8-16: Using a string slice after appending its
-contents to a `String`</span>
+<span class="caption">רשימה 8-16: שימוש בחיתוך מחרוזת לאחר צירוף התוכן שלו ל`String`</span>
 
-If the `push_str` method took ownership of `s2`, we wouldn’t be able to print
-its value on the last line. However, this code works as we’d expect!
+אם מתודת `push_str` לקחה בעלות על `s2`, לא נוכל להדפיס את הערך שלה בשורה האחרונה. עם זאת, קוד זה עובד כפי שהיינו מצפים!
 
-The `push` method takes a single character as a parameter and adds it to the
-`String`. Listing 8-17 adds the letter “l” to a `String` using the `push`
-method.
+המתודה `push` לוקחת תו בודד כפרמטר ומוסיפה אותו ל`String`. רשימה 8-17 מוסיף את האות "l" ל'מחרוזת' באמצעות המתודה `push`.
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-17/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 8-17: Adding one character to a `String` value
-using `push`</span>
+<span class="caption">רשימה 8-17: הוספת תו אחד לערך `String` באמצעות `push`</span>
+כתוצאה מכך, `s` תכיל `lol`.
 
-As a result, `s` will contain `lol`.
+#### שרשור עם האופרטור `+` או המאקרו `format!`
 
-#### Concatenation with the `+` Operator or the `format!` Macro
-
-Often, you’ll want to combine two existing strings. One way to do so is to use
-the `+` operator, as shown in Listing 8-18.
+לעתים קרובות נרצה לשרשר שתי מחרוזות קיימות. אחת הדרכים לעשות זאת היא להשתמש באופרטור `+`, כפי שמציגה רשימה 8-18.
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-18/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 8-18: Using the `+` operator to combine two
-`String` values into a new `String` value</span>
+<span class="caption">רשימה 8-18: שימוש באופרטור `+` לשרשור שני ערכי `String` לערך `String` חדש</span>
 
-The string `s3` will contain `Hello, world!`. The reason `s1` is no longer
-valid after the addition, and the reason we used a reference to `s2`, has to do
-with the signature of the method that’s called when we use the `+` operator.
-The `+` operator uses the `add` method, whose signature looks something like
-this:
+המחרוזת `s3` תכיל את `Hello, world!`. הסיבה מדוע `s1` כבר לא תקף לאחר השרשור, ומדוע השתמשנו בהפניה ל-`s2`, נעוצה בחותם המתודה שנקראת מאחורי הקלעים בעת השימוש באופרטור `+`. האופרטור `+` קורא למתודת `add`, שהחותם שלה נראה בערך כך:
 
 ```rust,ignore
 fn add(self, s: &str) -> String {
 ```
 
-In the standard library, you'll see `add` defined using generics and associated
-types. Here, we’ve substituted in concrete types, which is what happens when we
-call this method with `String` values. We’ll discuss generics in Chapter 10.
-This signature gives us the clues we need to understand the tricky bits of the
-`+` operator.
+בספרייה הסטנדרטית, תראה את המתודה `add` מוגדרת באמצעות ג’נריקס וטיפוסים משויכים. בדוגמה כאן, החלפנו אותם בטיפוסים קונקרטיים, שזה מה שמתרחש בפועל כשאנחנו קוראים לשיטה הזו עם ערכי `String`. נדון בהרחבה בטיפוסים גנריים בפרק 10. ובכל זאת, חותם זה נותן לנו את הרמזים הדרושים כדי לפענח את החלקים המורכבים באופרטור `+`.
 
-First, `s2` has an `&`, meaning that we’re adding a *reference* of the second
-string to the first string. This is because of the `s` parameter in the `add`
-function: we can only add a `&str` to a `String`; we can’t add two `String`
-values together. But wait—the type of `&s2` is `&String`, not `&str`, as
-specified in the second parameter to `add`. So why does Listing 8-18 compile?
+ראשית, הארגומנט `s2` מופיע עם `&`, כלומר אנו מוסיפים _הפניה_ של המחרוזת השנייה למחרוזת הראשונה. הסיבה לכך נעוצה בפרמטר `s` בפונקציה `add`: אנו יכולים להוסיף רק `&str` ל`String`; אנחנו לא יכולים להוסיף שני ערכי `String` ביחד. אבל רגע - הטיפוס של `s2&` הוא `String&`, לא `str&`, כפי שצוין בפרמטר השני של 'add'. אם כך, מדוע רשימה 8-18 לא גוררת שגיאת קומפילציה?
 
-The reason we’re able to use `&s2` in the call to `add` is that the compiler
-can *coerce* the `&String` argument into a `&str`. When we call the `add`
-method, Rust uses a *deref coercion*, which here turns `&s2` into `&s2[..]`.
-We’ll discuss deref coercion in more depth in Chapter 15. Because `add` does
-not take ownership of the `s` parameter, `s2` will still be a valid `String`
-after this operation.
+הסיבה שמתאפשר לנו להשתמש ב-`s2&` בקריאה ל-`add` היא שהקומפיילר יכול _להכריח_ את הארגומנט `String&` לטיפוס `str&`. כאשר אנו קוראים למתודת `add`, ראסט מפעילה _כפיית דה-הפניה_, אשר הופכת כאן את `s2&` ל-`[..]s2&`. נדון עוד בכפיית דה-הפניה בפרק 15. כיוון ש-`add` אינה לוקחת בעלות על הפרמטר `s2`, `s2` יהיה עדיין טיפוס `String` חוקי לאחר הפעולה.
 
-Second, we can see in the signature that `add` takes ownership of `self`,
-because `self` does *not* have an `&`. This means `s1` in Listing 8-18 will be
-moved into the `add` call and will no longer be valid after that. So although
-`let s3 = s1 + &s2;` looks like it will copy both strings and create a new one,
-this statement actually takes ownership of `s1`, appends a copy of the contents
-of `s2`, and then returns ownership of the result. In other words, it looks
-like it’s making a lot of copies but isn’t; the implementation is more
-efficient than copying.
+שנית, אנו יכולים לראות בחותם ש-'add' לוקחת בעלות על `self`, מכיוון של-`self` _אין_ `&`. פירוש הדבר שהבעלות על `s1` ברשימה 8-18 תועבר בקריאה ל-`add`, והמשתנה `s1` לא יהיה תקף עוד לאחר-מכן. אז למרות שההצהרה `let s3 = s1 + &s2;` נדמית כאילו שתי המחרוזות יועתקו אל תוך מחרוזת חדשה, ההצהרה למעשה לוקחת בעלות על `s1`, מצרפת עותק עם התוכן של `s2`, ואז מחזירה בעלות על התוצאה. במילים אחרות, זה נראה כאילו נוצר כאן עותק חדש, אך לא זה מה שמתרחש. זהו מימוש יעיל יותר מהעתקה.
 
-If we need to concatenate multiple strings, the behavior of the `+` operator
-gets unwieldy:
+ובכל זאת - אם אנו נדרשים לשרשר מחרוזות מרובות, האופרטור `+` הופך למסורבל:
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/no-listing-01-concat-multiple-strings/src/main.rs:here}}
 ```
 
-At this point, `s` will be `tic-tac-toe`. With all of the `+` and `"`
-characters, it’s difficult to see what’s going on. For more complicated string
-combining, we can instead use the `format!` macro:
+בשלב זה, ערכו של 's' יהיה 'tic-tac-toe'. עם כל התווים `+` ו-```, קשה לראות מה קורה. במקום זאת, אם נידרש לשילוב מחרוזות מורכב יותר, נוכל להשתמש במאקרו `format!`:
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/no-listing-02-format/src/main.rs:here}}
 ```
 
-This code also sets `s` to `tic-tac-toe`. The `format!` macro works like
-`println!`, but instead of printing the output to the screen, it returns a
-`String` with the contents. The version of the code using `format!` is much
-easier to read, and the code generated by the `format!` macro uses references
-so that this call doesn’t take ownership of any of its parameters.
+קוד זה גם מגדיר את `s` כ-`tic-tac-toe`. המאקרו `format!` פועל בדומה ל-`println!`, אך במקום להדפיס את הפלט למסך, הוא מחזיר `String` עם התוכן. גרסת הקוד עם 'format!' קלה הרבה יותר לקריאה, והקוד שנוצר על ידי המאקרו 'format!' משתמש בהפניות כך שהקריאה הזו לא לוקחת בעלות על אף אחד מהפרמטרים שלה.
 
-### Indexing into Strings
+### גישה למחרוזת באמצעות אינדקס
 
-In many other programming languages, accessing individual characters in a
-string by referencing them by index is a valid and common operation. However,
-if you try to access parts of a `String` using indexing syntax in Rust, you’ll
-get an error. Consider the invalid code in Listing 8-19.
+בשפות תכנות רבות אחרות, גישה ישירה לתווים בודדים במחרוזת באמצעות ציון אינדקס היא פעולה חוקית ונפוצה. עם זאת, בראסט, הניסיון לגשת לחלקים של `String` באמצעות תחביר אינדקס יפיק שגיאה. התבוננו בקוד הלא-תקין ברשימה 8-19.
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-19/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 8-19: Attempting to use indexing syntax with a
-String</span>
+<span class="caption">רשימה 8-19: ניסיון להשתמש בתחביר אינדקס עם מחרוזת</span>
 
-This code will result in the following error:
+קוד זה יפיק את השגיאה הבאה:
 
 ```console
 {{#include ../listings/ch08-common-collections/listing-08-19/output.txt}}
 ```
 
-The error and the note tell the story: Rust strings don’t support indexing. But
-why not? To answer that question, we need to discuss how Rust stores strings in
-memory.
+השגיאה וההערה מספרים את הסיפור כולו: מחרוזות בראסט אינן תומכות בתחביר אינדקס. אבל מדוע לא? כדי לענות על השאלה הזו, עלינו לדון כיצד ראסט מאחסן מחרוזות בזיכרון.
 
-#### Internal Representation
+#### ייצוג פנימי
 
-A `String` is a wrapper over a `Vec<u8>`. Let’s look at some of our properly
-encoded UTF-8 example strings from Listing 8-14. First, this one:
+כאמור, הטיפוס `String` אינו אלא עטיפה על הטיפוס `Vec<u8>`. הבה נתבונן במספר מחרוזות דוגמה ברשימה 8-14. כולן מקודדות כראוי בקידוד UTF-8. ראשית, זו:
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-14/src/main.rs:spanish}}
 ```
 
-In this case, `len` will be 4, which means the vector storing the string “Hola”
-is 4 bytes long. Each of these letters takes 1 byte when encoded in UTF-8. The
-following line, however, may surprise you. (Note that this string begins with
-the capital Cyrillic letter Ze, not the Arabic number 3.)
+במקרה זה, ערכו של `len` יהיה 4, מה שאומר שהווקטור המאחסן את המחרוזת "Hola" הוא באורך 4 בתים. בקידוד UTF-8, כל אחת מהאותיות הללו דורשת 1 בייט. השורה הבאה, לעומת זאת, עשויה להפתיע אותך. (שים לב שהמחרוזת הזו מתחילה באות הקירילית הגדולה Ze, לא המספר הערבי 3.)
 
 ```rust
 {{#rustdoc_include ../listings/ch08-common-collections/listing-08-14/src/main.rs:russian}}
 ```
 
-Asked how long the string is, you might say 12. In fact, Rust’s answer is 24:
-that’s the number of bytes it takes to encode “Здравствуйте” in UTF-8, because
-each Unicode scalar value in that string takes 2 bytes of storage. Therefore,
-an index into the string’s bytes will not always correlate to a valid Unicode
-scalar value. To demonstrate, consider this invalid Rust code:
+בתשובה לשאלה מה אורך המחרוזת, תתפתו אולי לומר 12; למעשה, התשובה של ראסט היא 24: זה מספר הבתים שנדרש כדי לקודד "Здравствуйте" בקידוד UTF-8. זאת כיוון שכל ערך סקלארי של יוניקוד במחרוזת זו דורש 2 בתים של אחסון. לכן, אינדקס לבתים של מחרוזת מעין זו לא יהיה תואם תמיד לערך יוניקוד סקלארי חוקי. כדי להבין זאת טוב יותר, התבוננו בקוד הלא-תקין הזה:
 
 ```rust,ignore,does_not_compile
 let hello = "Здравствуйте";
 let answer = &hello[0];
 ```
 
-You already know that `answer` will not be `З`, the first letter. When encoded
-in UTF-8, the first byte of `З` is `208` and the second is `151`, so it would
-seem that `answer` should in fact be `208`, but `208` is not a valid character
-on its own. Returning `208` is likely not what a user would want if they asked
-for the first letter of this string; however, that’s the only data that Rust
-has at byte index 0. Users generally don’t want the byte value returned, even
-if the string contains only Latin letters: if `&"hello"[0]` were valid code
-that returned the byte value, it would return `104`, not `h`.
+אנחנו כבר יודעים ש-`answer` לא יהיה `З`, האות הראשונה. בקידוד UTF-8, ערך הבית הראשון של `З` הוא `208`, וערך הבית השני הוא `151`, כך שנראה שערכו של `answer` צריך להיות למעשה `208`. אך `208` אינו ערך חוקי בפני עצמו; סביר להניח שהחזרת '208' אינה מה שהמשתמש היה רוצה לו היה מבקש את האות הראשונה של המחרוזת הזו. עם זאת, אלו הנתונים היחידים שיש לראסט באינדקס 0. גם אם המחרוזת מכילה רק אותיות לטיניות, משתמשים בדרך כלל לא רוצים לקבל את ערך הבייטים עצמם: לו `&"hello"[0]` היה קוד חוקי, הוא היה מחזיר `104`, לא `h`.
 
-The answer, then, is that to avoid returning an unexpected value and causing
-bugs that might not be discovered immediately, Rust doesn’t compile this code
-at all and prevents misunderstandings early in the development process.
+התשובה, אם כן, היא שכדי להימנע מהחזרת ערך בלתי-צפוי שעלול להוליד בהמשך באגים קשים-לתיקון, ראסט מסרבת-מראש לקמפל את הקוד הזה. בכך היא מונעת אי-הבנות כאלה כבר בשלב מוקדם של תהליך הפיתוח.
 
-#### Bytes and Scalar Values and Grapheme Clusters! Oh My!
+#### בתים וערכים סקלאריים ואשכולות גרפמה! אללי!
 
-Another point about UTF-8 is that there are actually three relevant ways to
-look at strings from Rust’s perspective: as bytes, scalar values, and grapheme
-clusters (the closest thing to what we would call *letters*).
+נקודה נוספת לגבי UTF-8 היא שלמעשה, מנקודת המבט של ראסט, ישנן שלוש דרכים אפשריות להסתכל על מחרוזות: כבתים, כערכים סקלרים, וכאשכולות גרפמה (שאלו הדבר הקרוב ביותר למה שהיינו מכנים _אותיות_).
 
-If we look at the Hindi word “नमस्ते” written in the Devanagari script, it is
-stored as a vector of `u8` values that looks like this:
+אם נסתכל על המילה ההינדית "नमस्ते" הכתובה בסקריפט Devanagari, היא מאוחסנת כווקטור של ערכי 'u8' שנראה כך:
 
 ```text
 [224, 164, 168, 224, 164, 174, 224, 164, 184, 224, 165, 141, 224, 164, 164,
 224, 165, 135]
 ```
 
-That’s 18 bytes and is how computers ultimately store this data. If we look at
-them as Unicode scalar values, which are what Rust’s `char` type is, those
-bytes look like this:
+מדובר ב-18 בתים, ובסופו של יום, כך מחשבים מאחסנים נתונים אלה. אם נסתכל עליהם כערכי יוניקוד סקלאריים, שהוא סוג קידוד התווים בשפת ראסט, בתים אלה יראו כך:
 
 ```text
 ['न', 'म', 'स', '्', 'त', 'े']
 ```
 
-There are six `char` values here, but the fourth and sixth are not letters:
-they’re diacritics that don’t make sense on their own. Finally, if we look at
-them as grapheme clusters, we’d get what a person would call the four letters
-that make up the Hindi word:
+יש כאן שישה ערכי 'char', אבל הרביעי והשישי אינם אותיות: הם סימנים דיאקריטיים שאין להם מובן בפני עצמם. לבסוף, אם נסתכל עליהם כאשכולות גרפמה, נקבל מה שניתן להחשיב כארבע האותיות המרכיבות את המילה ההינדית:
 
 ```text
 ["न", "म", "स्", "ते"]
 ```
 
-Rust provides different ways of interpreting the raw string data that computers
-store so that each program can choose the interpretation it needs, no matter
-what human language the data is in.
+ראסט מספקת דרכים שונות לפרש את נתוני המחרוזת הגולמיים, כך שכל תוכנית תוכל לבחור את הפרשנות הדרושה לה, לא משנה איזו שפה אנושית מייצגים הנתונים.
 
-A final reason Rust doesn’t allow us to index into a `String` to get a
-character is that indexing operations are expected to always take constant time
-(O(1)). But it isn’t possible to guarantee that performance with a `String`,
-because Rust would have to walk through the contents from the beginning to the
-index to determine how many valid characters there were.
+סיבה אחרונה שראסט לא מאפשרת לנו לגשת ל-`String` באמצעות אינדקס היא שגישה באינדקס צפויה לדרוש זמן קבוע (O(1)). אך לא ניתן להבטיח ביצועים אלה עבור הטיפוס `String`. ראסט הרי תצטרך לעבור על תוכן המחרוזת, מתחילה עד לאינדקס המבוקש, בכדי לקבוע כמה תווים חוקיים קיימים.
 
-### Slicing Strings
+### חיתוך מחרוזות
 
-Indexing into a string is often a bad idea because it’s not clear what the
-return type of the string-indexing operation should be: a byte value, a
-character, a grapheme cluster, or a string slice. If you really need to use
-indices to create string slices, therefore, Rust asks you to be more specific.
+אינדקס למחרוזת הוא לעתים קרובות רעיון רע מכיוון שלא ברור מה צריך להיות סוג ההחזרה של גישה באמצעות אינדקס: האם ערך בתים, האם תו, אשכול גרפמה, או חיתוך מחרוזת. אם אתה באמת צריך להשתמש באינדקסים כדי ליצור חיתוכי מחרוזות, ראסט תבקש ממך להיות מדויק יותר בבקשתך.
 
-Rather than indexing using `[]` with a single number, you can use `[]` with a
-range to create a string slice containing particular bytes:
+במקום לגשת לאינדקס באמצעות `[]` עם מספר בודד, אתה יכול להשתמש ב-`[]` עם טווח כדי ליצור פרוסת מחרוזת המכילה בתים מסוימים:
 
 ```rust
 let hello = "Здравствуйте";
@@ -331,43 +203,19 @@ let hello = "Здравствуйте";
 let s = &hello[0..4];
 ```
 
-Here, `s` will be a `&str` that contains the first 4 bytes of the string.
-Earlier, we mentioned that each of these characters was 2 bytes, which means
-`s` will be `Зд`.
+כאן, `s` יהיה מטיפוס `&str` שמכיל את 4 הבתים הראשונים של המחרוזת. קודם ציינו שכל אחד מהתווים האלה היה בן 2 בתים, מה שאומר ש-'s' יהיה 'Зд'.
 
-If we were to try to slice only part of a character’s bytes with something like
-`&hello[0..1]`, Rust would panic at runtime in the same way as if an invalid
-index were accessed in a vector:
+אם היינו מנסים לחתוך רק חלק מהבתים של תו מסוים, נניח עם משהו כגון `&hello[0..1]`, ראסט היתה נכנסת לפאניקה בזמן הריצה, ממש כאילו ניגשנו לאינדקס לא-חוקי בווקטור:
 
 ```console
 {{#include ../listings/ch08-common-collections/output-only-01-not-char-boundary/output.txt}}
 ```
 
-You should use ranges to create string slices with caution, because doing so
-can crash your program.
+בבואכם ליצור חיתוכי מחרוזת, נקטו במשנה זהירות, כי פעולה זו עלולה להביא לקריסת התוכנית.
 
-### Methods for Iterating Over Strings
+### מתודות לאיטרציה על מחרוזות
 
-The best way to operate on pieces of strings is to be explicit about whether
-you want characters or bytes. For individual Unicode scalar values, use the
-`chars` method. Calling `chars` on “Зд” separates out and returns two values
-of type `char`, and you can iterate over the result to access each element:
-
-```rust
-for c in "Зд".chars() {
-    println!("{c}");
-}
-```
-
-This code will print the following:
-
-```text
-З
-д
-```
-
-Alternatively, the `bytes` method returns each raw byte, which might be
-appropriate for your domain:
+הדרך הטובה ביותר לפעול על חיתוכי מחרוזות היא לציין במפורש האם אתם מעוניינים בתווים או בבתים. עבור ערכי יוניקוד סקלארים בודדים, השתמשו במתודת `chars`. קריאה ל-`chars` ב-"Зд" מפרידה ומחזירה שני ערכים מסוג `chars`, ואתם יכולים לחזור על התוצאה בכדי לגשת לכל פריט בתורו:
 
 ```rust
 for b in "Зд".bytes() {
@@ -375,38 +223,38 @@ for b in "Зд".bytes() {
 }
 ```
 
-This code will print the four bytes that make up this string:
+קוד זה ידפיס את הפלט הבא:
 
 ```text
+З
+д
+```
+
+לחלופין, המתודה `bytes` תחזיר ערכי בתים גולמיים, אם זה מה שאתם רוצים:
+
+```rust
+for b in "Зд".bytes() {
+    println!("{b}");
+}
+```
+
+קוד זה ידפיס את ארבעת הבתים המרכיבים מחרוזת זו:
+
+```טקסט
 208
 151
 208
 180
 ```
 
-But be sure to remember that valid Unicode scalar values may be made up of more
-than 1 byte.
+הקפדו לזכור שערכי יוניקוד סקלארים חוקיים עשויים להיות מורכבים מיותר מבית אחד.
 
-Getting grapheme clusters from strings as with the Devanagari script is
-complex, so this functionality is not provided by the standard library. Crates
-are available on [crates.io](https://crates.io/)<!-- ignore --> if this is the
-functionality you need.
+קבלת אשכולות גרפמה ממחרוזות, בדומה לדוגמת Devanagari, היא מורכבת יותר. לכן, פונקציונליות זו אינה כלולה בספרייה הסטנדרטית. אם זו הפונקציונליות הנדרשת לכם, תוכלו למצוא מכולות מתאימות ב-[crates.io](https://crates.io/)<!-- ignore -->.
 
-### Strings Are Not So Simple
+### מחרוזות אינן כה פשוטות
 
-To summarize, strings are complicated. Different programming languages make
-different choices about how to present this complexity to the programmer. Rust
-has chosen to make the correct handling of `String` data the default behavior
-for all Rust programs, which means programmers have to put more thought into
-handling UTF-8 data upfront. This trade-off exposes more of the complexity of
-strings than is apparent in other programming languages, but it prevents you
-from having to handle errors involving non-ASCII characters later in your
-development life cycle.
+לסיכום, מחרוזות הן נושא מורכב. שפות תכנות שונות עושות בחירות שונות כיצד להנגיש את המורכבות הזו למתכנת. ראסט בחרה להפוך את הטיפול הנכון בנתוני 'מחרוזת' להתנהגות ברירת-המחדל של כל תכנית, מה שאומר שמתכנתים צריכים להשקיע מעט יותר מחשבה בטיפול בנתוני UTF-8. פשרה זו אמנם חושפת יותר מן המורכבות הפנימית של מחרוזות ביחס לשפות תכנות אחרות, אך מאידך, היא חוסכת מכם טיפול אפשרי בשגיאות שעלולות לצוץ מאוחר הרבה יותר במחזור חיי הפיתוח.
 
-The good news is that the standard library offers a lot of functionality built
-off the `String` and `&str` types to help handle these complex situations
-correctly. Be sure to check out the documentation for useful methods like
-`contains` for searching in a string and `replace` for substituting parts of a
-string with another string.
+החדשות הטובות הן שהספרייה הסטנדרטית מציעה פונקציונליות רבה לטיפוסים `String` ו-`&str`, הנועדה בדיוק כדי לטפל במצבים מורכבים אלו בצורה נכונה. הקפידו לבדוק את התיעוד ךמתודות שימושיות כמו `contains` לחיפוש במחרוזת, או `replace` להחלפת חלקים קיימים של מחרוזת במחרוזת אחרת.
 
-Let’s switch to something a bit less complex: hash maps!
+הבה נעבור למשהו קצת פחות מורכב: מפות גיבוב!

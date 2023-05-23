@@ -1,35 +1,19 @@
-## Unrecoverable Errors with `panic!`
+## שגיאות סופניות ופאניקה
 
-Sometimes, bad things happen in your code, and there’s nothing you can do about
-it. In these cases, Rust has the `panic!` macro. There are two ways to cause a
-panic in practice: by taking an action that causes our code to panic (such as
-accessing an array past the end) or by explicitly calling the `panic!` macro.
-In both cases, we cause a panic in our program. By default, these panics will
-print a failure message, unwind, clean up the stack, and quit. Via an
-environment variable, you can also have Rust display the call stack when a
-panic occurs to make it easier to track down the source of the panic.
+לעיתים, דברים לא טובים קורים בקוד, ואין מה לעשות בקשר לכך. למקרים כאלה, לראסט יש את המאקרו `panic!`. בפועל יש שתי דרכים להיכנס לפאניקה: על-ידי נקיטת פעולה שגורמת לקוד להיכנס לפאניקה (כמו גישה למערך מעבר לאורכו) או על-ידי קריאה מפורשת למאקרו `panic!`. בשני המקרים, אנו גורמים לתכנית להיכנס לפאניקה. כברירת מחדל, כניסה כזו לפאניקה תדפיס הודעת קריסה, תגלול את הריצה, תנקה את המחסנית, ותצא. דרך משתנה סביבתי (environment variable), ניתן גם לגרום לראסט להציג את מחסנית הקריאות (call stack) בעת כניסה לפאניקה על מנת להקל על איתור מקור הכניסה לפאניקה.
 
-> ### Unwinding the Stack or Aborting in Response to a Panic
->
-> By default, when a panic occurs, the program starts *unwinding*, which
-> means Rust walks back up the stack and cleans up the data from each function
-> it encounters. However, this walking back and cleanup is a lot of work. Rust,
-> therefore, allows you to choose the alternative of immediately *aborting*,
-> which ends the program without cleaning up.
->
-> Memory that the program was using will then need to be cleaned
-> up by the operating system. If in your project you need to make the resulting
-> binary as small as possible, you can switch from unwinding to aborting upon a
-> panic by adding `panic = 'abort'` to the appropriate `[profile]` sections in
-> your *Cargo.toml* file. For example, if you want to abort on panic in release
-> mode, add this:
->
+> ### גלילת המחסנית או עצירה מוחלטת בתגובה לפאניקה
+> 
+> כברירת מחדל, כאשר נכנסים לפאניקה, התכנית מתחילה לגלול, משמע שראסט עובר על המחסנית ומנקה את הדאטה של כל פונקציה שהיא פוגשת. אבל, פעולה זו והניקיון זה הרבה עבודה. לכן, ראסט מאפשרת לבחור באלטרנטיבה של *עצירה מיידית*, דבר שמייד יסיים את ריצת התכנית ללא פעולות ניקוי.
+> 
+> על מערכת ההפעלה יהיה לנקות את הזיכרון בו התכנית השתמשה. אם, בפרוייקט שלכם, אתם רוצים שגודל הבינרי יהיה קטן ככל שניתן, תוכלו לעבור מגלילה לעצירה מוחלטת בעקבות פאניקה על-ידי הוספת `panic = 'abort'` לסעיפי ה- `[profile]` הרולוונטים של קובץ ה-*Cargo.toml*. לדוגמא, אם אתם רוצים לעצור לחלוטין במקרה של פאניקה במצב release, הוסיפו את הטקסט:
+> 
 > ```toml
 > [profile.release]
 > panic = 'abort'
 > ```
 
-Let’s try calling `panic!` in a simple program:
+הבה ננסה לקרוא ל-`panic!` מתוך תכנית פשוטה:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -37,32 +21,19 @@ Let’s try calling `panic!` in a simple program:
 {{#rustdoc_include ../listings/ch09-error-handling/no-listing-01-panic/src/main.rs}}
 ```
 
-When you run the program, you’ll see something like this:
+כאשר תריצו את התכנית, תראו משהו כמו:
 
 ```console
 {{#include ../listings/ch09-error-handling/no-listing-01-panic/output.txt}}
 ```
 
-The call to `panic!` causes the error message contained in the last two lines.
-The first line shows our panic message and the place in our source code where
-the panic occurred: *src/main.rs:2:5* indicates that it’s the second line,
-fifth character of our *src/main.rs* file.
+הקריאה ל-`panic!` מדפיסה את הודעת השגיאה שבשתי השורות האחרונות. השורה הראשונה מראה את הודעת הפאניקה שלנו ואת המיקום בקוד שלנו בו ארעה הפאניקה: *src/main.rs:2:5* מציין שמדובר בשורה השניה, התו החמישי בקובץ *src/main.rs*.
 
-In this case, the line indicated is part of our code, and if we go to that
-line, we see the `panic!` macro call. In other cases, the `panic!` call might
-be in code that our code calls, and the filename and line number reported by
-the error message will be someone else’s code where the `panic!` macro is
-called, not the line of our code that eventually led to the `panic!` call. We
-can use the backtrace of the functions the `panic!` call came from to figure
-out the part of our code that is causing the problem. We’ll discuss backtraces
-in more detail next.
+במקרה זה, השורה המצויינת היא חלק מהקוד שלנו, ואם נלך לשורה זו, נראה את הקריאה למאקרו `panic!`. במקרים אחרים, הקריאה ל- `panic!` יכולה להיות בקוד אחר שהקוד שלנו משתמש בו, ושם הקובץ ומספר השורה שידווחו בהודעת השגיאה יהיו של המיקום בקוד של מישהו אחר בו הקריאה ל- `panic!` בוצעה, ולא השורה בקוד שלנו שהובילה, בסופו של דבר, לקריאה ל- `panic!`. ניתן להשתמש במעקב לאחור (backtrace) של הפונקציות מהן הקריאה ל- `panic!` הגיעה כדי להבין איזה חלק של הקוד שלנו גרם לבעיה. כעת נדון במעקב לאחור ביתר פירוט.
 
-### Using a `panic!` Backtrace
+### שימוש במעקב לאחור של `panic!`
 
-Let’s look at another example to see what it’s like when a `panic!` call comes
-from a library because of a bug in our code instead of from our code calling
-the macro directly. Listing 9-1 has some code that attempts to access an
-index in a vector beyond the range of valid indexes.
+הבה נתבונן בדוגמא נוספת כדי לראות מה קורה כאשר קריאה ל-`panic!` מגיעה מספריה בעקבות באג בקוד שלנו, ולא בעקבות קריאה ישירה למאקרו. ברשימה 9-1 יש קוד שמנסה לגשת מיקום בווקטור שנמצא מעבר לתחום הערכים התקף.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -70,43 +41,21 @@ index in a vector beyond the range of valid indexes.
 {{#rustdoc_include ../listings/ch09-error-handling/listing-09-01/src/main.rs}}
 ```
 
-<span class="caption">Listing 9-1: Attempting to access an element beyond the
-end of a vector, which will cause a call to `panic!`</span>
 
-Here, we’re attempting to access the 100th element of our vector (which is at
-index 99 because indexing starts at zero), but the vector has only 3 elements.
-In this situation, Rust will panic. Using `[]` is supposed to return an
-element, but if you pass an invalid index, there’s no element that Rust could
-return here that would be correct.
+<span class="caption">רשימה 9-1: ניסון לגשת לפריט מעבר לסוף הווקטור, דבר שיגרום לקריאה ל-`panic!`</span>
 
-In C, attempting to read beyond the end of a data structure is undefined
-behavior. You might get whatever is at the location in memory that would
-correspond to that element in the data structure, even though the memory
-doesn’t belong to that structure. This is called a *buffer overread* and can
-lead to security vulnerabilities if an attacker is able to manipulate the index
-in such a way as to read data they shouldn’t be allowed to that is stored after
-the data structure.
+כאן, אנו מנסים לגשת לפריט ה-100 בווקטור (שנמצא באינדקס 99 כיוון שאינדקסציה מתחילה באפס), אבל בווקטור יש רק שלושה פריטים. במקרה זה, ראסט תיכנס לפאניקה. שימוש ב- `[]` אמור להחזיר פריט, אבל אם מעבירים אינדקס לא תקף, אז פשוט אין פריט שראסט יכולה להחזיר.
 
-To protect your program from this sort of vulnerability, if you try to read an
-element at an index that doesn’t exist, Rust will stop execution and refuse to
-continue. Let’s try it and see:
+בשפה C, ניסיון לקרוא מעבר לסוף של מבנה נתונים מוביל להתנהגות לא מוגדרת. יתכן ותקבלו דבר מה שממוקם בזיכרון במקום שהיה מותאם לפריט כלשהו לו מבנה הנתונים היה ארוך יותר, למרות שהזיכרון כלל לא שייך למבנה הנתונים. לזה קוראים *buffer overread*, וזה יכול להוביל לרגישות בבטיחות במידה ותוקף יהיה מסוגל לתמרן את האינדקס בצורה כזו שתיווצר גישה לדאטה רגיש שממוקם מחוץ למבנה הנתונים.
+
+כדי להגן אל תכניתחם מסוג זה של פעילות עויינת, אם תנסו לקרוא פריט באינדקס שלא קיים, ראסט תעצור את ההרצה ותסרב להמשיך. הבה ננסה וניווכח:
 
 ```console
 {{#include ../listings/ch09-error-handling/listing-09-01/output.txt}}
 ```
 
-This error points at line 4 of our `main.rs` where we attempt to access index
-99. The next note line tells us that we can set the `RUST_BACKTRACE`
-environment variable to get a backtrace of exactly what happened to cause the
-error. A *backtrace* is a list of all the functions that have been called to
-get to this point. Backtraces in Rust work as they do in other languages: the
-key to reading the backtrace is to start from the top and read until you see
-files you wrote. That’s the spot where the problem originated. The lines above
-that spot are code that your code has called; the lines below are code that
-called your code. These before-and-after lines might include core Rust code,
-standard library code, or crates that you’re using. Let’s try getting a
-backtrace by setting the `RUST_BACKTRACE` environment variable to any value
-except 0. Listing 9-2 shows output similar to what you’ll see.
+שגיאה זו מצביע על שורה 4 בקובץ `main.rs` בה אנו מנסים לגשת לאינדקס
+99. השורה הבאה אומרת לנו שאנחנו יכולים להשתמש במשתנה הסביבתי `RUST_BACKTRACE` על מנת מעקב לאחור שיראה בדיוק מה הארועים שהובילו לשגיאה. *מעקב לאחור* הוא רשימה של הפונקציות שנקראו והובילו לנקודה זו. מעקב לאחור בראסט עובד כמו בשפות אחרות: המפתח לקריאה מועילה של המעקב לאחור הוא להתחיל מההתחלה ולסרוק עד שמגיעים לקבצים שאתם כתבתם. זו הנקודה בה הבעיה התחילה. השורות מעל נקודה זו הן קוד בו הקוד שלנו עשה שימוש; השורות שמתחת הן קוד שקרא לקוד שלנו. השורות האלה, של לפני ואחרי, יכולות לכלול קוד ליבה של ראסט, קוד מהספריה הסטנדרטית, או מכולות בהן אתם משתמשים. הבה ננסה לקרוא מעקב לאחור על-ידי שימוש בערך שאינו אפש עבור המשתנה הסביבתי `RUST_BACKTRACE`. רשימה 9-2 מציגה פלט דומה למה שתראו.
 
 <!-- manual-regeneration
 cd listings/ch09-error-handling/listing-09-01
@@ -138,28 +87,12 @@ stack backtrace:
 note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.
 ```
 
-<span class="caption">Listing 9-2: The backtrace generated by a call to
-`panic!` displayed when the environment variable `RUST_BACKTRACE` is set</span>
 
-That’s a lot of output! The exact output you see might be different depending
-on your operating system and Rust version. In order to get backtraces with this
-information, debug symbols must be enabled. Debug symbols are enabled by
-default when using `cargo build` or `cargo run` without the `--release` flag,
-as we have here.
+<span class="caption">רשימה 9-2: המעקב לאחור שנוצר מקריאה ל-`panic!` שמוצג כאשר מציבים ערך עבור המשתנה הסביבתי `RUST_BACKTRACE`</span>
 
-In the output in Listing 9-2, line 6 of the backtrace points to the line in our
-project that’s causing the problem: line 4 of *src/main.rs*. If we don’t want
-our program to panic, we should start our investigation at the location pointed
-to by the first line mentioning a file we wrote. In Listing 9-1, where we
-deliberately wrote code that would panic, the way to fix the panic is to not
-request an element beyond the range of the vector indexes. When your code
-panics in the future, you’ll need to figure out what action the code is taking
-with what values to cause the panic and what the code should do instead.
+יש די הרבה מה לקרוא! הפלט המדויק שאתם תראו יכול להיות שונה בתלות במערכת ההפעלה שלכם ובגרסת ראסט בה אתם משתמשים. בכדי לקבל מעקב לאחור עם מידע זה, חייבים לאפשר סימולי דה-באג. סימולי דה-באג זמינים כברירת מחדל כאשר משתמשים ב- `cargo build` או ב- `cargo run` ללא הדגל `--release`, כפי שאנו עושים כאן.
 
-We’ll come back to `panic!` and when we should and should not use `panic!` to
-handle error conditions in the [“To `panic!` or Not to
-`panic!`”][to-panic-or-not-to-panic]<!-- ignore --> section later in this
-chapter. Next, we’ll look at how to recover from an error using `Result`.
+בפלט ברשימה 9-2, שורה 6 של המעקב לאחור מצביעה לשורה בפרוייקט שלנו שגורמת לבעיה: שורה 4 בקובץ *src/main.rs*. אם אנחנו לא רוצים שהתכנית שלנו תיכנס לפאניקה, אנחנו צריכים להתחיל את מלאכת איתור הבעיה במיקום אליו מצביעה השורה הראשונה שמזכירה קובץ שאנו כתבנו. ברשימה 9-1, שם כתבנו בכוונה קוד שניכנס לפאניקה, הדרך להימנע מפאניקה היא לא לגשת לפריט במיקום שמחוץ לטוו האינדקסים של הווקטור. כאשר הקוד שלכם יכנס לפאניקה בעתיד, תצטרכו להבין באיזו פעולה הקוד נוקט, ועם אלו ערכים, שגורם לפאניקה, ומה הדרך לתקן את הקוד.
 
-[to-panic-or-not-to-panic]:
+נחזור למאקרו `panic!`, ונדון מתי ראוי ומתי לא ראוי להשתמש בו כדי לנהל מצבי שגיאה, בסעיף ["להיכנס לפאניקה, כן או לא?"]()<!-- ignore --> מאוחר יותר בפרק זה. כעת, נעבור לדון בדרכים להתמודד עם שגיאות באמצעות הטיפוס `Result`.
 ch09-03-to-panic-or-not-to-panic.html#to-panic-or-not-to-panic
