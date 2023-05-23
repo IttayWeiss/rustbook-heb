@@ -1,79 +1,38 @@
-## Macros
+## מאקרואים
 
-We’ve used macros like `println!` throughout this book, but we haven’t fully
-explored what a macro is and how it works. The term *macro* refers to a family
-of features in Rust: *declarative* macros with `macro_rules!` and three kinds
-of *procedural* macros:
+השתמשנו במקרואים לכל אורך הספר, אבל לא בחנו לעומק מהם מקרואים וכיצד הם עובדים. המושג *מקרו* (macro) מתייחס למשפחה של תכונות בראסט: *מקרואים הכרזתיים* עם `macro_rules!` ושלושה סוגים של *מקרואים תפעוליים*:
 
-* Custom `#[derive]` macros that specify code added with the `derive` attribute
-  used on structs and enums
-* Attribute-like macros that define custom attributes usable on any item
-* Function-like macros that look like function calls but operate on the tokens
-  specified as their argument
+* מקרואים מותאמים מסוג `#[derive]` שמציינים קוד בתוספת האפיון `derive` בשימוש על מבנים ומבחרים
+* מקרואים דמויי-אפיון שמגדירים אפיונים מותאמים שניתנים לשימוש על כל טיפוס
+* מקרואים דמויי-פונקציה שנראים כמו קריאות לפונקציה אבל פועלים על האסימונים (tokens) שמצויינים כארגומנטים שלהם
 
-We’ll talk about each of these in turn, but first, let’s look at why we even
-need macros when we already have functions.
+אנו נדון בכל אחד מאלה לפי התור, אבל ראשית, הבה נבין מדוע בכלל יש צורך במאקרואים כאשר כבר יש לנו פונקציות.
 
-### The Difference Between Macros and Functions
+### על ההבדל בין מקרואים לפונקציות
 
-Fundamentally, macros are a way of writing code that writes other code, which
-is known as *metaprogramming*. In Appendix C, we discuss the `derive`
-attribute, which generates an implementation of various traits for you. We’ve
-also used the `println!` and `vec!` macros throughout the book. All of these
-macros *expand* to produce more code than the code you’ve written manually.
+באופן בסיסי, מאקרואים הם דרך לכתוב קוד שכותב קוד, פעולה שידועה בשם *מטה-תכנות*. בנספח ג', אנו דנים באפיון `derive`, שמייצר עבורכם מימוש של כל מיני תכונות. כמו כן, השתמשנו, לכל אורך הספר, במקרואים `println!` ו-`vec!`. כל המקרואים האלה מתרחבים לכדי יותר קוד מהקוד שכותבים ידנית.
 
-Metaprogramming is useful for reducing the amount of code you have to write and
-maintain, which is also one of the roles of functions. However, macros have
-some additional powers that functions don’t.
+מטה-תכנות הוא שימושי כדי להקטין את כמות הקוד שצריך לכתוב ולתחזק, וזו גם אחת המטרות של פונקציות. אבל, למקרואים יש כמה יכולות שלפונקציות אין.
 
-A function signature must declare the number and type of parameters the
-function has. Macros, on the other hand, can take a variable number of
-parameters: we can call `println!("hello")` with one argument or
-`println!("hello {}", name)` with two arguments. Also, macros are expanded
-before the compiler interprets the meaning of the code, so a macro can, for
-example, implement a trait on a given type. A function can’t, because it gets
-called at runtime and a trait needs to be implemented at compile time.
+חותם פונקציה חייב להכריז על מספר הפרמטרים, והטיפוסים שלכם, שהפונקציה מקבלת. מקרו, לאומת זאת, יכול לקבל כל מספר של פרמטרים: ניתן לכתוב `println!("hello")` עם ארגומנט אחד, או `println!("hello {}", name)` עם שני ארגומנטים. בנוסף, מקרואים עוברים התרחבות לפני שהקומפיילר מפרש את הקוד, ולכן מקרו יכול, למשל, לממש תכונה של טיפוס נתון. פונקציה לא יכולה לבצע פעולה שכזאת משום שלפונקציה קוראים בזמן הריצה בעוד התכונה חייבת להיות ממומשת בזמן הקומפילציה.
 
-The downside to implementing a macro instead of a function is that macro
-definitions are more complex than function definitions because you’re writing
-Rust code that writes Rust code. Due to this indirection, macro definitions are
-generally more difficult to read, understand, and maintain than function
-definitions.
+חסרון של מימוש מקרו במקום פונקציה הוא שהגדרת מקרו היא יותר סבוכה מהגדרת פונקציה כיוון שהמטרה היא לכתוב קוד ראסט שבעצמו כותב עוד קוד ראסט. בשל כתיבת קוד עקיפה זו, הגדרות של מקרואים בדרך-כלל קשות יותר לקריאה, להבנה, ולתחזוק בהשוואה להגדרות של פונקציות.
 
-Another important difference between macros and functions is that you must
-define macros or bring them into scope *before* you call them in a file, as
-opposed to functions you can define anywhere and call anywhere.
+הבדל חשוב נוסף בין מקרואים לפונקציות הוא שחייבים להגדיר מקרו, או להכניס אותו למתחם, *לפני* שקוראים לו בקובץ, בניגוד לפונקציות, אותן ניתן להגדיר בכל מקום ולקרוא להן מכל מקום.
 
-### Declarative Macros with `macro_rules!` for General Metaprogramming
+### מקרואים הכרזתיים באמצעות `macro_rules!` עבור מטה-תכנות כללי
 
-The most widely used form of macros in Rust is the *declarative macro*. These
-are also sometimes referred to as “macros by example,” “`macro_rules!` macros,”
-or just plain “macros.” At their core, declarative macros allow you to write
-something similar to a Rust `match` expression. As discussed in Chapter 6,
-`match` expressions are control structures that take an expression, compare the
-resulting value of the expression to patterns, and then run the code associated
-with the matching pattern. Macros also compare a value to patterns that are
-associated with particular code: in this situation, the value is the literal
-Rust source code passed to the macro; the patterns are compared with the
-structure of that source code; and the code associated with each pattern, when
-matched, replaces the code passed to the macro. This all happens during
-compilation.
+תצורת המקרו הנפוצה ביותר בראסט היא *מקרו הכרזתי*. למקרואים אלה לעיתים קוראים גם "מקרואים לפי דוגמא", "`macro_rules!` ", או פשוט "מקרואים" בבסיסם, מקרואים הכרזתיים מאפשרים לכם לכתוב דבר מה הדומה לביטוי `match` בראסט. כפי שנידון בפרק 6, ביטוי `match` הוא מבנה לבקרת זרימה שמקבל ביטוי, משווה את הערך המתקבל מהביטוי מול תבניות, ואז מריץ קוד לפי שיוך לתבנית. מקרו גם משווה ערך מול תביות שמשוייכות עם קוד מסויים: במקרה זה, הערך הוא קוד הראסט המפורש שמועבר למקרו; התבניות מושוות מול המבנה של קוד זה; והקוד המשוייך עם כל תבנית, כאשר יש התאמה, מחליף את הקוד המועבר למקרו. כל זה מתרחש במהלך הקומפילציה.
 
-To define a macro, you use the `macro_rules!` construct. Let’s explore how to
-use `macro_rules!` by looking at how the `vec!` macro is defined. Chapter 8
-covered how we can use the `vec!` macro to create a new vector with particular
-values. For example, the following macro creates a new vector containing three
-integers:
+על מנת להגדיר מקרו, משתמשים ב- `macro_rules!`. הבה נראה כיצד להשתמש ב- `macro_rules!` על-ידי התבוננות באופן ההגדרה של המקרו `vec!`. פרק 8 כיסה את השימוש במקרו `vec!` כדי ליצור ווקטור חדש עם ערכים נתונים. למשל, המקרו הבא יוצר ווקטור חדש המכיל שלושה שלמים:
 
 ```rust
 let v: Vec<u32> = vec![1, 2, 3];
 ```
 
-We could also use the `vec!` macro to make a vector of two integers or a vector
-of five string slices. We wouldn’t be able to use a function to do the same
-because we wouldn’t know the number or type of values up front.
+ניתן גם להשתמש במקרו `vec!` כדי ליצור ווקטור של שני שלמים, או ווקטור של חמישה חיתוכי מחרוזת. לא ניתן לעשות זאת עם פונקציה משום שאי-אפשר לדעת מראש את מספר הערכים, או טיפוסם.
 
-Listing 19-28 shows a slightly simplified definition of the `vec!` macro.
+רשימה 19-28 מציגה הגדרה מפושטת מעט של המקרו `vec!`.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -81,56 +40,26 @@ Listing 19-28 shows a slightly simplified definition of the `vec!` macro.
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-28/src/lib.rs}}
 ```
 
-<span class="caption">Listing 19-28: A simplified version of the `vec!` macro
-definition</span>
 
-> Note: The actual definition of the `vec!` macro in the standard library
-> includes code to preallocate the correct amount of memory up front. That code
-> is an optimization that we don’t include here to make the example simpler.
+<span class="caption">רשימה 19-28: גרסה מפושטת `vec!`</span>
 
-The `#[macro_export]` annotation indicates that this macro should be made
-available whenever the crate in which the macro is defined is brought into
-scope. Without this annotation, the macro can’t be brought into scope.
+> הערה: ההגדרה של `vec!` בגרסתה הרשמית בספריה הסטנדרטית כוללת קוד לביצוע הקצאה מקדימה של כמות הזיכרון הדרוש. קוד זה הוא אופטימיזציה ממנה אנו מתעלמים פה, למען פשטות הדוגמא.
 
-We then start the macro definition with `macro_rules!` and the name of the
-macro we’re defining *without* the exclamation mark. The name, in this case
-`vec`, is followed by curly brackets denoting the body of the macro definition.
+הביאור `#[macro_export]` מציין שמקרו זה צריך להיות זמין בכל מקום בו המכולה בה המקרו מוגדר מוכנסת למתחם. ללא ביאור זה, לא ניתן להכניס את המקרו למתחם.
 
-The structure in the `vec!` body is similar to the structure of a `match`
-expression. Here we have one arm with the pattern `( $( $x:expr ),* )`,
-followed by `=>` and the block of code associated with this pattern. If the
-pattern matches, the associated block of code will be emitted. Given that this
-is the only pattern in this macro, there is only one valid way to match; any
-other pattern will result in an error. More complex macros will have more than
-one arm.
+מתחילים את הגדרת המקרו על-ידי כתיבת `macro_rules!` ולאחר מכן שם המקרו *ללא* סימן קריאה. לאחר השם, שבמקרה זה הוא `vec`, מופיעים סוגריים מסולסלים אשר מסמנים את גוף הגדרת המקרו.
 
-Valid pattern syntax in macro definitions is different than the pattern syntax
-covered in Chapter 18 because macro patterns are matched against Rust code
-structure rather than values. Let’s walk through what the pattern pieces in
-Listing 19-28 mean; for the full macro pattern syntax, see the [Rust
-Reference][ref].
+המבנה של גוף ה-`vec` דומה למבנה של ביטוי `match`. כאן יש לנו זרוע אחת עם התבנית `( $( $x:expr ),* )`, ולאחריה `=>` והבלוק של הקוד המשוייך לתבנית זו. במידה והתבנית מתאימה, בלוק הקוד המשוייך יופק. בהתחשב בכך שזוהי התבנית היחידה במקרו, יש רק דרך תקפה אחת להתאמה; כל תבנית אחרת תוביל לשגיאה. למקרואים מורכבים יותר יהיו יותר מזרוע אחת.
 
-First, we use a set of parentheses to encompass the whole pattern. We use a
-dollar sign (`$`) to declare a variable in the macro system that will contain
-the Rust code matching the pattern. The dollar sign makes it clear this is a
-macro variable as opposed to a regular Rust variable. Next comes a set of
-parentheses that captures values that match the pattern within the parentheses
-for use in the replacement code. Within `$()` is `$x:expr`, which matches any
-Rust expression and gives the expression the name `$x`.
+התחביר של תבניות תקפות בהגדרות מקרואים שונה מתחביר התבניות בו דנו בפרק 18 מכיוון שתבניות מקרואים מותאמות מול קוד ראסט, ולא כנגד ערכים. הבה נעבור, פיסה-אחר-פיסה, על משמעות הקוד ברשימה 19-28; לתחביר תבניות המקרואים המלא, פנו [לתיעוד של ראסט][ref].
 
-The comma following `$()` indicates that a literal comma separator character
-could optionally appear after the code that matches the code in `$()`. The `*`
-specifies that the pattern matches zero or more of whatever precedes the `*`.
+ראשית, אנו משתמשים בזוג סוגריים כדי להקיף את התבנית כולה. אנו משתמשים בסימן `$` כדי להכריז, במערכת המקרואים, על משתנה שיכיל את קוד הראסט עליו מתבצעת ההתאמה. סימן ה-<0>$</0> מבהיר שזהו משתנה מקרו בניגוד למשתנה רגיל של ראסט. לאחר מכן מגיעים סוגריים שתופסים ערכים שמתאימים לתבנית שבתוך הסוגריים, לשימוש בקוד להחלפה. בתוך `$()` נמצא `$x:expr`, שמתאים לכל ביטוי ראסט ונותן לביטוי את השם `$x`.
 
-When we call this macro with `vec![1, 2, 3];`, the `$x` pattern matches three
-times with the three expressions `1`, `2`, and `3`.
+הפסיק שאחרי ה-`$()` מציין שהסימן המפורש פסיק כסימן מפריד יכול, אופציונאלית, להופיע אחרי הקוד שמותאם לקוד ב-`$()`. ה-`*` מציינת שהתבנית מתאימה לאפס, או יותר, ממה שמופיע אחרי ה-`*`.
 
-Now let’s look at the pattern in the body of the code associated with this arm:
-`temp_vec.push()` within `$()*` is generated for each part that matches `$()`
-in the pattern zero or more times depending on how many times the pattern
-matches. The `$x` is replaced with each expression matched. When we call this
-macro with `vec![1, 2, 3];`, the code generated that replaces this macro call
-will be the following:
+כאשר קוראים למקרו זה עם `vec![1, 2, 3];`, התבנית `$x` מתאימה שלוש פעמים עם שלושת הביטויים `1`, `2`, ו-`3`.
+
+הבה נעבור כעת בתבנית שבגוף של הקוד המשוייך לזרוע זו: `temp_vec.push()` בתוך `$()*` יופק עבור כל חלק שמתאים ל-`$()` בתבנית, אפס או יותר פעמים, בתלות בכמה פעמים התבנית הותאמה. ה-`$x` יוחלף עם כל אחד מהביטויים שהותאמו. כאשר קוראים למקרו זה עם `vec![1, 2, 3];`, הקוד שיופק שיחליף את קריאת המקרו יהיה:
 
 ```rust,ignore
 {
@@ -142,27 +71,15 @@ will be the following:
 }
 ```
 
-We’ve defined a macro that can take any number of arguments of any type and can
-generate code to create a vector containing the specified elements.
+הגדרנו מקרו שיכול לקבל כל מספר שהוא של ארגומנטים, לא משנה מאיזה טיפוס, ומייצר קוד שמייצר ווקטור שמכיל את הפרטים הנתונים.
 
-To learn more about how to write macros, consult the online documentation or
-other resources, such as [“The Little Book of Rust Macros”][tlborm] started by
-Daniel Keep and continued by Lukas Wirth.
+כדי ללמוד עוד על כתיבת מקרואים, פנו לתיעוד ברשת, או למקורות אחרים, כמו [“The Little Book of Rust Macros”][tlborm] שיזם דניאל קיפ (Daniel Keep) והמשיך לכתוב לוקאס ווירת' (Lukas Wirth).
 
-### Procedural Macros for Generating Code from Attributes
+### מקרואים תפעוליים לייצור קוד ממאפיינים
 
-The second form of macros is the *procedural macro*, which acts more like a
-function (and is a type of procedure). Procedural macros accept some code as an
-input, operate on that code, and produce some code as an output rather than
-matching against patterns and replacing the code with other code as declarative
-macros do. The three kinds of procedural macros are custom derive,
-attribute-like, and function-like, and all work in a similar fashion.
+התצורה השניה של מקרואים היא *מקרואים תפעוליים*, שפועלים יותר כמו פונקציות (והם סוג של פרוצדורה). מקרו תפעולי מקבל פיסת קוד כקלט, פועל על קוד זה, ומפיק קוד כלשהו כפלט במקום להתאים מול תבניות ולבצע החלפה של קוד בקוד אחר כמו שמקרו הכרזתי עושה. שלושת הסוגים של מקרואים תפעוליים הם גזירה מותאמת, דמוי-אפיון, ודמוי-פונקציה, וכולם פועלים בדרכים דומות.
 
-When creating procedural macros, the definitions must reside in their own crate
-with a special crate type. This is for complex technical reasons that we hope
-to eliminate in the future. In Listing 19-29, we show how to define a
-procedural macro, where `some_attribute` is a placeholder for using a specific
-macro variety.
+כאשר יוצרים מקרו תפעולי, ההגדרות חייבות לשכון במכולה משלהן, בעלת טיפוס מכולה מיוחד. זה נחוץ מסיבות טכניות סבוכות שכולנו תקווה שיעלמו בעתיד. ברשימה 19-29, אנו מראים כיצד להגדיר מקרו תפעולי, כאשר `some_attribute` הוא תופס-מקום לשימוש בסוג ספציפי של מקרו.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -174,33 +91,17 @@ pub fn some_name(input: TokenStream) -> TokenStream {
 }
 ```
 
-<span class="caption">Listing 19-29: An example of defining a procedural
-macro</span>
 
-The function that defines a procedural macro takes a `TokenStream` as an input
-and produces a `TokenStream` as an output. The `TokenStream` type is defined by
-the `proc_macro` crate that is included with Rust and represents a sequence of
-tokens. This is the core of the macro: the source code that the macro is
-operating on makes up the input `TokenStream`, and the code the macro produces
-is the output `TokenStream`. The function also has an attribute attached to it
-that specifies which kind of procedural macro we’re creating. We can have
-multiple kinds of procedural macros in the same crate.
+<span class="caption">רשימה 19-29: דוגמא להגדרת מקרו תפעולי</span>
 
-Let’s look at the different kinds of procedural macros. We’ll start with a
-custom derive macro and then explain the small dissimilarities that make the
-other forms different.
+הפונקציה שמגדירה את המקרו התפעולי מקבלת את `TokenStream` כקלט ומפיק `TokenStream` כפלט. הטיפוס `TokenStream` מוגדר על-ידי המכולה `proc_macro` שכלולה עם ראסט ומייצגת סדרה של אסימונים. זהו לב המקרו: קוד המקור שעליו המקרו פועל הוא הקלט `TokenStream`, והקוד שהמקרו מפיק הוא הפלט `TokenStream`. לפונקציה יש גם אפיון שמציין איזה סוג של מקרו תפעולי יוצר. יכולים להיות כמה סוגים של מקרואים תפעוליים במכולה אחת.
 
-### How to Write a Custom `derive` Macro
+הבה נתבונן בסוגים השונים של מקרואים תפעוליים. נתחיל עם מקרואים מסוג גזירה מותאמת, ולאחר מכן נסביר מהן השונויות הקטנות שבסוגים האחרים.
 
-Let’s create a crate named `hello_macro` that defines a trait named
-`HelloMacro` with one associated function named `hello_macro`. Rather than
-making our users implement the `HelloMacro` trait for each of their types,
-we’ll provide a procedural macro so users can annotate their type with
-`#[derive(HelloMacro)]` to get a default implementation of the `hello_macro`
-function. The default implementation will print `Hello, Macro! My name is
-TypeName!` where `TypeName` is the name of the type on which this trait has
-been defined. In other words, we’ll write a crate that enables another
-programmer to write code like Listing 19-30 using our crate.
+### כיצד לכתוב מקרו `derive` מותאם
+
+הבה ניצור מכולה בשם `hello_macro` שמגדירה תכונה בשם `HelloMacro` עם פונקציה משוייכת אחת בשם `hello_macro`. במקום להכריח את המשתמשים שלנו לממש את התכונה `HelloMacro` עבור כל אחד מהטיפוסים שלהם, נספק מקרו תפעולי כדי שמשתמשים יוכלו לבאר את הטיפוסים שלהם עם `#[derive(HelloMacro)]` ולקבל מימוש ברירת-מחדל עבור הפונקציה `hello_macro`. מימוש ברירת-המחד ידפיס `hello_macro</0>! My name is
+TypeName!` כאשר `TypeName` הוא השם של הטיפוס עליו התכונה הוגדרה. במילים אחרות, נכתוב מכולה שמאפשרת למתכנתים אחרים לכתוב קוד כמו ברשימה 19-30 תוך שימוש במכולה שלנו.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -208,17 +109,16 @@ programmer to write code like Listing 19-30 using our crate.
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-30/src/main.rs}}
 ```
 
-<span class="caption">Listing 19-30: The code a user of our crate will be able
-to write when using our procedural macro</span>
 
-This code will print `Hello, Macro! My name is Pancakes!` when we’re done. The
-first step is to make a new library crate, like this:
+<span class="caption">רשימה 19-30: הקוד שמשתמשים של המכולה שלנו יוכלו לכתוב תוך שימוש במקרו תפעולי</span>
+
+קוד זה ידפיס `Hello, Macro! My name is Pancakes!` כאשר נסיים. הצעד הראשון הוא ליצור מכולת ספריה חדשה, כך:
 
 ```console
 $ cargo new hello_macro --lib
 ```
 
-Next, we’ll define the `HelloMacro` trait and its associated function:
+לאחר מכן, נגדיר את התכונה `HelloMacro` ואת הפונקציות המשוייכות שלה:
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -226,48 +126,25 @@ Next, we’ll define the `HelloMacro` trait and its associated function:
 {{#rustdoc_include ../listings/ch19-advanced-features/no-listing-20-impl-hellomacro-for-pancakes/hello_macro/src/lib.rs}}
 ```
 
-We have a trait and its function. At this point, our crate user could implement
-the trait to achieve the desired functionality, like so:
+יש לנו תכונה ואת הפונקציות שלה. בנקודה זו, המכולה שלנו תוכל לממש את התכונה כדי להשיג את הפונקציונאליות המצופה, כך:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch19-advanced-features/no-listing-20-impl-hellomacro-for-pancakes/pancakes/src/main.rs}}
 ```
 
-However, they would need to write the implementation block for each type they
-wanted to use with `hello_macro`; we want to spare them from having to do this
-work.
+אבל, משתמשים יאלצו לכתוב את בלוק המימוש לכל טיפוס עבורו הם רוצים להשתמש ב- `hello_macro`; אנחנו רוצים לחסוך להם את המאמץ הזה.
 
-Additionally, we can’t yet provide the `hello_macro` function with default
-implementation that will print the name of the type the trait is implemented
-on: Rust doesn’t have reflection capabilities, so it can’t look up the type’s
-name at runtime. We need a macro to generate code at compile time.
+בנוסף, לא ניתן לספק לפונקציה `hello_macro` מימוש ברירת-מחדל שידפיס את השם של הטיפוס עליו התכונה ממומשת: לראסט אין יכולת התבוננות עצמית, ולכן אינה יכולה לחפש אחר שם טיפוס בזמן הריצה. אנחנו צריכים מקרו כדי להיות מסוגלים לייצר קוד בזמן הקומפילציה.
 
-The next step is to define the procedural macro. At the time of this writing,
-procedural macros need to be in their own crate. Eventually, this restriction
-might be lifted. The convention for structuring crates and macro crates is as
-follows: for a crate named `foo`, a custom derive procedural macro crate is
-called `foo_derive`. Let’s start a new crate called `hello_macro_derive` inside
-our `hello_macro` project:
+הצעד הבא הוא להגדיר את המקרו התפעולי. בזמן כתיבת שורות אלה, מקרואים תפעוליים חייבים להימצא במכולה משלהם. עם הזמן, יתכן ומגבלה זו תוסר. המוסכמה לבנית מכולות ומכולות מקרואים היא כדלהלן: עבור מקרו בשם `foo`, מכולת מקרו תפעולי נגזרתי מותאם נקראת `foo_derive`. הבה ניצור מכולה חדשה בשם `hello_macro_derive` בתוך הפרוייקט `hello_macro`:
 
 ```console
 $ cargo new hello_macro_derive --lib
 ```
 
-Our two crates are tightly related, so we create the procedural macro crate
-within the directory of our `hello_macro` crate. If we change the trait
-definition in `hello_macro`, we’ll have to change the implementation of the
-procedural macro in `hello_macro_derive` as well. The two crates will need to
-be published separately, and programmers using these crates will need to add
-both as dependencies and bring them both into scope. We could instead have the
-`hello_macro` crate use `hello_macro_derive` as a dependency and re-export the
-procedural macro code. However, the way we’ve structured the project makes it
-possible for programmers to use `hello_macro` even if they don’t want the
-`derive` functionality.
+שתי המכולות שלנו קשורות הדוקות זו לזו, ולכן אנו יוצרים את מכולת המקרו התפעולי בתוך התיקיה של המכולה `hello_macro`. אם נשנה את שם התכונה ב-`hello_macro`, יהיה עלינו לשנות את המימוש של המקרו התפעולי ב-`hello_macro_derive` גם כן. שתי המכולות יצטרכו להיות מפורסמות בנפרד, ומתכנתים שישתמשו במכולות אלה יצטרכו להוסיף את שתיהן כתלותות ולהכניס את שתיהן למתחם. היינו יכולים, כחלופה, להגדיר שהמכולה `hello_macro` משתמשת ב-`hello_macro_derive` כתלות ולבצע יצוא מחדש של הקוד של המקרו התפעולי. אבל, הדרך בה בנינו את הפרוייקט מאפשרת למתכנתים להשתמש ב-`hello_macro` אפילו אם הם לא מעוניינים בפונקציונאליות ה-`derive`.
 
-We need to declare the `hello_macro_derive` crate as a procedural macro crate.
-We’ll also need functionality from the `syn` and `quote` crates, as you’ll see
-in a moment, so we need to add them as dependencies. Add the following to the
-*Cargo.toml* file for `hello_macro_derive`:
+אנחנו צריכים להכריז על המכולה `hello_macro_derive` כמכולת מקרו תפעולי. בנוסף נצטרך גם פונקציונאליות מהמכולות `syn` ו- `quote`, כפי שתראו עוד רגע קט, ולכן אנחנו מוסיפים אותן כתלותות. הוסיפו את השורות הבאות לקובץ *Cargo.toml* עבור `hello_macro_derive`:
 
 <span class="filename">Filename: hello_macro_derive/Cargo.toml</span>
 
@@ -275,9 +152,7 @@ in a moment, so we need to add them as dependencies. Add the following to the
 {{#include ../listings/ch19-advanced-features/listing-19-31/hello_macro/hello_macro_derive/Cargo.toml:6:12}}
 ```
 
-To start defining the procedural macro, place the code in Listing 19-31 into
-your *src/lib.rs* file for the `hello_macro_derive` crate. Note that this code
-won’t compile until we add a definition for the `impl_hello_macro` function.
+על מנת להתחיל להגדיר את המקרו התפעולי, מקמו את הקוד מרשימה 19-31 לתוך הקובץ *src/lib.rs* עבור המכולה `hello_macro_derive`. שימו לב שקוד זה לא יעבור קומפילציה לפני שנוסיף את ההגדרה עבור הפונקציה `impl_hello_macro`.
 
 <span class="filename">Filename: hello_macro_derive/src/lib.rs</span>
 
@@ -285,41 +160,18 @@ won’t compile until we add a definition for the `impl_hello_macro` function.
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-31/hello_macro/hello_macro_derive/src/lib.rs}}
 ```
 
-<span class="caption">Listing 19-31: Code that most procedural macro crates
-will require in order to process Rust code</span>
 
-Notice that we’ve split the code into the `hello_macro_derive` function, which
-is responsible for parsing the `TokenStream`, and the `impl_hello_macro`
-function, which is responsible for transforming the syntax tree: this makes
-writing a procedural macro more convenient. The code in the outer function
-(`hello_macro_derive` in this case) will be the same for almost every
-procedural macro crate you see or create. The code you specify in the body of
-the inner function (`impl_hello_macro` in this case) will be different
-depending on your procedural macro’s purpose.
+<span class="caption">רשימה 19-31: קוד שרוב מכולות מקרואים תפעוליים ידרשו בשביל לעבד קוד ראסט</span>
 
-We’ve introduced three new crates: `proc_macro`, [`syn`], and [`quote`]. The
-`proc_macro` crate comes with Rust, so we didn’t need to add that to the
-dependencies in *Cargo.toml*. The `proc_macro` crate is the compiler’s API that
-allows us to read and manipulate Rust code from our code.
+שימו לב שפיצלנו את הקוד לפונקציה `hello_macro_derive`, שאחראית על הפרסינג של ה- `TokenStream`, והפונקציה `impl_hello_macro`, שאחראית על המרת עץ התחביר: פיצול זה הופך מקל על כתיבת מקרואים תפעוליים. הקוד בפונקציה חיצונית זו (`hello_macro_derive` במקרה זה) תהיה זהה כמעט לכל מכולת מקרו תפעולי שתראו, או שתכתבו. הקוד שאתם מספקים בגוף הפונקציה הפנימית (`impl_hello_macro` במקרה זה) תהיה שונה ותלויה במטרת המקרו התפעולי.
 
-The `syn` crate parses Rust code from a string into a data structure that we
-can perform operations on. The `quote` crate turns `syn` data structures back
-into Rust code. These crates make it much simpler to parse any sort of Rust
-code we might want to handle: writing a full parser for Rust code is no simple
-task.
+הצגנו שלוש מכולות חדשות: `proc_macro`, [`syn`][], ו-[`quote`][]. המכולה `proc_macro` מגיעה עם ראסט, ולכן לא היה צורך להוסיף אותה לרשימת התלותות ב-*Cargo.toml*. המכולה `proc_macro` היא ה-API של הקומפיילר שמאפשרת לנו לקרוא ולעבד קוד ראסט מתוך הקוד שלנו.
 
-The `hello_macro_derive` function will be called when a user of our library
-specifies `#[derive(HelloMacro)]` on a type. This is possible because we’ve
-annotated the `hello_macro_derive` function here with `proc_macro_derive` and
-specified the name `HelloMacro`, which matches our trait name; this is the
-convention most procedural macros follow.
+המכולה `syn` עושה פרסינג לקוד ראסט מתוך מחרוזת לתוך מבנה נתונים שעליו אנו מבצעים פעולות. המכולה `quote` הופכת מבני נתונים מסוג `syn` חזרה לקוד ראסט. מכולות אלה מקלות מאוד על ביצוע פרסינג על כל סוג של קוד ראסט שנוכל להיתקל בו: כתיבת פרסר מלא לראסט אינה עניין של מה בכך.
 
-The `hello_macro_derive` function first converts the `input` from a
-`TokenStream` to a data structure that we can then interpret and perform
-operations on. This is where `syn` comes into play. The `parse` function in
-`syn` takes a `TokenStream` and returns a `DeriveInput` struct representing the
-parsed Rust code. Listing 19-32 shows the relevant parts of the `DeriveInput`
-struct we get from parsing the `struct Pancakes;` string:
+הפונקציה `hello_macro_derive` תיקרא כאשר משתמשי הספריה יציינו `#[derive(HelloMacro)]` על טיפוס כלשהו. זה מתאפשר מכיוון שביארנו כאן את הפונקציה `hello_macro_derive` עם `proc_macro_derive` וציינו את השם `HelloMacro`, שתואם את שם התכונה שלנו; זוהי המוסכמה אחריה רוב המקרואים התפעוליים עוקבים.
+
+הפונקציה `hello_macro_derive` מתחילה בלהמיר את `input` מ-`TokenStream` למבנה נתונים שאנחנו יכולים לפרש ולבצע עליו פעולות. כאן `syn` נכנס לתמונה. הפונקציה `parse` ב-`syn` מקבלת `TokenStream` ומחזירה מבנה `DeriveInput` המייצג את קוד הראסט לאחר פרסינג. רשימה 19-32 מציגה את החלקים הרלוונטים של המבנה `DeriveInput` שאנו מקבלים לאחר ביצוע פרסינג למחרוזת `struct Pancakes;`:
 
 ```rust,ignore
 DeriveInput {
@@ -341,32 +193,16 @@ DeriveInput {
 }
 ```
 
-<span class="caption">Listing 19-32: The `DeriveInput` instance we get when
-parsing the code that has the macro’s attribute in Listing 19-30</span>
 
-The fields of this struct show that the Rust code we’ve parsed is a unit struct
-with the `ident` (identifier, meaning the name) of `Pancakes`. There are more
-fields on this struct for describing all sorts of Rust code; check the [`syn`
-documentation for `DeriveInput`][syn-docs] for more information.
+<span class="caption">רשימה 19-32: המופע של `DeriveInput` שאנו מקבלים כשמבצעים פרסינג לקוד עם האפיון של המקרו ברשימה 19-30</span>
 
-Soon we’ll define the `impl_hello_macro` function, which is where we’ll build
-the new Rust code we want to include. But before we do, note that the output
-for our derive macro is also a `TokenStream`. The returned `TokenStream` is
-added to the code that our crate users write, so when they compile their crate,
-they’ll get the extra functionality that we provide in the modified
-`TokenStream`.
+השדות במבנה זה מראים שקוד הראסט עליו עשינו פרסינג הוא מבנה יחידה עם ה-`ident` (identifier, קריא השם) של `Pancakes`. יש שדות נוספים במבנה זה עבור תיאור כל סוגי הקוד בראסי; פנו לתיעוד של `DeriveInput`</a> למידע נוסף.
 
-You might have noticed that we’re calling `unwrap` to cause the
-`hello_macro_derive` function to panic if the call to the `syn::parse` function
-fails here. It’s necessary for our procedural macro to panic on errors because
-`proc_macro_derive` functions must return `TokenStream` rather than `Result` to
-conform to the procedural macro API. We’ve simplified this example by using
-`unwrap`; in production code, you should provide more specific error messages
-about what went wrong by using `panic!` or `expect`.
+בעוד זמן קצר נגדיר את הפונקציה `impl_hello_macro`, שם נבנה את קוד הראסט החדש שאנו רוצים לכלול. אבל לפני שנעשה זאת, שימוש לב שהפלט שמקרו הגזירה שלנו גם הוא `TokenStream`. ערך `TokenStream` מוחזר זה מוסף לקוד שמשתמשי המכולה שלנו כותבים, כך שכאשר אם מקמפלים את המכולה שלהם, הם יקבלו פונקציונאליות נוספת שאנו מספקים ב-`TokenStream` המשודרג.
 
-Now that we have the code to turn the annotated Rust code from a `TokenStream`
-into a `DeriveInput` instance, let’s generate the code that implements the
-`HelloMacro` trait on the annotated type, as shown in Listing 19-33.
+יתכן ושמתם לב שאנו קוראים ל-`unwrap` כדי לגרום לפונקציה `hello_macro_derive` להיכנס לפאניקה במקרה והקריאה לפונקציה `syn::parse` נכשלת. זה הכרחי שהמקרו התפעולי שלנו יכנס לפאניקה במקרה של שגיאות כיוון שפונקציות מסוג `proc_macro_derive` חייבות להחזיר `TokenStream` ולא `Result` על מנת לענות לדרישות ה-API של מקרואים תפעוליים. פישטנו דוגמא זאת על-ידי שימוש ב-`unwrap`; בקוד להשקה, יש לספק הודעות שגיאה יותר ממוקדות באמצעות `panic!` או `expect` אודות מה שהשתבש.
+
+כעת, משיש בידנו את הקוד להפוך את קוד הראסט המבואר מ-`TokenStream` למופע של `DeriveInput`, הבה ניצר את הקוד שמממש את התכונה `HelloMacro` על הטיפוס המבואר, כמוצג ברשימה 19-33.
 
 <span class="filename">Filename: hello_macro_derive/src/lib.rs</span>
 
@@ -374,140 +210,75 @@ into a `DeriveInput` instance, let’s generate the code that implements the
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-33/hello_macro/hello_macro_derive/src/lib.rs:here}}
 ```
 
-<span class="caption">Listing 19-33: Implementing the `HelloMacro` trait using
-the parsed Rust code</span>
 
-We get an `Ident` struct instance containing the name (identifier) of the
-annotated type using `ast.ident`. The struct in Listing 19-32 shows that when
-we run the `impl_hello_macro` function on the code in Listing 19-30, the
-`ident` we get will have the `ident` field with a value of `"Pancakes"`. Thus,
-the `name` variable in Listing 19-33 will contain an `Ident` struct instance
-that, when printed, will be the string `"Pancakes"`, the name of the struct in
-Listing 19-30.
+<span class="caption">רשימה 19-33: מימוש של התכונה `HelloMacro` תוך שימוש בקוד ראסט שעבר פרסינג</span>
 
-The `quote!` macro lets us define the Rust code that we want to return. The
-compiler expects something different to the direct result of the `quote!`
-macro’s execution, so we need to convert it to a `TokenStream`. We do this by
-calling the `into` method, which consumes this intermediate representation and
-returns a value of the required `TokenStream` type.
+אנו מקבלים, באמצעות `ast.ident`, מופע של המבנה `Ident` שמכיל את השם (identifier) של הטיפוס המבואר. המבנה ברשימה 19-32 מראה שכאשר אנו קוראים לפונקציה `impl_hello_macro` על הקוד מרשימה 19-30, ל-`ident` שמקבלים יהיה את הערך `"Pancakes"` בשדה `ident`. לכן, המשתנה `name` ברשימה 19-33 יכיל מופע של המבנה `Ident` אשר, כשהוא יודפס, יהיה המחרוזת `"Pancakes"`, שהיא השם של המבנה מרשימה 19-30.
 
-The `quote!` macro also provides some very cool templating mechanics: we can
-enter `#name`, and `quote!` will replace it with the value in the variable
-`name`. You can even do some repetition similar to the way regular macros work.
-Check out [the `quote` crate’s docs][quote-docs] for a thorough introduction.
+המקרו `quote!` מאפשר לנו להגדיר את קוד הראסט שאנחנו רוצים להחזיר. הקומפיילר מצפה לקבל משהו שונה מהתוצאה שמסופקת ישירות מריצת המקרו `quote!`, ולכן עלינו להמיר את התוצאה ל-`TokenStream`. אנו עושים זאת על-ידי קריאה למתודה `into`, שמכלה את ייצוג הביניים הזה ומחזירה ערך מהטיפוס המבוקש, `TokenStream`.
 
-We want our procedural macro to generate an implementation of our `HelloMacro`
-trait for the type the user annotated, which we can get by using `#name`. The
-trait implementation has the one function `hello_macro`, whose body contains the
-functionality we want to provide: printing `Hello, Macro! My name is` and then
-the name of the annotated type.
+המקרו `quote!` מספק גם כמה יכולות בנית טמפלטים מרשימות ביותר: ניתן לרשום `#name`, ואז `quote!` יחליף את זה עם הערך במשתנה `name`. ניתן אפילו לבצע חזרות באופן דומה לנעשה במקרואים רגילים. פנו לתיעוד ב-[the `quote` crate’s docs][quote-docs] לעוד מידע.
 
-The `stringify!` macro used here is built into Rust. It takes a Rust
-expression, such as `1 + 2`, and at compile time turns the expression into a
-string literal, such as `"1 + 2"`. This is different than `format!` or
-`println!`, macros which evaluate the expression and then turn the result into
-a `String`. There is a possibility that the `#name` input might be an
-expression to print literally, so we use `stringify!`. Using `stringify!` also
-saves an allocation by converting `#name` to a string literal at compile time.
+אנחנו רוצים שהמקרו התפעולי שלנו ייצר מימוש עבור התכונה `HelloMacro` שלנו עבור הטיפוס שהמשתמש מבאר, שאותו אנו יכולים לקבל דרך `#name`. למימוש התכונה יש את הפונקציה היחידה `hello_macro`, וגוף הפונקציה מכיל את הפונקציונאליות שאנחנו רוצים: הדפסת `Hello, Macro! My name is` ואז את שם הטיפוס המבואר.
 
-At this point, `cargo build` should complete successfully in both `hello_macro`
-and `hello_macro_derive`. Let’s hook up these crates to the code in Listing
-19-30 to see the procedural macro in action! Create a new binary project in
-your *projects* directory using `cargo new pancakes`. We need to add
-`hello_macro` and `hello_macro_derive` as dependencies in the `pancakes`
-crate’s *Cargo.toml*. If you’re publishing your versions of `hello_macro` and
-`hello_macro_derive` to [crates.io](https://crates.io/), they would be regular
-dependencies; if not, you can specify them as `path` dependencies as follows:
+המקרו `stringify!` בו אנו משתמשים כאן הוא מקרו שבנוי לתוך ראסט. הוא לוקח ביטוי של ראסט, כגון `1 + 2`, ובזמן הקומפילציה הופך את הביטוי למחרוזת מפורשת, כמו `"1 + 2"`. פעולה זו שונה ממה ש-`format!` עושה, או ממה ש-`println!` עושה. אלה מקרואים שמעריכים ביטוי ומחזירים את את התוצאה כ-`String`. יתכן שהקלט שב-`#name` מכיל ביטוי, ואותו יש להדפיס כמו שהוא, לכן אנו משתמשים ב-`stringify!`. שימוש ב-`stringify!`. גם חוסך הקצאת זיכרון על-ידי המרת `#name` למחרוזת מפורשת בזמן הקומפילציה.
+
+בנקודה זו, `cargo build` צריך לעבוד בהצלחה גם ב-`hello_macro` וגם ב-`hello_macro_derive`. הבה נחבר מכולות אלה לקוד מרשימה 19-30 כדי לראות את המקרואים התפעוליים בפעולה! צרו פרוייקט בינארי חדש בתיקיית הפרוייקטים שלכם על-ידי הרצת `cargo new pancakes`. יש להוסיף את `hello_macro` ואת `hello_macro_derive` כתלותות בקובץ *Cargo.toml* של המכולה `pancakes`. אם אתם מפרסמים את הגרסאות שלכם של `hello_macro` ו-`hello_macro_derive` ל-[crates.io](https://crates.io/), הם יהיו תלותות רגילות; אחרת, תוכלו לציין אותם כתלותות `path`, באופן הבא:
 
 ```toml
 {{#include ../listings/ch19-advanced-features/no-listing-21-pancakes/pancakes/Cargo.toml:7:9}}
 ```
 
-Put the code in Listing 19-30 into *src/main.rs*, and run `cargo run`: it
-should print `Hello, Macro! My name is Pancakes!` The implementation of the
-`HelloMacro` trait from the procedural macro was included without the
-`pancakes` crate needing to implement it; the `#[derive(HelloMacro)]` added the
-trait implementation.
+מקמו את הקוד מרשימה 19-30 לתוך הקובץ *src/main.rs*, והריצו `cargo run`: אתם צריכים לראות `Hello, Macro! My name is Pancakes!` המימוש של התכונה `HelloMacro` מהמקרו התפעולי נכלל מבלי שהמכולה `pancakes` היתה צריכה לממש אותה; השורה `#[derive(HelloMacro)]` הוסיפה את המימוש.
 
-Next, let’s explore how the other kinds of procedural macros differ from custom
-derive macros.
+כעת, הבה נבין במה נבדלים המקרואים התפעוליים האחרים ממקרואים נגזרים מותאמים.
 
-### Attribute-like macros
+### מקרואים דמויי-אפיון
 
-Attribute-like macros are similar to custom derive macros, but instead of
-generating code for the `derive` attribute, they allow you to create new
-attributes. They’re also more flexible: `derive` only works for structs and
-enums; attributes can be applied to other items as well, such as functions.
-Here’s an example of using an attribute-like macro: say you have an attribute
-named `route` that annotates functions when using a web application framework:
+מקרואים דמויי-אפיון דומים למקרואים נגזרים מותאמים, אבל במקום לייצר קוד עבור האפיון `derive`, הם מאפשרים לכם ליצור אפיונים חדשים. הם גם יותר גמישים: `derive` עובד רק עבור מבנים ומבחרים; מאפיינים יכולים לפעול על עצמים אחרים, כמו פונקציות. הימה דוגמא לשימוש במקרו דמוי-אפיון: נניח שיש לכם אפיון בשם `route` שמבאר פונקציות כאשר משתמשים ב-web appliation framework:
 
 ```rust,ignore
 #[route(GET, "/")]
 fn index() {
 ```
 
-This `#[route]` attribute would be defined by the framework as a procedural
-macro. The signature of the macro definition function would look like this:
+האפיון `#[route]` יהיה מוגדר ע"י ה-framework כמקרו תפעולי. החותם של הפונקציה של הגדרת המקרו יראה כך:
 
 ```rust,ignore
 #[proc_macro_attribute]
 pub fn route(attr: TokenStream, item: TokenStream) -> TokenStream {
 ```
 
-Here, we have two parameters of type `TokenStream`. The first is for the
-contents of the attribute: the `GET, "/"` part. The second is the body of the
-item the attribute is attached to: in this case, `fn index() {}` and the rest
-of the function’s body.
+יש לנו כאן שני פרמטרים מטיפוס `TokenStream`. הראשון הוא עבור התוכן של האפיון: החלק של ה-`GET, "/"`. השני הוא הגוף של העצם שמקושר לאפיון: במקרה זה, `fn index() {}` ושארית הגוף של הפונקציה.
 
-Other than that, attribute-like macros work the same way as custom derive
-macros: you create a crate with the `proc-macro` crate type and implement a
-function that generates the code you want!
+מלבד זאת, מקרואים דמויי-אפיון עובדים באותה הדרך כמו מקרואים נגזרים מותאמים: יוצרים מכולה עם טיפוס המכולה `proc-macro` ומממשים פונקציה שיוצר את הקוד הרצוי!
 
-### Function-like macros
+### מקרואים דמויי-פונקציה
 
-Function-like macros define macros that look like function calls. Similarly to
-`macro_rules!` macros, they’re more flexible than functions; for example, they
-can take an unknown number of arguments. However, `macro_rules!` macros can be
-defined only using the match-like syntax we discussed in the section
-[“Declarative Macros with `macro_rules!` for General
-Metaprogramming”][decl]<!-- ignore --> earlier. Function-like macros take a
-`TokenStream` parameter and their definition manipulates that `TokenStream`
-using Rust code as the other two types of procedural macros do. An example of a
-function-like macro is an `sql!` macro that might be called like so:
+מקרואים דמויי-פונקציה מגדירים מקרואים שנראים כמו קריאות לפונקציה. באופן דומה למקרואים מסוג `macro_rules!`, הם יותר גמישים מפונקציות; למשל, הם יכולים לקבל מספר לא ידוע של ארגומנטים. אבל, מקרואים מסוג `macro_rules!` ניתן להגדיר רק באמצעות תחביר שדומה לתחביר match, כפי שנידון לעיל בסעיף ["מקרואים הכרזתיים עם `macro_rules!` עבור מטה-תכנות כללי"][decl]<!-- ignore --> . מקראוים דמויי-פונקציה מקבלים פרמטר `TokenStream` וההגדרה שלהם מבצעת מניפולציות על פרמטר זה תוך שימוש בקוד ראסט, כמו שנעשה בשני הסוגים האחרים של מקרואים תפעוליים. דוגמא למקרו דמוי-פונקציה הוא המקרו `sql!`, אותו ניתן לקרוא כך:
 
 ```rust,ignore
 let sql = sql!(SELECT * FROM posts WHERE id=1);
 ```
 
-This macro would parse the SQL statement inside it and check that it’s
-syntactically correct, which is much more complex processing than a
-`macro_rules!` macro can do. The `sql!` macro would be defined like this:
+מקרו זה יבצע פרסינג לביטוי ה-SQL שבתוכו, ויבדוק שהוא נכון תחבירים, פעולת עיבוד הרבה יותר מורכבת ממה ש-`macro_rules!` יכולים לבצע. המקרו `sql!` יהיה מוגדר כך:
 
 ```rust,ignore
 #[proc_macro]
 pub fn sql(input: TokenStream) -> TokenStream {
 ```
 
-This definition is similar to the custom derive macro’s signature: we receive
-the tokens that are inside the parentheses and return the code we wanted to
-generate.
+הגדרה זו דומה לחותם של מקרו נגזר מותאם: אנו מקבלים את האסימונים שבתוך הסוגריים, ומחזירים את הקוד שאנו רוצים לייצר.
 
-## Summary
+## סיכום
 
-Whew! Now you have some Rust features in your toolbox that you likely won’t use
-often, but you’ll know they’re available in very particular circumstances.
-We’ve introduced several complex topics so that when you encounter them in
-error message suggestions or in other peoples’ code, you’ll be able to
-recognize these concepts and syntax. Use this chapter as a reference to guide
-you to solutions.
+וואוו! כעת יש באמתחתכם כמה יכולות בראסט בהם, כנראה, לא תעשו שימוש תכוף, אבל תדעו על קיומן במידה והנסיבות ידרשו אותן. הצגנו כמה נושאים מורכבים כך שכשפגשו אותם בהמלצות כחלק מהודעות שגיאה, או בקוד של מפתחים אחרים, תהיו מסוגלים לזהות את המושגים והתחביר. השתמשו בפרק זה כהפניה וכדי לכוון אתכם בעודכן מחפשים אחר פתרונות.
 
-Next, we’ll put everything we’ve discussed throughout the book into practice
-and do one more project!
+כעת, ניישם את כל המ שלמדו במהלך הספר הלכה למעשה ונבנה פרוייקט אחד נוסף!
 
 [ref]: ../reference/macros-by-example.html
 [tlborm]: https://veykril.github.io/tlborm/
 [`syn`]: https://crates.io/crates/syn
 [`quote`]: https://crates.io/crates/quote
-[syn-docs]: https://docs.rs/syn/1.0/syn/struct.DeriveInput.html
 [quote-docs]: https://docs.rs/quote
 [decl]: #declarative-macros-with-macro_rules-for-general-metaprogramming

@@ -1,47 +1,25 @@
-## Advanced Traits
+## נושאים מתקדמים בתכונות
 
-We first covered traits in the [“Traits: Defining Shared
-Behavior”][traits-defining-shared-behavior]<!-- ignore --> section of Chapter
-10, but we didn’t discuss the more advanced details. Now that you know more
-about Rust, we can get into the nitty-gritty.
+דיברנו על תכונות לראשונה בסעיף ["תכונות: הגדרת התנהגות משותפת"]()<!-- ignore --> בפרק 10, אבל לא דנו בנושאים מתקדמים של תכונות. עכשיו שאתם בקיאים ביסודות ראסט, נוכל לדון ברזי השפה, ונתמקד בתכונות.
 
-### Specifying Placeholder Types in Trait Definitions with Associated Types
+### ציון טיפוסי שומרי-מקום בהגדרות תכונות עם טיפוסים מקושרים
 
-*Associated types* connect a type placeholder with a trait such that the trait
-method definitions can use these placeholder types in their signatures. The
-implementor of a trait will specify the concrete type to be used instead of the
-placeholder type for the particular implementation. That way, we can define a
-trait that uses some types without needing to know exactly what those types are
-until the trait is implemented.
+*טיפוסים מקושרים* מחברים טיפוס שומר-מקום לתכונה בשביל שהגדרות המתודות של התכונה יוכלו להשתמש בטיפוסי שומרי-המקום בחותמים שלהם. על מי שמממש את התכונה יהיה לציין מהו הטיפוס הקונקרטי שבו יש להשתמש, במקום טיפוס שומר-המקום, עבור המימוש הספציפי. בדרך זו, ניתן להגדיר תכונה שמשתמשת בטיפוסים כלשהם ללא צורך לדעת בדיוק מהם הטיפוסים האלה עד לרגע המימוש של התכונה.
 
-We’ve described most of the advanced features in this chapter as being rarely
-needed. Associated types are somewhere in the middle: they’re used more rarely
-than features explained in the rest of the book but more commonly than many of
-the other features discussed in this chapter.
+תארנו את רוב הנושאים המתקדמים בפרק זה ככאלו שמשתמשים בהם לעיתים נדירות. נושט הטיפוסים המשוייכים הוא במקום כלשהו באמצע: בפועל משתמשים טיפוסים משוייכים פחות מבמנגנונים אחרים אותם ראינו בשאר הספר, אבל הם בשימוש יותר תכוף משאר הנושאים בפרק זה.
 
-One example of a trait with an associated type is the `Iterator` trait that the
-standard library provides. The associated type is named `Item` and stands in
-for the type of the values the type implementing the `Iterator` trait is
-iterating over. The definition of the `Iterator` trait is as shown in Listing
-19-12.
+דוגמא אחת לתכנוה עם טיפוס משוייך היא התכונה `Iterator` שהספריה הסטנדרטית מספקת. הטיפוס המשוייך נקרא `Item` והוא משמש עבור הטיפוס של הערכים שעליהם הטיפוס שמממש את התכונה `Item` מבצע איטרציה. ההגדרה של התכונה `Item` מוצגת ברשימה 19-12.
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-12/src/lib.rs}}
 ```
 
-<span class="caption">Listing 19-12: The definition of the `Iterator` trait
-that has an associated type `Item`</span>
 
-The type `Item` is a placeholder, and the `next` method’s definition shows that
-it will return values of type `Option<Self::Item>`. Implementors of the
-`Iterator` trait will specify the concrete type for `Item`, and the `next`
-method will return an `Option` containing a value of that concrete type.
+<span class="caption">רשימה 19-12: ההגדרה של התכונה `Iterator` שלה הטיפוס המשוייך `Item`</span>
 
-Associated types might seem like a similar concept to generics, in that the
-latter allow us to define a function without specifying what types it can
-handle. To examine the difference between the two concepts, we’ll look at an
-implementation of the `Iterator` trait on a type named `Counter` that specifies
-the `Item` type is `u32`:
+הטיפוס `Item` הוא שומר-מקום, והגדרת המתודה `next` מציינת שהיא תחזיר ערכים מטיפוס `Option<Self::Item>`. מממשים של התכונה `Iterator` יציינו מהו הטיפוס הקונקרטי עבור `Item`, והמתודה `next` תחזיר ערך מטיפוס `Option` שמכיל את ערך מהטיפוס הקונקרטי שסופק.
+
+יש דמיון מסוים בין טיפוסים משוייכים לטיפוסים גנריים, שכן שניהם מאפשים להגדיר פונקציה מבלי לציין בדיוק אלו טיפוסים היא דורשת. על מנת להבין את ההבדל בין שני המושגים האלה, נתבונן במימוש של התכונה `Iterator` על טיפוס בשם `Counter` שמציין כי הטיפוס `Item` הוא `u32`:
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -49,54 +27,28 @@ the `Item` type is `u32`:
 {{#rustdoc_include ../listings/ch19-advanced-features/no-listing-22-iterator-on-counter/src/lib.rs:ch19}}
 ```
 
-This syntax seems comparable to that of generics. So why not just define the
-`Iterator` trait with generics, as shown in Listing 19-13?
+תחביר זה מאוד בר-השוואה לזה של ג'נריקס. אם כן, מדוע לא להגדיר את התכונה `Iterator` פשוט באמצעות ג'נריקס, כמוצג ברשימה 19-13?
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-13/src/lib.rs}}
 ```
 
-<span class="caption">Listing 19-13: A hypothetical definition of the
-`Iterator` trait using generics</span>
 
-The difference is that when using generics, as in Listing 19-13, we must
-annotate the types in each implementation; because we can also implement
-`Iterator<String> for Counter` or any other type, we could have multiple
-implementations of `Iterator` for `Counter`. In other words, when a trait has a
-generic parameter, it can be implemented for a type multiple times, changing
-the concrete types of the generic type parameters each time. When we use the
-`next` method on `Counter`, we would have to provide type annotations to
-indicate which implementation of `Iterator` we want to use.
+<span class="caption">רשימה 19-13: הגדרה היפותטית של התכונה `Iterator` באמצעות ג'נריקס</span>
 
-With associated types, we don’t need to annotate types because we can’t
-implement a trait on a type multiple times. In Listing 19-12 with the
-definition that uses associated types, we can only choose what the type of
-`Item` will be once, because there can only be one `impl Iterator for Counter`.
-We don’t have to specify that we want an iterator of `u32` values everywhere
-that we call `next` on `Counter`.
+ההבדל נעוץ בכך שכשמשתמשים בג'נריקס, כמו ברשימה 19-13, חייבים לבאר את הטיפוסים בכל מימוש; כיוון שניתן גם לממש את `Iterator<String> עבור Counter` או כל טיפוס אחר, יכולים להיות מימושים אבים של `Iterator` עבור `Counter`. במילים אחרות, כאשר תכונה מלווה בטיפוס גנרי, ניתן לממש אותה ליותר מטיפוס אחד, כאשר משנים את הטיפוסים הקונקרטים של הטיפוס הגנרי בכל פעם. כאשר משתמשים במתודה `next` על `Counter` יש צורך לספק ביאורי טיפוסים כדי לציין באיזה מימוש של `Iterator` יש להשתמש.
 
-Associated types also become part of the trait’s contract: implementors of the
-trait must provide a type to stand in for the associated type placeholder.
-Associated types often have a name that describes how the type will be used,
-and documenting the associated type in the API documentation is good practice.
+עם טיפוסים משוייכים, אין צורך לבאר את הטיפוסים שכן לא ניתן לממש את התכונה על טיפוס יותר מפעם אחת. ברשימה 19-12, עם ההגדרה שמשתמשת בטיפוסים משוייכים, ניתן לבחור איזה טיפוס `Item` יהיה רק פעם אחת, מכיוון שיכול להיות רק `impt Iterator for Counter` יחיד. אין צורך לציין שאנו רצוים איטרטור של ערכי `u32` בכל מקום בו אנו קוראים ל-`next` על `Counter`.
 
-### Default Generic Type Parameters and Operator Overloading
+טיפוסים משוייכים הופכים גם להיות חלק מחוזה התכונה: מממשיםשל התכונה מספקים טיפוס שמחליף את הטיפוס המשוייך שמהווה שומר-מקום. לרוב, לטיפוסים משוייכים יש שם שמתאר את אופן השימוש בטיפוס, ותיעוד של הטיפוס המשוייך כחלק מתיעוד ה-API הוא הרגל טוב.
 
-When we use generic type parameters, we can specify a default concrete type for
-the generic type. This eliminates the need for implementors of the trait to
-specify a concrete type if the default type works. You specify a default type
-when declaring a generic type with the `<PlaceholderType=ConcreteType>` syntax.
+### ברירת מחדל עבור פרמטרי טיפוס גנריים והעמסת אופרטורים
 
-A great example of a situation where this technique is useful is with *operator
-overloading*, in which you customize the behavior of an operator (such as `+`)
-in particular situations.
+כאשר משתמשים בפרמטרי טיפוס גנריים, ניתן לציין טיפוס קונקרטי שיתפקד כברירת מדחל עבור הטיפוס הגנרי. אפשרות זו מונעת את הצורך של כל מממש של התכונה לציין טיפוס קונקרטי, במידה וברירת המחדל עושה את המלאכה. מציינים טיפוס ברירת מחדל בעת ההכרזה על הטיפוס הגנרי, באמצעות התחביר `<PlaceholderType=ConcreteType>`.
 
-Rust doesn’t allow you to create your own operators or overload arbitrary
-operators. But you can overload the operations and corresponding traits listed
-in `std::ops` by implementing the traits associated with the operator. For
-example, in Listing 19-14 we overload the `+` operator to add two `Point`
-instances together. We do this by implementing the `Add` trait on a `Point`
-struct:
+דוגמא מצויינת למצב בו טכניקה זו היא שימושית היא *העמסת אופרטורים*, משמע כאשר מבצעים התאמות לדרך הפעולה של אופרטורים (כמו `+`) בנסיבות מסויימות.
+
+ראסט אינה מאפשרת ליצור אופרטורים משלכם או להעמיס אופרטורים שרירותיים. אבל כן ניתן להעמיס את הפעולות והתכונות השייכות להם שמופיעים ב-`std::ops` על-ידי מימוש התכונות המשוייכות עם האופרטור. למשל, ברשימה 19-14 אנו מעמיסים את האופרטור `+` על מנת לחבר שני מופעים של `Point`. אנו עושים זאת על-ידי מימוש התכונה `Add` עבור המבנה `Point`:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -104,16 +56,12 @@ struct:
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-14/src/main.rs}}
 ```
 
-<span class="caption">Listing 19-14: Implementing the `Add` trait to overload
-the `+` operator for `Point` instances</span>
 
-The `add` method adds the `x` values of two `Point` instances and the `y`
-values of two `Point` instances to create a new `Point`. The `Add` trait has an
-associated type named `Output` that determines the type returned from the `add`
-method.
+<span class="caption">רשימה 19-14: מימוש התכונה `Add` כדי להעמיס את האופרטור `+` עבור מופעי `Point`</span>
 
-The default generic type in this code is within the `Add` trait. Here is its
-definition:
+המתודה `add` מוסיפה את ערכי השדה `x` של שני מופעים של `Point` ואת ערכי השדה `y` שלהם כדי ליצור מופע חדש של `Point`. לתכונה `Add` יש טיפוס משוייך בשם `Output` שקובע את הטיפוס שהמתודה `add` מחזירה.
+
+ברירת המחדל עבור טיפוס גנרי זה מופיע בתכונה `Add`. הינה הגדרתו:
 
 ```rust
 trait Add<Rhs=Self> {
@@ -123,26 +71,14 @@ trait Add<Rhs=Self> {
 }
 ```
 
-This code should look generally familiar: a trait with one method and an
-associated type. The new part is `Rhs=Self`: this syntax is called *default
-type parameters*. The `Rhs` generic type parameter (short for “right hand
-side”) defines the type of the `rhs` parameter in the `add` method. If we don’t
-specify a concrete type for `Rhs` when we implement the `Add` trait, the type
-of `Rhs` will default to `Self`, which will be the type we’re implementing
-`Add` on.
+קוד זה צריך להראות די מוכל: תכונה עם מתודה אחת וטיפוס משוייך. החלק החדש כאן הוא `Rhs=Self`: תחביר זה מספק *ברירת מחדל עבור פרמטר הטיפוס*. פרמטר הטיפוס הגנרי `Rhs` (קיצור ל-right-hand side, משמע, צד ימין, בדרך-כלל של משוואה) מגדיר את הטיפוס של הפמטר `rhs` במתודה `add`. אם לא מציינים טיפוס קונקרטי עבור `Rhs` כאשר ממשים את התכונה `Add`, הטיפוס של `Rhs` יהיה, כברירת-מחדל, הטיפוס `Self`, שהוא הטיפוס עבורו מתבצע המימוש של `Add`.
 
-When we implemented `Add` for `Point`, we used the default for `Rhs` because we
-wanted to add two `Point` instances. Let’s look at an example of implementing
-the `Add` trait where we want to customize the `Rhs` type rather than using the
-default.
+כאשר מימשנו את `Add` עבור `Point`, השתמשנו בברית המחדל עבור `Rhs` כיוון שרצינו לחבר שני מופעים של `Point`. הבא נתבונן בדוגמא של מימוש של התכונה `Add` בה אנו מעוניינים להתאים את הטיפוס `Rhs`, ולא להשתמש בברירת-המחדל.
 
-We have two structs, `Millimeters` and `Meters`, holding values in different
-units. This thin wrapping of an existing type in another struct is known as the
-*newtype pattern*, which we describe in more detail in the [“Using the Newtype
-Pattern to Implement External Traits on External Types”][newtype]<!-- ignore
---> section. We want to add values in millimeters to values in meters and have
-the implementation of `Add` do the conversion correctly. We can implement `Add`
-for `Millimeters` with `Meters` as the `Rhs`, as shown in Listing 19-15.
+יש לנו שני מבנים, `Millimeters` ו-`Meters`, שמאכסנים ערכים ביחידות שונות. מעטפת דקה זו של טיפוס קיים בתוך מבנה נקראת *תבנית טיפוס-חדש*, ונתאר אותו ביתר פירוט בסעיף ["שימוש בתבנית טיפוס-חדש כדי לממש תכונות חיצוניות עבור טיפוסים חיצוניים"][newtype]<!-- ignore
+--> . אנו מעוניינים לחבר ערכים במילימטרים לערכים במטרים ולוודא שהמימוש של 
+
+`Add` יבצע את ההמרה בצורה נכונה. נוכל לממש את `Add` עבור `Millimeters` עם `Meters` בתור הטיפוס עבור `Rhs`, כפי שמוצג ברשימה 19-15.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -150,41 +86,25 @@ for `Millimeters` with `Meters` as the `Rhs`, as shown in Listing 19-15.
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-15/src/lib.rs}}
 ```
 
-<span class="caption">Listing 19-15: Implementing the `Add` trait on
-`Millimeters` to add `Millimeters` to `Meters`</span>
 
-To add `Millimeters` and `Meters`, we specify `impl Add<Meters>` to set the
-value of the `Rhs` type parameter instead of using the default of `Self`.
+<span class="caption">רשימה 19-15: מימוש התכונה `Add` עבור המבנה `Millimeters` כדי לחבר מופע של `Millimeters` עם מופע של `Meters`</span>
 
-You’ll use default type parameters in two main ways:
+כדי לחבר `Millimeters` עם `Meters`, אנו מציינים `impl Add<Meters>` כדי להציב את הטיפוס `Meters` ב-`Rhs` במקום ברירת-המחדל <0>Self</0>.
 
-* To extend a type without breaking existing code
-* To allow customization in specific cases most users won’t need
+משתמשים בברירת-מחדל עבור פרמטרי טיפוסים בשני אופנים מרכזיים:
 
-The standard library’s `Add` trait is an example of the second purpose:
-usually, you’ll add two like types, but the `Add` trait provides the ability to
-customize beyond that. Using a default type parameter in the `Add` trait
-definition means you don’t have to specify the extra parameter most of the
-time. In other words, a bit of implementation boilerplate isn’t needed, making
-it easier to use the trait.
+* על מנת להרחיב טיפוס מבלי לשבור קוד קיים
+* בכדי לאפשר התאמות קוד במקרים ספציפיים שאינן נוגעות לרוב המשתמשים
 
-The first purpose is similar to the second but in reverse: if you want to add a
-type parameter to an existing trait, you can give it a default to allow
-extension of the functionality of the trait without breaking the existing
-implementation code.
+התכונה `Add` מהספריה הסטנדרטית היא דוגמא לשימוש מהסוג השני: בדרך-כלל, מחברים שני מופעים של אותו טיפוס, אבל התכונה `Add` מספקת את היכולת להתאמות שחורגות מהכלל. שימוש בברירת-מחדל עבור פרמטר הטיפוס בהגדרת התכונה `Add` משמעה שרוב הזמן אין צורך לציין פרמטר נוסף. במילים אחרות, נוצר חיסכון קל בקוד סתמי, ובכך התכונה נוחה יותר לשימוש.
 
-### Fully Qualified Syntax for Disambiguation: Calling Methods with the Same Name
+השימוש הראשון דומה לשני, במהופך: אם רוצים להוסיף פרמטר טיפוס לתכונה קיימת, ניתן לספק ברירת-מחדל ובכך לאפשר את הרחבת הפונקציונאליות ללא פגיעה תפעולית של המימוש הקיים.
 
-Nothing in Rust prevents a trait from having a method with the same name as
-another trait’s method, nor does Rust prevent you from implementing both traits
-on one type. It’s also possible to implement a method directly on the type with
-the same name as methods from traits.
+### תחביר מוסמך לחלוטין לביטול דו-משמעות: קריאה למתודות בעלות אותו שם
 
-When calling methods with the same name, you’ll need to tell Rust which one you
-want to use. Consider the code in Listing 19-16 where we’ve defined two traits,
-`Pilot` and `Wizard`, that both have a method called `fly`. We then implement
-both traits on a type `Human` that already has a method named `fly` implemented
-on it. Each `fly` method does something different.
+בראסט, דבר אינו מונע מתכונה אחת להכיל מתודה בעלת שם זהה למתודה בתכונה אחרת, וראסט גם אינה מונעת ממכם לממש את שתי התכונות עבור טיפוס אחד. ניתן גם לממש מתודה ישירות עבור הטיפוס עם אותו שם כמו מתודות מתכונות.
+
+כאשר קוראים למתודות בעלות אותו שם, יש צורך לאמר לראסט לאיזו מתודה אתם מתכוונים. התבוננו בקוד ברשימה 19-16 שם הגדרנו שתי תכונות, `Pilot` ו-`Wizard`, ושתיהן מכילות את המתודה `fly`. אנו מממשים את שתי התכונות עבור הטיפוס `Human`, שעבורו כבר ממומשת מתודה בשם `fly`. כל אחת ממתודות ה-`fly` האלה מבצעת פעולה שונה.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -192,12 +112,10 @@ on it. Each `fly` method does something different.
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-16/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 19-16: Two traits are defined to have a `fly`
-method and are implemented on the `Human` type, and a `fly` method is
-implemented on `Human` directly</span>
 
-When we call `fly` on an instance of `Human`, the compiler defaults to calling
-the method that is directly implemented on the type, as shown in Listing 19-17.
+<span class="caption">רשימה 19-16: שתי תכונות המוגדרות להכיל מתודה בשם `fly` וממומשות עבור הטיפוס `Human`, ומתודה בשם `fly` שממומשת ישירות עבור `Human`</span>
+
+כאשר קורים ל-`fly` על מופע של `Human`, הקומפיילר קורא, כברירת מחדל, למתודה שמוגדרת ישירות על הטיפוס, כפי שקורא ברשימה 19-17.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -205,15 +123,12 @@ the method that is directly implemented on the type, as shown in Listing 19-17.
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-17/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 19-17: Calling `fly` on an instance of
-`Human`</span>
 
-Running this code will print `*waving arms furiously*`, showing that Rust
-called the `fly` method implemented on `Human` directly.
+<span class="caption">רשימה 19-17: קריאה ל-`fly` על מופע של `Human`</span>
 
-To call the `fly` methods from either the `Pilot` trait or the `Wizard` trait,
-we need to use more explicit syntax to specify which `fly` method we mean.
-Listing 19-18 demonstrates this syntax.
+הרצת קוד זה תדפיס `*waving arms furiously*`, כך שאכן ראסט קראה למתודה `fly` אשר מוגדרת ישירות עבור `Human`.
+
+על מנת לקרוא למתודה `fly` של התכונה `Pilot` או התכונה `Wizard`, יש להשתמש בתחביר מפורש כדי לציין לאיזו מתודה אנו מתכוונים. רשימה 19-19 מדגימה תחביר זה.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -221,33 +136,20 @@ Listing 19-18 demonstrates this syntax.
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-18/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 19-18: Specifying which trait’s `fly` method we
-want to call</span>
 
-Specifying the trait name before the method name clarifies to Rust which
-implementation of `fly` we want to call. We could also write
-`Human::fly(&person)`, which is equivalent to the `person.fly()` that we used
-in Listing 19-18, but this is a bit longer to write if we don’t need to
-disambiguate.
+<span class="caption">רשימה 19-18: ציון התכונה שאת המתודה בשם `fly` שלה אנו רוצים לקרוא</span>
 
-Running this code prints the following:
+ציון שם התכונה לפני שם המתודה מבהיר לראסט לאיזה מימוש של `fly` אנו רוצים לקרוא. ניתן גם לכתוב `Human::fly(&person)`, וזה שקול ל-`person.fly()` כפי שעשינו ברשימה 19-18, אבל כתיב זה ארוך יותר והוא אינו נחוץ כאן לשם מניעת כפל משמעות.
+
+הרצת קוד זה תדפיס את הפלט:
 
 ```console
 {{#include ../listings/ch19-advanced-features/listing-19-18/output.txt}}
 ```
 
-Because the `fly` method takes a `self` parameter, if we had two *types* that
-both implement one *trait*, Rust could figure out which implementation of a
-trait to use based on the type of `self`.
+כיוון שהמתודה `fly` מקבלת פרמטר `self`, לו היו לנו שני *טיפוסים* שמממשים *תכונה* אחת, ראסט היתה יכולה להסיק, בהתבסס על הטיפוס `self`, באיזה מימוש של התכונה להשתמש.
 
-However, associated functions that are not methods don’t have a `self`
-parameter. When there are multiple types or traits that define non-method
-functions with the same function name, Rust doesn't always know which type you
-mean unless you use *fully qualified syntax*. For example, in Listing 19-19 we
-create a trait for an animal shelter that wants to name all baby dogs *Spot*.
-We make an `Animal` trait with an associated non-method function `baby_name`.
-The `Animal` trait is implemented for the struct `Dog`, on which we also
-provide an associated non-method function `baby_name` directly.
+אולם, לפונקציות משוייכות שאינן מתודות אין את הפרמטר `self`. כאשר יש כמה טיפוסים, או כמה תכונות, שמגדירים פונקציות שאינן מתודות בעלות אותו שם, ראסט לא תמיד יכולה לדעת לאיזה טיפוס מתכוונים, אלמלא משתמשים *בתחביר מוסמך לחלוטין*. למשל, ברשימה 19-19 אנו יוצרים תכונה עבור מקלט לחיות שרוצה לקרוא לכל גורי הכלבים *Spot*. אנו יוצרים את התכונה `Animal` עם פונקציה משוייכת, שאינה מתודה, בשם `baby_name`. התכונה `Animal` ממומשת עבור המבנה `Dog`, ועבורו אנו גם מספקים את הפונקציה משוייכת `baby_name`, שאינה מתודה, באופן ישיר.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -255,28 +157,18 @@ provide an associated non-method function `baby_name` directly.
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-19/src/main.rs}}
 ```
 
-<span class="caption">Listing 19-19: A trait with an associated function and a
-type with an associated function of the same name that also implements the
-trait</span>
 
-We implement the code for naming all puppies Spot in the `baby_name` associated
-function that is defined on `Dog`. The `Dog` type also implements the trait
-`Animal`, which describes characteristics that all animals have. Baby dogs are
-called puppies, and that is expressed in the implementation of the `Animal`
-trait on `Dog` in the `baby_name` function associated with the `Animal` trait.
+<span class="caption">רשימה 19-19: תכונה עם פונקציה משוייכת וטיפוס עם פונקציה משוייכת בעלת אותו שם שגם מממש את התכונה</span>
 
-In `main`, we call the `Dog::baby_name` function, which calls the associated
-function defined on `Dog` directly. This code prints the following:
+מימשנו את הקוד כך ששמות כל גורי הכלבים יהיו Spot בפונקציה המשוייכת `baby_name` המוגדרת עבור `Dog`. הטיפוס `Dog` מממש גם את התכונה `Animal`, אשר מתארת אפיונים שיש לכל החיות. גור של כלב נקרא puppy, וזה מבוטא במימוש של התכונה `Animal` עבור `Dog` בפונקציה המשוייכת `baby_name` עם התכונה `Animal`.
+
+בפונקציה `main`, אנו קוראים לפונקציה `Dog::baby_name`, שקוראת לפונקציה המשוייכת המוגדרת ישירות עבור `Dog`. קוד זה מפיק את הפלט:
 
 ```console
 {{#include ../listings/ch19-advanced-features/listing-19-19/output.txt}}
 ```
 
-This output isn’t what we wanted. We want to call the `baby_name` function that
-is part of the `Animal` trait that we implemented on `Dog` so the code prints
-`A baby dog is called a puppy`. The technique of specifying the trait name that
-we used in Listing 19-18 doesn’t help here; if we change `main` to the code in
-Listing 19-20, we’ll get a compilation error.
+פלט זה אינו הפלט שרצינו. אנו רוצים לקרוא לפונקציה `baby_name` שהיא חלק מהתכונה `Animal` שמימשנו עבור `Dog` כך שהקוד ידפיס `A baby dog is called a puppy`. הטכניקה לציון שם התכונה, בה השתמשנו ברשימה 19-18, לא תעזור כאן; אם נשנה את הקוד ב-`main` לקוד שברשימה 19-20, נקבל שגיאת קומפילציה.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -284,22 +176,16 @@ Listing 19-20, we’ll get a compilation error.
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-20/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 19-20: Attempting to call the `baby_name`
-function from the `Animal` trait, but Rust doesn’t know which implementation to
-use</span>
 
-Because `Animal::baby_name` doesn’t have a `self` parameter, and there could be
-other types that implement the `Animal` trait, Rust can’t figure out which
-implementation of `Animal::baby_name` we want. We’ll get this compiler error:
+<span class="caption">רשימה 19-20: ניסיון לקרוא לפונקציה `baby_name` מהתכונה `Animal`, אבל ראסט אינה יודעת באיזה מימוש להשתמש</span>
+
+כיוון של-`Animal::baby_name` אין פרמטר `self`, והיות ויכולים להיות כמה טיפוסים שמממשים את התכונה `Animal`, ראסט לא יכולה להסיק לאיזה מימוש אנחנו מתכוונים. נקבל את שגיאת הקומפילציה הבאה:
 
 ```console
 {{#include ../listings/ch19-advanced-features/listing-19-20/output.txt}}
 ```
 
-To disambiguate and tell Rust that we want to use the implementation of
-`Animal` for `Dog` as opposed to the implementation of `Animal` for some other
-type, we need to use fully qualified syntax. Listing 19-21 demonstrates how to
-use fully qualified syntax.
+על מנת לפתור את כפל המשמעות ולאמר לראסט שאנחנו מעוניינים במימוש של `Animal` עבור `Dog`, ולא במימוש של `Animal` לכל טיפוס אחר, עלינו להשתמש בתחביר מוסמך לחלוטין. רשימה 19-21 מדגימה כיצד להשתמש בתחביר מוסמך לחלוטין במקרה זה.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -307,47 +193,28 @@ use fully qualified syntax.
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-21/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 19-21: Using fully qualified syntax to specify
-that we want to call the `baby_name` function from the `Animal` trait as
-implemented on `Dog`</span>
 
-We’re providing Rust with a type annotation within the angle brackets, which
-indicates we want to call the `baby_name` method from the `Animal` trait as
-implemented on `Dog` by saying that we want to treat the `Dog` type as an
-`Animal` for this function call. This code will now print what we want:
+<span class="caption">רשימה 19-21: שימוש בתחביר מוסמך לחלוטין על מנת לציין שאנו רוצים לקרוא לפונקציה `baby_name` מהתכונה `Animal` הממומשת עבור `Dog`</span>
+
+אנו מספקים לראסט ביאור טיפוס בתוך סוגריים משולשים, וזה מציין לראסט שאחנו רוצים לקרוא למתודה `baby_name` מהתכונה `Animal` הממומשת עבור `Dog` על-ידי כך שאנחנו אומרים לראסט להתייחס לטיפוס `Dog` כ-`Animal` עבור קריאת פונקציה זו. כעת, הקוד ידפיס את המבוקש:
 
 ```console
 {{#include ../listings/ch19-advanced-features/listing-19-21/output.txt}}
 ```
 
-In general, fully qualified syntax is defined as follows:
+באופן כללי, תחביר מוסמך לחלוטין מוגדר באופן הבא:
 
 ```rust,ignore
 <Type as Trait>::function(receiver_if_method, next_arg, ...);
 ```
 
-For associated functions that aren’t methods, there would not be a `receiver`:
-there would only be the list of other arguments. You could use fully qualified
-syntax everywhere that you call functions or methods. However, you’re allowed
-to omit any part of this syntax that Rust can figure out from other information
-in the program. You only need to use this more verbose syntax in cases where
-there are multiple implementations that use the same name and Rust needs help
-to identify which implementation you want to call.
+עבור פונקציות משוייכות שאינן מתודות, לא יהיה `receiver`: תהיה רק את רשימת הארגומנטים. ניתן להשתמש בתחביר מוסמך לחלוטין בכל מקום בו קוראים לפונקציה או למתודה. אבל, מותר להשמיט כל חלק בתחביר זה שראסט יכולה להסיק לבדה מתוך ההקשר של התכנית. חובה להשתמש בתחביר מילולי זה במקרים בהם יש ריבוי מימושים לאותו שם וראסט צריכה סיוע כדי לזהות בוודאות לאיזה מימוש מתכוונים.
 
-### Using Supertraits to Require One Trait’s Functionality Within Another Trait
+### שימוש בתכונת-על כדי לדרוש פונקציונאליות של תכונה אחת בתוך תכונה אחרת
 
-Sometimes, you might write a trait definition that depends on another trait:
-for a type to implement the first trait, you want to require that type to also
-implement the second trait. You would do this so that your trait definition can
-make use of the associated items of the second trait. The trait your trait
-definition is relying on is called a *supertrait* of your trait.
+לעיתים אתם עשויים למצוא את עצמכם כותבים הגדרה של תכונה שמסמכת על תכונה אחרת: בשביל שטיפוס יממש את התכונה הראשונה, אתם רוצים לדרוש שהטיפוס מממש גם את התכונה השניה. בכך תבטיחו שבהגדרת התכונה שלכם יש באפשרותכם להשתמש בפרטים המשוייכים לתכונה השניה. התכונה עליה התכונה שלכם מסתמכת נקראת *תכונת-על* של התכונה שלכם.
 
-For example, let’s say we want to make an `OutlinePrint` trait with an
-`outline_print` method that will print a given value formatted so that it's
-framed in asterisks. That is, given a `Point` struct that implements the
-standard library trait `Display` to result in `(x, y)`, when we call
-`outline_print` on a `Point` instance that has `1` for `x` and `3` for `y`, it
-should print the following:
+למשל, נניח שאנחנו רוצים ליצור את התכונה `OutlinePrint` עם מתודה בשם `outline_print` שתדפיס ערך נתון מוקף בכוכביות. זאת אומרת שבהינתן מבנה כמו `Point` שמממש את התכונה `Display` של הספריה הסטנדרטית כדי להפיק `(x, y)`, כאשר נקרא למתודה `outline_print` על מופע של `Point` שבו `x` מכיל את הערך `1` ו- `y` מכיל את הערך `3`, מה שיודפס יראה כך:
 
 ```text
 **********
@@ -357,13 +224,7 @@ should print the following:
 **********
 ```
 
-In the implementation of the `outline_print` method, we want to use the
-`Display` trait’s functionality. Therefore, we need to specify that the
-`OutlinePrint` trait will work only for types that also implement `Display` and
-provide the functionality that `OutlinePrint` needs. We can do that in the
-trait definition by specifying `OutlinePrint: Display`. This technique is
-similar to adding a trait bound to the trait. Listing 19-22 shows an
-implementation of the `OutlinePrint` trait.
+במימוש של המתודה `outline_print`, אנו רוצים להשתמש בפונקציונאליות של התכונה `Display`. לכן, יש לדרוש שהתכונה `OutlinePrint` תעבוד אך ורק עם טיפוסים שמממשים את `Display` ומספקים את הפונקציונאליות לה `OutlinePrint` זקוקה. ניתן לעשות זאת בהגדרת התכונה על-ידי ציון `OutlinePrint: Display`. טכניקה זו דומה להוספת מגביל תכונה לתכונה. רשימה 19-22 מציגה מימוש של התכונה `OutlinePrint`.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -371,18 +232,12 @@ implementation of the `OutlinePrint` trait.
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-22/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 19-22: Implementing the `OutlinePrint` trait that
-requires the functionality from `Display`</span>
 
-Because we’ve specified that `OutlinePrint` requires the `Display` trait, we
-can use the `to_string` function that is automatically implemented for any type
-that implements `Display`. If we tried to use `to_string` without adding a
-colon and specifying the `Display` trait after the trait name, we’d get an
-error saying that no method named `to_string` was found for the type `&Self` in
-the current scope.
+<span class="caption">רשימה 19-22: מימוש של התכונה `OutlinePrint` שדורש את הפונקציונאליות של `Display`</span>
 
-Let’s see what happens when we try to implement `OutlinePrint` on a type that
-doesn’t implement `Display`, such as the `Point` struct:
+כיוון שציינו ש- `OutlinePrint` דורשת את התכונה `Display`, ניתן להשתמש בפונקציה `to_string` שממומשת אוטומטית עבור כל טיפוס המממש את `Display`. לו היינו מנסים להשתמש ב-`to_string` ללא הוספת הנקודותיים וציון התכונה `Display` אחרי שם התכונה, איינו מקבלים שגיאת קומפילציה שאומרת לנו לא נמצא מתודה בשם `to_string` עבור הטיפוס `&Self` במתחם הנוכחי.
+
+הבה נראמ מה קורא כאשר מנסים למממש את `OutlinePrint` עבור טיפוס שלא מממש את `Display`, למשל המבנה `Point`:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -390,14 +245,13 @@ doesn’t implement `Display`, such as the `Point` struct:
 {{#rustdoc_include ../listings/ch19-advanced-features/no-listing-02-impl-outlineprint-for-point/src/main.rs:here}}
 ```
 
-We get an error saying that `Display` is required but not implemented:
+מתקבלת הודעת שגיאה שאומרת שהתכונה `Display` נחוצה, אבל לא ממומשת:
 
 ```console
 {{#include ../listings/ch19-advanced-features/no-listing-02-impl-outlineprint-for-point/output.txt}}
 ```
 
-To fix this, we implement `Display` on `Point` and satisfy the constraint that
-`OutlinePrint` requires, like so:
+על מנת לפתור זאת, נממש את `Display` עבור `Point` ובכך נספק את התנאי ש-`OutlinePrint`, בצורה הבאה:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -405,31 +259,16 @@ To fix this, we implement `Display` on `Point` and satisfy the constraint that
 {{#rustdoc_include ../listings/ch19-advanced-features/no-listing-03-impl-display-for-point/src/main.rs:here}}
 ```
 
-Then implementing the `OutlinePrint` trait on `Point` will compile
-successfully, and we can call `outline_print` on a `Point` instance to display
-it within an outline of asterisks.
+כעת המימוש של `OutlinePrint` עבור `Point` יעבור קומפילציה בהצלחה, ונוכל לקרוא ל-`outline_print` על מופעים של `Point` כדי להציג את אותם מוקפים בכוכביות.
 
-### Using the Newtype Pattern to Implement External Traits on External Types
+### שימוש בתבנית הטיפוס החדש כדי לממש תכונות חיצוניות וטיפוסים חיצוניים
 
-In Chapter 10 in the [“Implementing a Trait on a
-Type”][implementing-a-trait-on-a-type]<!-- ignore --> section, we mentioned the
-orphan rule that states we’re only allowed to implement a trait on a type if
-either the trait or the type are local to our crate. It’s possible to get
-around this restriction using the *newtype pattern*, which involves creating a
-new type in a tuple struct. (We covered tuple structs in the [“Using Tuple
-Structs without Named Fields to Create Different Types”][tuple-structs]<!--
-ignore --> section of Chapter 5.) The tuple struct will have one field and be a
-thin wrapper around the type we want to implement a trait for. Then the wrapper
-type is local to our crate, and we can implement the trait on the wrapper.
-*Newtype* is a term that originates from the Haskell programming language.
-There is no runtime performance penalty for using this pattern, and the wrapper
-type is elided at compile time.
+בפרק 10, הסעיף ["מימוש תכונה עבור טיפוס"]()<!-- ignore --> , הזכרנו את כלל היתמות, לפיו מותר לנו לממש תכונה עבור טיפוס רק אם התכונה או הטיפוס נמצאים לוקאלית במכולה שלנו. ניתן לעקוף מגבלה זו על-ידי שימוש *בתבנית הדפוס החדש*, אשר מערבת יצירת טיפוס חדש במבנה מרצף. (דיברנו על מבני מרצף בסעיף ["שימוש במבני מרצף ללא שדות בעלי שם בכדי ליצור טיפוסים שונים"][tuple-structs]<!--
+ignore --> בפרק 5.) למבנה המרצף יהיה שדה יחיד והוא יהיה מעטפת דקה מסביב לטיפוס שעבורו אנו רוצים לממש תכונה. ואז, טיפוס המעטפת הוא לוקאלי למכולה שלנו, ולכן ניתן לממש את התכונה עבור המעטפת. 
 
-As an example, let’s say we want to implement `Display` on `Vec<T>`, which the
-orphan rule prevents us from doing directly because the `Display` trait and the
-`Vec<T>` type are defined outside our crate. We can make a `Wrapper` struct
-that holds an instance of `Vec<T>`; then we can implement `Display` on
-`Wrapper` and use the `Vec<T>` value, as shown in Listing 19-23.
+*Newtype* is a term that originates from the Haskell programming language. There is no runtime performance penalty for using this pattern, and the wrapper type is elided at compile time.
+
+כדוגמא, הבה נניח שאנחנו רוצים לממש את `Display` עבור `Vec<T>`, דבר שכלל היתמות מונע מאיתנו לעשות ישירות מכיוון שגם התכונה `Display` וגם הטיפוס `Vec<T>` מוגדרים מחוץ למכולה שלנו. נוכל ליצור את המבנה `Wrapper` שמאכסן מופע של `Vec<T>`; ואז נוכל לממש את `Display` על `Wrapper` ולהשתמש בערך של `Vec<T>`, כפי שרואים ברשימה 19-23.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -437,32 +276,16 @@ that holds an instance of `Vec<T>`; then we can implement `Display` on
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-23/src/main.rs}}
 ```
 
-<span class="caption">Listing 19-23: Creating a `Wrapper` type around
-`Vec<String>` to implement `Display`</span>
 
-The implementation of `Display` uses `self.0` to access the inner `Vec<T>`,
-because `Wrapper` is a tuple struct and `Vec<T>` is the item at index 0 in the
-tuple. Then we can use the functionality of the `Display` type on `Wrapper`.
+<span class="caption">רשימה 19-23: יצירת הטיפוס `Wrapper` מסביב ל-`Vec<String>` בכדי לממש את `Display`</span>
 
-The downside of using this technique is that `Wrapper` is a new type, so it
-doesn’t have the methods of the value it’s holding. We would have to implement
-all the methods of `Vec<T>` directly on `Wrapper` such that the methods
-delegate to `self.0`, which would allow us to treat `Wrapper` exactly like a
-`Vec<T>`. If we wanted the new type to have every method the inner type has,
-implementing the `Deref` trait (discussed in Chapter 15 in the [“Treating Smart
-Pointers Like Regular References with the `Deref`
-Trait”][smart-pointer-deref]<!-- ignore --> section) on the `Wrapper` to return
-the inner type would be a solution. If we don’t want the `Wrapper` type to have
-all the methods of the inner type—for example, to restrict the `Wrapper` type’s
-behavior—we would have to implement just the methods we do want manually.
+המימוש של `Display` משתמש ב-`self.0` כדי לגשת ל-`Vec<T>` הפנימי, כיוון ש-`Wrapper` הוא מבנה מרצף ו- `Vec<T>` הוא הפריט במיקום 0 במרצף. כך ניתן להשתמש בפונקציונאליות של התכונה `Display` עבור `Wrapper`.
 
-This newtype pattern is also useful even when traits are not involved. Let’s
-switch focus and look at some advanced ways to interact with Rust’s type system.
+החיסרון שבשימוש בטכניקה זו היא ש- `Wrapper` הוא טיפוס חדש, ולכן המתודות הזמינות עבור הערך הפנימי שבו אינן זמינות עבורו. יהיה עלינו לממש את כל המתודות של `Vec<T>` ישירות עבור `Wrapper`, בצורה כזו שהמתודות יעבירו את אחריות הביצוע ל- `self.0`, כדי שיתאפשר לנו להתייחס אל `Wrapper` בדיוק כמו אל `Vec<T>`. אם היינו רוצים שלטיפוס החדש יהיו את כל המתודות שיש לטיפוס הפנימי, מימוש התכונה `Deref` (בה דנו בפרק 15 בסעיף ["התייחסות אל מצביעים חכמים כאל הפניות רגילות באמצעות התכונה `Deref`"][smart-pointer-deref]<!-- ignore --> ) עבור `Wrapper` כדי לחזור אל הטיפוס הפנימי יהיה פתרון. אם אנחנו לא רוצים של- `Wrapper` יהיו את כל המתודות של הטיפוס הפנימי -- למשל, כדי להגביל את התנהגות הטיפוס `Wrapper` -- יהיה עלינו לממש רק את המתודות הבן אנו מעוניינים.
+
+תבנית הטיפוס החדש הזו שימושית גם ללא קשר לתכונות. הבה נשנה את המיקוד כרגע ונעבור להתבונן בדרכים מתקדמות לבוא במגע עם מערכת הטיפוסים של ראסט.
+ch10-02-traits.html#implementing-a-trait-on-a-type ch10-02-traits.html#traits-defining-shared-behavior
 
 [newtype]: ch19-03-advanced-traits.html#using-the-newtype-pattern-to-implement-external-traits-on-external-types
-[implementing-a-trait-on-a-type]:
-ch10-02-traits.html#implementing-a-trait-on-a-type
-[traits-defining-shared-behavior]:
-ch10-02-traits.html#traits-defining-shared-behavior
 [smart-pointer-deref]: ch15-02-deref.html#treating-smart-pointers-like-regular-references-with-the-deref-trait
 [tuple-structs]: ch05-01-defining-structs.html#using-tuple-structs-without-named-fields-to-create-different-types

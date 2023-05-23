@@ -1,26 +1,12 @@
-## Advanced Functions and Closures
+## נושאים מתקדמים אודות פונקציות וסגורים
 
-This section explores some advanced features related to functions and closures,
-including function pointers and returning closures.
+סעיף זה ידון בכמה תכונוות מתקדמות הקשורות לפונקציות ולסגורים, כולל מצביעי פונקציות והחזרת סגורים.
 
-### Function Pointers
+### מצביעי פונקציות
 
-We’ve talked about how to pass closures to functions; you can also pass regular
-functions to functions! This technique is useful when you want to pass a
-function you’ve already defined rather than defining a new closure. Functions
-coerce to the type `fn` (with a lowercase f), not to be confused with the `Fn`
-closure trait. The `fn` type is called a *function pointer*. Passing functions
-with function pointers will allow you to use functions as arguments to other
-functions.
+דיברו על איך להעביר סגורים לפונקציות; ניתן גם להעביר פונקציות רגילות לפונקציות! טכניקה זו שימושית כאשר רוצים להעביר פונקציה שכבר הגדרתם במקום להגדיר סגור חדש. פונקציות מותמרות לטיפוס `fn` (עם 'f' קטנה), שהוא טיפוס שונה מתכונת הסגור `Fn`. הטיפוס `fn` נקראה *מצביע פונקציה*. העברת פונקציות באמצעות מצביעי פונקציות מאפשרת להעביר פונקציות כארגומנטים לפונקציות אחרות.
 
-The syntax for specifying that a parameter is a function pointer is similar to
-that of closures, as shown in Listing 19-27, where we’ve defined a function
-`add_one` that adds one to its parameter. The function `do_twice` takes two
-parameters: a function pointer to any function that takes an `i32` parameter
-and returns an `i32`, and one `i32 value`. The `do_twice` function calls the
-function `f` twice, passing it the `arg` value, then adds the two function call
-results together. The `main` function calls `do_twice` with the arguments
-`add_one` and `5`.
+התחביר כדי לציין שפרמטר הוא מצביע פונקציה דומה לזה של סגורים, כפי שמוצג ברשימה 19-27, שם הגדרנו את הפונקציה `add_one` שמוסיפה אחד לפרמטר שלה. הפונקציה `do_twice` מקבלת שני פרמטרים: מצביע פונקציה לפונקציה שמקבלת פרמטר מטיפוס `i32` ומחזירה ערך `i32`, וערך אחד מטיפוס `i32`. הפונקציה `do_twice` קוראת לפונקציה `f` פעמיים, בעודה מעבירה לה את הערך `arg`, ואז מחברת את שני הערכים המוחזרים. הפונקציה `main` קוראת ל- `do_twice` עם הארגומנטים `add_one` ו-`5`.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -28,103 +14,65 @@ results together. The `main` function calls `do_twice` with the arguments
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-27/src/main.rs}}
 ```
 
-<span class="caption">Listing 19-27: Using the `fn` type to accept a function
-pointer as an argument</span>
 
-This code prints `The answer is: 12`. We specify that the parameter `f` in
-`do_twice` is an `fn` that takes one parameter of type `i32` and returns an
-`i32`. We can then call `f` in the body of `do_twice`. In `main`, we can pass
-the function name `add_one` as the first argument to `do_twice`.
+<span class="caption">רשימה 19-27: שימוש בטיפוס `fn` כדי לקבל מצביע פונקציה כארגומנט</span>
 
-Unlike closures, `fn` is a type rather than a trait, so we specify `fn` as the
-parameter type directly rather than declaring a generic type parameter with one
-of the `Fn` traits as a trait bound.
+קוד זה ידפיס: `The answer is: 12`. אנו מציינים שהפרמטר `f` ב-`do_twice` הוא `fn` שמקבלת פרמטר אחד מטיפוס `i32` ומחזירה ערך `i32`. כך ניתן לקרוא לפונקציה `f` מתוך גוף הפונקציה `do_twice`. בפונקציה `main`, אנחנו יכולים להעביר את שם הפונקציה `add_one` כארגומנט הראשון ל-`do_twice`.
 
-Function pointers implement all three of the closure traits (`Fn`, `FnMut`, and
-`FnOnce`), meaning you can always pass a function pointer as an argument for a
-function that expects a closure. It’s best to write functions using a generic
-type and one of the closure traits so your functions can accept either
-functions or closures.
+שלא כמו סגורים, `fn` הוא טיפוס ולא תכונה, ולכן מציינים את `fn` כטיפוס הפרמטר ישירות במקום להכריז על פרמטר טיפוס גנרי עם אחת מתכונות ה-`Fn` כמגבלת תכונה.
 
-That said, one example of where you would want to only accept `fn` and not
-closures is when interfacing with external code that doesn’t have closures: C
-functions can accept functions as arguments, but C doesn’t have closures.
+מצביעי פונקציות מממשות את כל שלושת תכונות הסגורים (`Fn`, `FnMut`, ו-`FnOnce`), ומכן משתמע שתמיד ניתן להעביר מצביע פונקציה כארגומנט עבור פונקצה שמצפה לסגור. מומלץ לכתוב פונקציות תוך שימוש בטיפוס גנרי ובאחד מתכונות הסגור כדי שהפונקציות שלכם יוכלו לקבל גם פונקציות וגם סגורים.
 
-As an example of where you could use either a closure defined inline or a named
-function, let’s look at a use of the `map` method provided by the `Iterator`
-trait in the standard library. To use the `map` function to turn a vector of
-numbers into a vector of strings, we could use a closure, like this:
+אבל, מקרה בו יש להעדיף לקבל רק `fn` ולא סגורים הוא כאשר באים במגע עם קוד חיצוני שבו אין סגורים: פונקציות C יכולות לקבל פונקציות כארגומנטים, אבל ב-C אין סגורים.
+
+כדוגמא בה תוכלו להשתמש או בסגור מוגדר פנימית או בפונקציה בעלת שם, הבה נתבונן בשימוש במתודה `map` שמסופקת על-ידי התכונה `Iterator` בספריה הסטנדרטית. כדי להשתמש בפונקציה `map` כדי להפוך ווקטור של מספרים לווקטור של מחרוזות, נוכל להשתמש בסגור, כך:
 
 ```rust
 {{#rustdoc_include ../listings/ch19-advanced-features/no-listing-15-map-closure/src/main.rs:here}}
 ```
 
-Or we could name a function as the argument to `map` instead of the closure,
-like this:
+לחילופין, נוכל גם להעביר שם של פונקציה כארגנומנט ל-`map` במקום הסגור, בצורה הבאה:
 
 ```rust
 {{#rustdoc_include ../listings/ch19-advanced-features/no-listing-16-map-function/src/main.rs:here}}
 ```
 
-Note that we must use the fully qualified syntax that we talked about earlier
-in the [“Advanced Traits”][advanced-traits]<!-- ignore --> section because
-there are multiple functions available named `to_string`. Here, we’re using the
-`to_string` function defined in the `ToString` trait, which the standard
-library has implemented for any type that implements `Display`.
+שימו לב שחייבים להשתמש בתחביר מוסמך לחלוטין עליו דיברנו לעיל בסעיף ["נושאים מתקדמים אודות תכונות"]()<!-- ignore --> מכיוון שיש כמה פונקציות זמינות בשם `to_string`. כאן, אנו משתמשים בפונקציה `to_string` שמוגדרת בתכונה `ToString`, שהספריה הסטנדרטית מממשת עבור כל טיפוס שמממש את `Display`.
 
-Recall from the [“Enum values”][enum-values]<!-- ignore --> section of Chapter
-6 that the name of each enum variant that we define also becomes an initializer
-function. We can use these initializer functions as function pointers that
-implement the closure traits, which means we can specify the initializer
-functions as arguments for methods that take closures, like so:
+זכרו מסעיף ["ערכי מבחר"][enum-values]<!-- ignore --> מפרק 6 שהשם של כל ווריאנט של מבחר שאנו מגדירים הוא גם השם של פונקציה מאתחלת. ניתן להשתמש בפונקציות מאתחלות אלה כמצביעי פונקציות שמממשות את תכונות הסגור, משמע שניתן לספק פונקציות מאתחלות כארגומנטים עבור מתודות שמקבלות סגורים, למשל כך:
 
 ```rust
 {{#rustdoc_include ../listings/ch19-advanced-features/no-listing-17-map-initializer/src/main.rs:here}}
 ```
 
-Here we create `Status::Value` instances using each `u32` value in the range
-that `map` is called on by using the initializer function of `Status::Value`.
-Some people prefer this style, and some people prefer to use closures. They
-compile to the same code, so use whichever style is clearer to you.
+כאן אנו יוצרים מופעים של `Status::Value` תוך שימוש בכל ערכי ה-`u32` בטווח שעליו קוראים את `map` על-ידי שימוש בפונקציה מאתחלת של `Status::Value`. יש המעדיפים סגנון זה, ויש המעדיפים שימוש בסגורים. שתי האפשרויות עוברות קימפול לאותו קוד, כך שאתם מוזמנים לבחור את הסגנון המועדף עליכם.
 
-### Returning Closures
+### החזרת סגורים
 
-Closures are represented by traits, which means you can’t return closures
-directly. In most cases where you might want to return a trait, you can instead
-use the concrete type that implements the trait as the return value of the
-function. However, you can’t do that with closures because they don’t have a
-concrete type that is returnable; you’re not allowed to use the function
-pointer `fn` as a return type, for example.
+סגורים מיוצגים על-ידי תכונות, ולכן לא ניתן להחזיר סגורים בצורה ישירה. ברוב המקרים בהם תרצו להחזיר תכונה, תוכלו במקום זאת להשתמש בטיפוס קונקרטי שמממש את התכונה כערך המוחזר של הפונקציה. אולם, לא ניתן לעשות זאת עם סגורים משום שאין להם טיפוס קונקרטי ניתן להחזרה; אסור להשתמש במצביע הפונקציה `fn` כטיפוס מוחזר, למשל.
 
-The following code tries to return a closure directly, but it won’t compile:
+הקוד הבא מנסה להחזיר סגור ישירות, אבל הוא לא עובר קומפילציה:
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch19-advanced-features/no-listing-18-returns-closure/src/lib.rs}}
 ```
 
-The compiler error is as follows:
+שגיאת הקומפילציה היא:
 
 ```console
 {{#include ../listings/ch19-advanced-features/no-listing-18-returns-closure/output.txt}}
 ```
 
-The error references the `Sized` trait again! Rust doesn’t know how much space
-it will need to store the closure. We saw a solution to this problem earlier.
-We can use a trait object:
+השגיאה מתייחסת שוב לתכונה `Sized`! ראסט לא יודעת כמה מקום בזיכרון יש עליה להקצות עבור הסגור. כבר ראינו פתרון לבעיה זו. נוכל להשתמש באובייקט תכונה:
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch19-advanced-features/no-listing-19-returns-closure-trait-object/src/lib.rs}}
 ```
 
-This code will compile just fine. For more about trait objects, refer to the
-section [“Using Trait Objects That Allow for Values of Different
-Types”][using-trait-objects-that-allow-for-values-of-different-types]<!--
-ignore --> in Chapter 17.
+קוד זה עובר קומפילציה בלי שום בעיה. לעוד אודות אובייקטי תכונה, פנו לסעיף ["שימוש באובייקטי תכונה שמאפשרים ערכים מטיפוסים שונים"]()<!--
+ignore --> בפרק 17.
 
-Next, let’s look at macros!
+וכעת, הבה נפנה להתבוננות במאקרואים!
+ch19-03-advanced-traits.html#advanced-traits ch17-02-trait-objects.html#using-trait-objects-that-allow-for-values-of-different-types
 
-[advanced-traits]:
-ch19-03-advanced-traits.html#advanced-traits
 [enum-values]: ch06-01-defining-an-enum.html#enum-values
-[using-trait-objects-that-allow-for-values-of-different-types]:
-ch17-02-trait-objects.html#using-trait-objects-that-allow-for-values-of-different-types

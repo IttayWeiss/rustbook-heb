@@ -1,297 +1,171 @@
-## Advanced Types
+## נושאים מתקדמים אודות טיפוסים
 
-The Rust type system has some features that we’ve so far mentioned but haven’t
-yet discussed. We’ll start by discussing newtypes in general as we examine why
-newtypes are useful as types. Then we’ll move on to type aliases, a feature
-similar to newtypes but with slightly different semantics. We’ll also discuss
-the `!` type and dynamically sized types.
+למערכת הטיפוסים של ראסט ישנן כמה תכונות שכבר הזכרנו אבל שעוד לא דנו בהן. נתחיל בלדון בתבנית הטיפוס החדש באופן כללי תוך כדי פיתוח הבנה מדוע תבנית זו שימושית. משם נעבור לכינויי טיפוסים, תכונה דומה לטיפוסים חדשים אבל עם סמנטיקה מעט שונה. נדון גם בטיפוס `!` ובטיפוסים בעלי גודל דינמי.
 
-### Using the Newtype Pattern for Type Safety and Abstraction
+### שימוש בתבנית הטיפוס החדש למטרת בטיחות טיפוסים ואבסטרקציה
 
-> Note: This section assumes you’ve read the earlier section [“Using the
-> Newtype Pattern to Implement External Traits on External
-> Types.”][using-the-newtype-pattern]<!-- ignore -->
+> הערה: סעיף זה מניח שקראתם את הסעיף הקודם ["שימוש בתבנית הטיפוס החדש כדי לממש תכונות חיצוניות וטיפוסים חיצוניים".][using-the-newtype-pattern]<!-- ignore -->
 
-The newtype pattern is also useful for tasks beyond those we’ve discussed so
-far, including statically enforcing that values are never confused and
-indicating the units of a value. You saw an example of using newtypes to
-indicate units in Listing 19-15: recall that the `Millimeters` and `Meters`
-structs wrapped `u32` values in a newtype. If we wrote a function with a
-parameter of type `Millimeters`, we couldn’t compile a program that
-accidentally tried to call that function with a value of type `Meters` or a
-plain `u32`.
+תבנית הטיפוס החדש שימושית גם עבור מטלות מעבר לאלו בהן דנו עד כה, כולל כפיה סטטית שערכים אף-פעם לא מבולבלים וציון יחידות של ערך. ראיתם דוגמא לשימוש בתבנית הטיפוס החדש כדי לציין יחידות ברשימה 19-15: זכרו שהמבנים `Millimeters` ו- `Meters` עטפו ערכי `u32` בתוך טיפוס חדש. אם היינו כותבים פונקציה עם פרמטר מטיפוס `Millimeters`, לא היינו יכולים לקמפל תוכנית שבטעות היתה מנסה לקרוא לפונקציה עם ערך מטיפוס `Meters` או עם ערך `u32` פשוט.
 
-We can also use the newtype pattern to abstract away some implementation
-details of a type: the new type can expose a public API that is different from
-the API of the private inner type.
+ניתן גם להשתמש בתבנית הטיפוס החדש כדי ליצור אבסטרקציה של פרטי מימוש עבור טיפוס: הטיפוס החדש יכול לחשוף API ציבורי שונה מה-API של הטיפוס הפנימי.
 
-Newtypes can also hide internal implementation. For example, we could provide a
-`People` type to wrap a `HashMap<i32, String>` that stores a person’s ID
-associated with their name. Code using `People` would only interact with the
-public API we provide, such as a method to add a name string to the `People`
-collection; that code wouldn’t need to know that we assign an `i32` ID to names
-internally. The newtype pattern is a lightweight way to achieve encapsulation
-to hide implementation details, which we discussed in the [“Encapsulation that
-Hides Implementation
-Details”][encapsulation-that-hides-implementation-details]<!-- ignore -->
-section of Chapter 17.
+טיפוסים חדשים יכולים גם להסתיר מימושים פנימיים. למשל, ניתן לספק טיפוס `People` כדי לעטוף `HashMap<i32, String>` שמאכסן מספר זהות של משתמש המשוייך לשמם. קוד שמשתמש ב-`People` יבוא במגע רק עם ה-API הפומבי שאנו מספקים, כמו מתודה להוספת שם, כמחרוזת, לאוסף ה-`People`; קוד זה לא יצטרך לדעת ששייכנו ערך `i32` לשמות באופן פנימי. תבנית הטיפוס החדש היא דרך קלת-משקל לאפסן ולהחביא פרטי מימושים, תכונה בה דנו בסעיף ["אפסון שמחביא פרטי מימושים"]()<!-- ignore -->
+בפרק 17.
 
-### Creating Type Synonyms with Type Aliases
+### יצירת שמות נרדפים לטיפוסים באמצעות כינויי טיפוסים
 
-Rust provides the ability to declare a *type alias* to give an existing type
-another name. For this we use the `type` keyword. For example, we can create
-the alias `Kilometers` to `i32` like so:
+ראסט מספקת את היכולת להכריז על *כינוי טיפוס* על מנת לתת לטיפוס קיים שם אחר. לשם כך משתמשים במילת המפתח `type`. לדוגמא, ניתן ליצור את הכינוי `Kilometers` עבור הטיפוס `i32` כך:
 
 ```rust
 {{#rustdoc_include ../listings/ch19-advanced-features/no-listing-04-kilometers-alias/src/main.rs:here}}
 ```
 
-Now, the alias `Kilometers` is a *synonym* for `i32`; unlike the `Millimeters`
-and `Meters` types we created in Listing 19-15, `Kilometers` is not a separate,
-new type. Values that have the type `Kilometers` will be treated the same as
-values of type `i32`:
+כעת, הכינוי `Kilometers` הוא *שם נרדף* עבור `i32`; שלא כמו `Millimeters` ו-`Meters`, טיפוסים בפני עצמם שיצרנו ברשימה 19-15, `Kilometers` אינו טיפוס בפני עצמו. ערכים מטיפוס `Kilometers` הם בדיוק כמו ערכים מטיפוס `i32`:
 
 ```rust
 {{#rustdoc_include ../listings/ch19-advanced-features/no-listing-04-kilometers-alias/src/main.rs:there}}
 ```
 
-Because `Kilometers` and `i32` are the same type, we can add values of both
-types and we can pass `Kilometers` values to functions that take `i32`
-parameters. However, using this method, we don’t get the type checking benefits
-that we get from the newtype pattern discussed earlier. In other words, if we
-mix up `Kilometers` and `i32` values somewhere, the compiler will not give us
-an error.
+כיוון ש-`Kilometers` ו-`i32` הם אותו טיפוס, ניתן לחבר ערכים מטיפוסים אלה וניתן להעביר ערכי `Kilometers` לפונקציות שמקבלות פרמטרים מטיפוס `i32`. אבל, שימוש בטכניקה זו לא מגיע עם היתרון של בדיקת טיפוסים על-ידי הקומפיילר כמו שאנו מקבלים משימוש בתבנית הטיפוס החדש, כפי שראינו קודם. במילים אחרות, אם נערב ערכי `Kilometers` וערכי `i32` במקום כלשהו, הקומפיילר לא יתריע על כך כלל.
 
-The main use case for type synonyms is to reduce repetition. For example, we
-might have a lengthy type like this:
+המניע העיקרי ליצרית שמות נרדפים לטיפוסים הוא הפחתת רפטטיביות. לדוגמא, יתכן שיש לנו טיפוס ארוך כמו:
 
 ```rust,ignore
 Box<dyn Fn() + Send + 'static>
 ```
 
-Writing this lengthy type in function signatures and as type annotations all
-over the code can be tiresome and error prone. Imagine having a project full of
-code like that in Listing 19-24.
+כתיבת טיפוס ארוך זה בחותמים של פונקציות ובביאורי טיפוסים לכל אורך הקוד יכולה להיות משימה מיגעת ומועדת לטעויות. דמיינו פרוייקט מלא בקוד כדוגמת הקוד ברשימה 19-24.
 
 ```rust
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-24/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 19-24: Using a long type in many places</span>
+<span class="caption">רשימה 19-24: שימוש בטיפוס ארוך במקומות רבים</span>
 
-A type alias makes this code more manageable by reducing the repetition. In
-Listing 19-25, we’ve introduced an alias named `Thunk` for the verbose type and
-can replace all uses of the type with the shorter alias `Thunk`.
+כינוי טיפוס יהפוך קוד זה להרבה יותר קריא על-ידי הפחתת הרפטטיביות. ברשימה 19-25, הצגנו את הכינוי בשם `Thunk` עבור הטיפוס רב המלל והחלפנו את כל השימושים בטיפוס בכינוי המקוצר `Thunk`.
 
 ```rust
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-25/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 19-25: Introducing a type alias `Thunk` to reduce
-repetition</span>
 
-This code is much easier to read and write! Choosing a meaningful name for a
-type alias can help communicate your intent as well (*thunk* is a word for code
-to be evaluated at a later time, so it’s an appropriate name for a closure that
-gets stored).
+<span class="caption">רשימה 19-25: הכנסה לשימוש של כינוי הטיפוס `Thunk` כדי להפחית רפטטיביות</span>
 
-Type aliases are also commonly used with the `Result<T, E>` type for reducing
-repetition. Consider the `std::io` module in the standard library. I/O
-operations often return a `Result<T, E>` to handle situations when operations
-fail to work. This library has a `std::io::Error` struct that represents all
-possible I/O errors. Many of the functions in `std::io` will be returning
-`Result<T, E>` where the `E` is `std::io::Error`, such as these functions in
-the `Write` trait:
+קוד זה קל הרבה יותר גם לקריאה וגם לכתיבה! בחירה של שם בעל משמעות עבור כינוי טיפוס יכולה להבהיר את כוונת הקוד (*thunk* היא מילה עבור קוד שיוערך בעתיד, כך שזה שם מתאים עבור סגור מאוכסן).
+
+כינויי טיפוסים נפוצים גם עם הטיפוס `Result<T, E>` כדי להימנע מרפטטיביות. התבוננו במודול `std::io` אשר בספריה הסטנדרטית. פעולות I/O בדרך-כלל מחזירות `Result<T, E>` לניהול מצבים בהם פעולות נכשלות. לספריה הסטנדרטית יש את המבנה `std::io::Error` שמייצג את כל שגיאות ה-I/O האפשריות. רבות מהפונקציות ב- `std::io` מחזירות `Result<T, E>` בהם חלק ה- `E` הוא `std::io::Error`, כמו, למשל, פונקציות אלה מהתכונה `Write`:
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch19-advanced-features/no-listing-05-write-trait/src/lib.rs}}
 ```
 
-The `Result<..., Error>` is repeated a lot. As such, `std::io` has this type
-alias declaration:
+השימוש ב- `Result<..., Error>` חוזר על עצמו פעמים רבות. לכן, ב- `std::io` יש את הכרזת כינוי הטיפוס:
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch19-advanced-features/no-listing-06-result-alias/src/lib.rs:here}}
 ```
 
-Because this declaration is in the `std::io` module, we can use the fully
-qualified alias `std::io::Result<T>`; that is, a `Result<T, E>` with the `E`
-filled in as `std::io::Error`. The `Write` trait function signatures end up
-looking like this:
+מכיוון שהכרזה זו נמצאת במודול `std::io`, ניתן להשתמש בכינוי המוסמך לחלוטין `std::io::Result<T>`; זאת אומרת, טיפוס `Result<T, E>` שבו `E` הוא `std::io::Error`. חותמי הפונקציות של התכונה `Write` הופכות עכשיו להראות כך:
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch19-advanced-features/no-listing-06-result-alias/src/lib.rs:there}}
 ```
 
-The type alias helps in two ways: it makes code easier to write *and* it gives
-us a consistent interface across all of `std::io`. Because it’s an alias, it’s
-just another `Result<T, E>`, which means we can use any methods that work on
-`Result<T, E>` with it, as well as special syntax like the `?` operator.
+כינוי הטיפוס מסייע בשני אופנים: הוא הופך את הקוד קל יותר לכתיבה *והוא גם* נותן לנו ממשק עקבי לאורך כל השימוש ב-`std::io`. כיוון שזהו כינוי, זהו פשוט שם נוסף עבור הטיפוס `Result<T, E>`, ולכן ניתן להשתמש עליו בכל המתודות הזמינות לשימוש על `Result<T, E>`, וכן בתחביר יחודי כמו האופרטור `?`.
 
-### The Never Type that Never Returns
+### הטיפוס Never שאף-פעם לא מחזיר
 
-Rust has a special type named `!` that’s known in type theory lingo as the
-*empty type* because it has no values. We prefer to call it the *never type*
-because it stands in the place of the return type when a function will never
-return. Here is an example:
+לראסט יש טיפוס מיוחד בשם `!` שידוע בעולם תורת הטיפוסים בשם *הטיפוס הריק* כיוון שאין לא כלל ערכים. אנו מעדיפים לקרוא לו בשם *טיפוס האף-פעם* בגלל שהוא משמש כטיפוס הערך החוזר בפונקציות שאף פעם לא חוזרות. הינה דוגמא:
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch19-advanced-features/no-listing-07-never-type/src/lib.rs:here}}
 ```
 
-This code is read as “the function `bar` returns never.” Functions that return
-never are called *diverging functions*. We can’t create values of the type `!`
-so `bar` can never possibly return.
+ניתן לקרוא קוד זה כאומר "הפונקציה `bar` מחזירה אף-פעם." פונקציות שמחזירות אף-פעם נקראות *פונקציות מתבדרות*. לא ניתן ליצור ערכים מטיפוס `!`, ולכן `bar` אף-פעם לא יכולה לחזור.
 
-But what use is a type you can never create values for? Recall the code from
-Listing 2-5, part of the number guessing game; we’ve reproduced a bit of it
-here in Listing 19-26.
+אבל איזה שימוש יכול להיות לטיפוס שלא ניתן להפיק אפילו לא ערך אחד שזה הטיפוס שלו? הזכרו בקוד מרשימה 2-5, שהוא חלק מתכנית משחק הניחוש; חלקו משוחזר כאן ברשימה 19-26.
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch02-guessing-game-tutorial/listing-02-05/src/main.rs:ch19}}
 ```
 
-<span class="caption">Listing 19-26: A `match` with an arm that ends in
-`continue`</span>
 
-At the time, we skipped over some details in this code. In Chapter 6 in [“The
-`match` Control Flow Operator”][the-match-control-flow-operator]<!-- ignore -->
-section, we discussed that `match` arms must all return the same type. So, for
-example, the following code doesn’t work:
+<span class="caption">רשימה 19-26: ביטוי `match` עם זרוע שמסתיימת ב-`continue`</span>
+
+בזמנו, דילגנו על כמה פרטים בקוד זה. בפרק 6, בסעיף ["המבנה התחבירי `match` לבקרת זרימה"]()<!-- ignore -->
+, אמרנו שכל הזרועות בביטוי `match` חייבות להחזיר את אותו הטיפוס. אם כן, לדוגמא, הקוד הבא לא תקין:
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch19-advanced-features/no-listing-08-match-arms-different-types/src/main.rs:here}}
 ```
 
-The type of `guess` in this code would have to be an integer *and* a string,
-and Rust requires that `guess` have only one type. So what does `continue`
-return? How were we allowed to return a `u32` from one arm and have another arm
-that ends with `continue` in Listing 19-26?
+הטיפוס של `guess` בקוד זה יהיה צריך להיות גם שלם *וגם* מחרוזת, בעוד שראסט דורשת של- `guess` יהיה טיפוס יחיד מוגדר היטב. אז איזה טיפוס `continue` מחזיר? מדוע מותר, ברשימה 19-26, לנו להחזיר ערך מטיפוס `u32` מזרוע אחת ולסיים זרוע אחרת עם `continue`?
 
-As you might have guessed, `continue` has a `!` value. That is, when Rust
-computes the type of `guess`, it looks at both match arms, the former with a
-value of `u32` and the latter with a `!` value. Because `!` can never have a
-value, Rust decides that the type of `guess` is `u32`.
+וודאי ניחשתם של- `continue` יש את הטיפוס `!`. זאת אומרת, כאשר ראסט מחשבת את הטיפוס של `guess`, היא מסתכלת על שתי הזרועות בביטוי ההתאמה, אחת מחזירה טיפוס `u32` והשניה `!`. כיוון של- `!` אף-פעם לא יכול להיות ערך קונקרטי, ראסט מחליטה שהטיפוס של `guess` הוא `u32`.
 
-The formal way of describing this behavior is that expressions of type `!` can
-be coerced into any other type. We’re allowed to end this `match` arm with
-`continue` because `continue` doesn’t return a value; instead, it moves control
-back to the top of the loop, so in the `Err` case, we never assign a value to
-`guess`.
+הדרך הפורמלית לתאר התנהגות זו היא שביטויים מטיפוס `!` יכולים להיות מומרים לכל טיפוס אחר. מותר לנו לסיים זרוע זו של ה- `match` עם `continue` משום ש-`continue` לא מחזירה ערך; במקום זאת, היא מעבירה את השליטה חזרה לראשית הלולאה, וכך במקרה של `Err` אנחנו אף-פעם לא מבצעים השמה של ערך ל-`guess`.
 
-The never type is useful with the `panic!` macro as well. Recall the `unwrap`
-function that we call on `Option<T>` values to produce a value or panic with
-this definition:
+טיפוס האף-פעם שימושי גם עם המאקרו `panic!`. זכרו את הפונקציה `unwrap`, לה אנו קוראים על ערכי `Option<T>` כדי או להפיק ערך או להיכנס לפאניקה, שהינה הגדרתה:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch19-advanced-features/no-listing-09-unwrap-definition/src/lib.rs:here}}
 ```
 
-In this code, the same thing happens as in the `match` in Listing 19-26: Rust
-sees that `val` has the type `T` and `panic!` has the type `!`, so the result
-of the overall `match` expression is `T`. This code works because `panic!`
-doesn’t produce a value; it ends the program. In the `None` case, we won’t be
-returning a value from `unwrap`, so this code is valid.
+בקוד זה, מתרחשת אותה התופעה כמו בביטוי ה- `match` מרשימה 19-26: ראסט רואה של- `val` יש את הטיפוס `T` ול-`panic!` יש את הטיפוס `!`, ולכן התוצאה של ביטוי ה-`match` כולו היא `T`. קוד זה תקין משום ש-`panic!` לא מחזירה שום ערך; היא מסיימת את ריצת התכנית. במקרה של `None`, לא מוחזר ערך מ- `unwrap`, ולכן קוד זה תקני.
 
-One final expression that has the type `!` is a `loop`:
+ביטוי נוסף אחרון מטיפוס `!` הוא לולאה:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch19-advanced-features/no-listing-10-loop-returns-never/src/main.rs:here}}
 ```
 
-Here, the loop never ends, so `!` is the value of the expression. However, this
-wouldn’t be true if we included a `break`, because the loop would terminate
-when it got to the `break`.
+כאן, הלולאה אף-פעם לא מסתיימת, ולכן `!` הוא טיפוס הערך של הביטוי. אבל, זה לא היה המקרה לו היינו מוסיפים פקודת `break`, שכן אז הלולאה היתה מסתיימת בהגיעה לפקודת ה- `break`.
 
-### Dynamically Sized Types and the `Sized` Trait
+### טיפוסים בעלי גודל דינמי והתכונה `Sized`
 
-Rust needs to know certain details about its types, such as how much space to
-allocate for a value of a particular type. This leaves one corner of its type
-system a little confusing at first: the concept of *dynamically sized types*.
-Sometimes referred to as *DSTs* or *unsized types*, these types let us write
-code using values whose size we can know only at runtime.
+ראסט צריכה לדעת פרטים מסויימים בקשר לטיפוסים שלה, כמו כמה מקום בזיכרון להקצות עבור ערך מטיפוס זה או אחר. פרט זה משאיר פינה אחת במערכת הטיפוסים של ראסט מעט לוטה בערפל: הרעיון של *טיפוסים בעלי גודל דינמי*. טיפוסים אלה, שלפעמים גם קוראים להם *DST* או *טיפוסים ללא גודל (unsized types)*, מאפשרים כתיבת קוד תוך שימוש בערכים שגודלם ידוע רק בזמן הריצה.
 
-Let’s dig into the details of a dynamically sized type called `str`, which
-we’ve been using throughout the book. That’s right, not `&str`, but `str` on
-its own, is a DST. We can’t know how long the string is until runtime, meaning
-we can’t create a variable of type `str`, nor can we take an argument of type
-`str`. Consider the following code, which does not work:
+הבה נתעמק בפרטים של הטיפוס `str`, שהוא בעל גודל דינמי, שכבר ראינו לכל אורך הספר. שימו לב, אכן, לא `&str` אלה הטיפוס `str` בפני עצמו הוא DST. אין דרך לדעת מה אורך המחרוזת עד לזמן הריצה, ולכן לא ניתן ליצור משתנה מטיפוס `str` או להעביר משתנה מטיפוס `str`. התבוננו בקוד הבא, שלא עובד:
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch19-advanced-features/no-listing-11-cant-create-str/src/main.rs:here}}
 ```
 
-Rust needs to know how much memory to allocate for any value of a particular
-type, and all values of a type must use the same amount of memory. If Rust
-allowed us to write this code, these two `str` values would need to take up the
-same amount of space. But they have different lengths: `s1` needs 12 bytes of
-storage and `s2` needs 15. This is why it’s not possible to create a variable
-holding a dynamically sized type.
+ראסט צריכה לדעת כמה מקום בזיכרון להקצות עבור כל משתנה שהוא, וכל הערכים מאותו טיפוס חייבים להשתמש באותה כמות של זיכרון. אם ראסט היתה מאפשרת לנו לכתוב קוד זה, שני ערכי `str` אלה היו משתמשים בכמות שווה של זיכרון. אבל יש להם אורכים שונים: `s1` זקוקה ל-12 בייטים בעוד `s2` צריכה 15. זו הסיבה שלא ניתן ליצור משתנים המאכסנים טיפוסים בעלי גודל דינמי.
 
-So what do we do? In this case, you already know the answer: we make the types
-of `s1` and `s2` a `&str` rather than a `str`. Recall from the [“String
-Slices”][string-slices]<!-- ignore --> section of Chapter 4 that the slice data
-structure just stores the starting position and the length of the slice. So
-although a `&T` is a single value that stores the memory address of where the
-`T` is located, a `&str` is *two* values: the address of the `str` and its
-length. As such, we can know the size of a `&str` value at compile time: it’s
-twice the length of a `usize`. That is, we always know the size of a `&str`, no
-matter how long the string it refers to is. In general, this is the way in
-which dynamically sized types are used in Rust: they have an extra bit of
-metadata that stores the size of the dynamic information. The golden rule of
-dynamically sized types is that we must always put values of dynamically sized
-types behind a pointer of some kind.
+אז מה אפשר לעשות? במקרה זה, אתם כבר יודעים את התשובה: משנים את הטיפוסים של `s1` ו- `s2` ל-`&str` במקום `str`. זכרו מסעיף ["חיתוכי מחרוזת"][string-slices]<!-- ignore --> בפרק 14 שחיתוך, כמבנה נתונים, רק מאכסן את מיקום תחילת החיתוך ואת אורכו. כך שלמרות ש- `&T` הוא ערך יחיד שמאכסן את כתובת הזיכרון שבה `T` ממוקם, מופע של `&str` הוא *שתי פיסות מידע*: כתובת של `str` ואורך. לכן, כן ניתן לדעת את הגודל של ערך מטיפוס `&str` בזמן הקומפילציה: פעמיים הגודל של `usize`. זאת אומרת שאנחנו תמיד יודעים את הגודל של `&str`, ללא תלות באורך המחרוזת אליה הוא מפנה. באופן כללי, זוהי הדרך בה משתמשים בטיפוסים בעלי גודל דינמי בראסט: הם מכילים מעט יותר מטה-דאטס שמאכסן את הגודל של המידע הדינמי. כלל הזהב לעבודה עם טיפוסים בעל גודל דינמי הוא שתמיד צריך לאכסן טיפוסים בעלי גודל דינמי מאחורי מצביע מתאים.
 
-We can combine `str` with all kinds of pointers: for example, `Box<str>` or
-`Rc<str>`. In fact, you’ve seen this before but with a different dynamically
-sized type: traits. Every trait is a dynamically sized type we can refer to by
-using the name of the trait. In Chapter 17 in the [“Using Trait Objects That
-Allow for Values of Different
-Types”][using-trait-objects-that-allow-for-values-of-different-types]<!--
-ignore --> section, we mentioned that to use traits as trait objects, we must
-put them behind a pointer, such as `&dyn Trait` or `Box<dyn Trait>` (`Rc<dyn
-Trait>` would work too).
+ניתן לשלב את `str` עם מצביעים מסוגים שונים: למשל, `Box<str>` או `Rc<str>`. למעשה, ראיתם זאת כבר עם טיפוס אחר בעל גודל דינמי: תכונה. כל תכונה היא טיפוס בעל גודל דינמי אליו ניתן להתייחס באמצעות שם התכונה. בפרק 17, בסעיף ["שימוש באובייקטי תכונה שמאפשרים ערכים מטיפוסים שונים"]()<!--
+ignore --> , הערנו שעל מנת להשתמש בתכונות כאובייקטי תכונה, חייבים לשים אותם מאחור מצביע, כמו 
 
-To work with DSTs, Rust provides the `Sized` trait to determine whether or not
-a type’s size is known at compile time. This trait is automatically implemented
-for everything whose size is known at compile time. In addition, Rust
-implicitly adds a bound on `Sized` to every generic function. That is, a
-generic function definition like this:
+`&dyn Trait` או `Box<dyn Trait>` (וכן `Rc<dyn
+Trait>`).
+
+על מנת לעבור עם טיפוסים בעלי גודל דינמי, ראסט מספקת את התכונה `Sized` על מנת לקבוע האם הגודל של טיפוס ידוע בזמן הקומפילציה. תכונה זו ממומשת אוטומטית עבור כל טיפוס שגודלו ידוע בזמן הקומפילציה. בנוסף, ראסט, באופן לא מפורש, מגבלה על `Sized` עבור כל פונקציה גנרית. זאת אומרת, הגדרת פונקציה גנרית כזאת:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch19-advanced-features/no-listing-12-generic-fn-definition/src/lib.rs}}
 ```
 
-is actually treated as though we had written this:
+מתפרשת למעשה כאילו כתבנו:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch19-advanced-features/no-listing-13-generic-implicit-sized-bound/src/lib.rs}}
 ```
 
-By default, generic functions will work only on types that have a known size at
-compile time. However, you can use the following special syntax to relax this
-restriction:
+כברירת מחדל, פונקציות גנריות יעבדו אך ורק עם טיפוסים שגודלם ידוע בזמן הקומפילציה. אולם, ניתן להחליש דרישה זו על-ידי שימוש בתחביר המיוחד הבא:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch19-advanced-features/no-listing-14-generic-maybe-sized/src/lib.rs}}
 ```
 
-A trait bound on `?Sized` means “`T` may or may not be `Sized`” and this
-notation overrides the default that generic types must have a known size at
-compile time. The `?Trait` syntax with this meaning is only available for
-`Sized`, not any other traits.
+מגבלת תכונה על `?Sized` משמעה ש-`T` יכול להיות `Sized` ויכול גם שלא, ונוטציה גוברת על ברירת המחדל לפיה טיפוסים גנריים חייבים להיות בעלי גודל ידוע בזמן הקומפילציה. התחביר `?Trait` במשמעות זו זמין רק עבור `Sized` ולא לאף תכונה אחרת.
 
-Also note that we switched the type of the `t` parameter from `T` to `&T`.
-Because the type might not be `Sized`, we need to use it behind some kind of
-pointer. In this case, we’ve chosen a reference.
+שימו לב גם שהחלפנו את הטיפוס של הפרמטר `t` מ- `T` ל-`&T`. כיוון שהטיפוס לא חייב לממש את `Sized`, עלינו להשתמש בו מאחורי מצביע כלשהוא. במקרה זה, בחרנו להשתמש בהפניה.
 
-Next, we’ll talk about functions and closures!
+הנושא הבא הוא פונקציות וסגורים!
+ch17-01-what-is-oo.html#encapsulation-that-hides-implementation-details ch06-02-match.html#the-match-control-flow-operator ch17-02-trait-objects.html#using-trait-objects-that-allow-for-values-of-different-types
 
-[encapsulation-that-hides-implementation-details]:
-ch17-01-what-is-oo.html#encapsulation-that-hides-implementation-details
 [string-slices]: ch04-03-slices.html#string-slices
-[the-match-control-flow-operator]:
-ch06-02-match.html#the-match-control-flow-operator
-[using-trait-objects-that-allow-for-values-of-different-types]:
-ch17-02-trait-objects.html#using-trait-objects-that-allow-for-values-of-different-types
 [using-the-newtype-pattern]: ch19-03-advanced-traits.html#using-the-newtype-pattern-to-implement-external-traits-on-external-types
