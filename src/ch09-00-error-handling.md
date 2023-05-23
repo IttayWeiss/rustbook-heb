@@ -1,24 +1,7 @@
-# Error Handling
+# טיפול בשגיאות
 
-Errors are a fact of life in software, so Rust has a number of features for
-handling situations in which something goes wrong. In many cases, Rust requires
-you to acknowledge the possibility of an error and take some action before your
-code will compile. This requirement makes your program more robust by ensuring
-that you’ll discover errors and handle them appropriately before you’ve
-deployed your code to production!
+שגיאות הן חלק משגרת החיים בפיתוח תוכנה, ועל כן לראסט יש כמה יכולות לטיפול במצבים בהם דבר מה אינו כשורה. במקרים רבים, ראסט דורשת ממכם להודות באפשרות של שגיאה ולנקוט בפעולה כלשהיא טרם הקוד יעבור קומפילציה. דרישה זו הופכת את התכניות שלכם ליותר יציבות על-ידי ווידוא שתגלו שגיאות, ושתטפלו בהן כיאות, לפני השקת הקוד!
 
-Rust groups errors into two major categories: *recoverable* and *unrecoverable*
-errors. For a recoverable error, such as a *file not found* error, we most
-likely just want to report the problem to the user and retry the operation.
-Unrecoverable errors are always symptoms of bugs, like trying to access a
-location beyond the end of an array, and so we want to immediately stop the
-program.
+ראסט מקבצת שגיאות לשתי קטגוריות עיקריות: *שגיאות בנות-חלוף* לאומת *שגיאות סופניות*. עבור שגיאה בת-חלוף, כמו שגיאת *file not found*, סביר להניח שפשוט נרצה לדווח למשתמש על הבעיה ולנסות את הפעולה בשנית. שגיאות סופניות הן תמיד תסמינים של באגים, כמו ניסון לגשת למיקום במערך מעבר לסופו, ולכן נרצה מייד לעצור את התכנית.
 
-Most languages don’t distinguish between these two kinds of errors and handle
-both in the same way, using mechanisms such as exceptions. Rust doesn’t have
-exceptions. Instead, it has the type `Result<T, E>` for recoverable errors and
-the `panic!` macro that stops execution when the program encounters an
-unrecoverable error. This chapter covers calling `panic!` first and then talks
-about returning `Result<T, E>` values. Additionally, we’ll explore
-considerations when deciding whether to try to recover from an error or to stop
-execution.
+רוב שפות התכנות לא מבדילות בין סוגי שגיאות אלה ומטפלים בשניהם באותו אופן, תוך שימוש במנגנונים כמו זיהוי סטיות. בראסט אין זיהוי סטיות. במקום זאת, יש את הטיפוס `Result<T, E>` עבור שגיאות בנות-חלוף ואת המאקרו `panic!`, אשר מפסיק מייד את הריצה ברגע שהתכנית נתקלת בשגיאה סופנית. פרק זה דן תחילה בשימוש ב-`panic!` ולאחר מכן עובר להחזרת ערכי `Result<T, E>`. בנוסף, נדון בשיקולים רלוונטים להחלטה האם לנסות להחלים משגיאה, או לעצור את הריצה.
