@@ -45,10 +45,10 @@
     - [הכנסת מסלולים למתחם באמצעות מילת המפתח `use`](ch07-04-bringing-paths-into-scope-with-the-use-keyword.md)
     - [הפרדת מודולים לקבצים שונים](ch07-05-separating-modules-into-different-files.md)
 
-- [Common Collections](ch08-00-common-collections.md)
-    - [Storing Lists of Values with Vectors](ch08-01-vectors.md)
-    - [Storing UTF-8 Encoded Text with Strings](ch08-02-strings.md)
-    - [Storing Keys with Associated Values in Hash Maps](ch08-03-hash-maps.md)
+- [אוספים נפוצים](ch08-00-common-collections.md)
+    - [אכסון רשימות של ערכים כוקטורים](ch08-01-vectors.md)
+    - [אחסון טקסט בקידוד UTF-8 כמחרוזת](ch08-02-strings.md)
+    - [אחסון מפתחות עם ערכים משויכים במפות גיבוב](ch08-03-hash-maps.md)
 
 - [טיפול בשגיאות](ch09-00-error-handling.md)
     - [שגיאות סופניות ופאניקה](ch09-01-unrecoverable-errors-with-panic.md)
