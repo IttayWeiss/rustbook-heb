@@ -40,7 +40,7 @@
 - [ניהול פרוייקטים עם חבילות, מכולות, ומודולים
 ](ch07-00-managing-growing-projects-with-packages-crates-and-modules.md)
     - [חבילות ומכולות](ch07-01-packages-and-crates.md)
-    - [Defining Modules to Control Scope and Privacy](ch07-02-defining-modules-to-control-scope-and-privacy.md)
+    - [שימוש במודולים לשליטה על מתחמים ופרטיות](ch07-02-defining-modules-to-control-scope-and-privacy.md)
     - [מסלולים להפניה לעצם בתוך עץ המודולים](ch07-03-paths-for-referring-to-an-item-in-the-module-tree.md)
     - [הכנסת מסלולים למתחם באמצעות מילת המפתח `use`](ch07-04-bringing-paths-into-scope-with-the-use-keyword.md)
     - [הפרדת מודולים לקבצים שונים](ch07-05-separating-modules-into-different-files.md)
