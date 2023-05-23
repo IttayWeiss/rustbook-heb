@@ -8,7 +8,7 @@
 | array                       | מערך                          |
 | associated function         | פונקציה משויכת                |
 | borrowing                   | השאלה                         |
-| borrow checker              | בודק ההפניות                  |
+| borrow checker              | בודק ההשאלות                  |
 | byte                        | בית, בייט                     |
 | cargo                       | קארגו                         |
 | char, character             | תו                            |
@@ -33,7 +33,7 @@
 | destructuring               | פירוק                         |
 | dispatch                    | שיגור                         |
 | double free                 | שחרור כפול                    |
-| drop (e.g. a vector)        | נעזב, נשמט                    |
+| drop (e.g. a vector)        | נעזב                          |
 | dynamic dispatch            | שיגור דינמי                   |
 | encapsulation               | אפסון                         |
 | enum                        | מבחר                          |
@@ -80,7 +80,7 @@
 | panic                       | להיכנס לפאניקה                |
 | parameter                   | פרמטר                         |
 | path                        | מסלול                         |
-| polymorphism                |                               |
+| polymorphism                | פולימורפיזם, רב־צורתיות       |
 | prelude                     | פרליוד                        |
 | reference                   | הפניה                         |
 | Rust                        | (נ') ראסט                     |
@@ -107,7 +107,7 @@
 | tuple struct                | מבנה מרצף                     |
 | type                        | טיפוס                         |
 | unicode                     | יוניקוד                       |
-| value is dropped            | ערך נעזב, נשמט                |
+| value is dropped            | ערך נעזב                      |
 | variant                     | וריאנט (או "סוג")             |
 | vector                      | וקטור                         |
 | workspace                   | אזור עבודה                    |
