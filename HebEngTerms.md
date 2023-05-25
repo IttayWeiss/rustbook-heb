@@ -87,6 +87,7 @@
 | path                        | מסלול                         |
 | polymorphism                | פולימורפיזם, רב־צורתיות       |
 | prelude                     | פרליוד                        |
+| propagation                 | השנעה                         |
 | reference                   | הפניה                         |
 | Rust                        | (נ') ראסט                     |
 | Rust idiom                  | אידיאומות ראסט                |
