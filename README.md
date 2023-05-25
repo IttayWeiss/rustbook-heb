@@ -62,4 +62,5 @@ Please follow the following recommended steps in order to contribute:
 4) If your observation is quick to perform, you may choose to immediate own the issue, make the improvement, and submit a PR. Otherwise, it is recommended that you let the issue stay open for a while to allow a discussion. It would be a shame if you work hard on an improvement, submit a PR, and then the PR is not accepted. 
 
 # Active contributors
-Ittay Weiss, Idan Liberman.
+Ittay Weiss,
+[Idan Liberman](https://github.com/IdanLib)
