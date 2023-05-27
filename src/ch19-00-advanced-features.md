@@ -1,22 +1,13 @@
-# Advanced Features
+# תכונות מתקדמות
 
-By now, you’ve learned the most commonly used parts of the Rust programming
-language. Before we do one more project in Chapter 20, we’ll look at a few
-aspects of the language you might run into every once in a while, but may not
-use every day. You can use this chapter as a reference for when you encounter
-any unknowns. The features covered here are useful in very specific situations.
-Although you might not reach for them often, we want to make sure you have a
-grasp of all the features Rust has to offer.
+בשלב זה, למדתם על החלקים של שפת התכנות ראסט שבשימוש נפוץ. לפני שנפנה לעבוד על פרוייקט נוסף בפרק 20, נתבונן בכמה אספקטים של השפה בהם אתם עשויים להיתקל מידי פעם, אבל לא בשימוש יום-יומי. תוכלו להשתמש בפרק זה כמראה-מקום במקרים בהם תמצאו את עצמכם מול אלמנטים לא מוכרים של השפה. התכונות בהן נדון כאן הן שימושיות בסיטואציות ספציפיות ביותר. למראות שאולי לא תצטרכו אותן תכופות, חשוב לפתח הבנה מקיפה של כל התכונות שראסט מציעה.
 
-In this chapter, we’ll cover:
+בפרק זה נדון בנושאים:
 
-* Unsafe Rust: how to opt out of some of Rust’s guarantees and take
-  responsibility for manually upholding those guarantees
-* Advanced traits: associated types, default type parameters, fully qualified
-  syntax, supertraits, and the newtype pattern in relation to traits
-* Advanced types: more about the newtype pattern, type aliases, the never type,
-  and dynamically sized types
-* Advanced functions and closures: function pointers and returning closures
-* Macros: ways to define code that defines more code at compile time
+* ראסט לא מאובטח: כיצד לחרוג מהבטחונות של ראסט ולקחת אחריות לביצוע ידני של פעולות אבטחה
+* תכונות מתקדמות: טיפוסים משוייכים, פרמטרי ברירת-מחדל, תחביר מוסמך לחלוטין, תכונות-על, והתבנית newtype ביחס לתכונות
+* טיפוסים מתקדמים: עוד אודות התבנית newtype, כינויי טיפוסים, וטיפוסים בעלי גודל דינמי
+* פונקציות מתקדמות וסגורים: מצביעי פונקציות והחזרת סגורים
+* מאקרואים: דרכים להגדיר קוד שמגדיר עוד קוד בזמן הקומפילציה
 
-It’s a panoply of Rust features with something for everyone! Let’s dive in!
+זהו ערב רב של תכונות של ראסט, עם משהו מעניין לכל אחד ואחת! הבה נתחיל!

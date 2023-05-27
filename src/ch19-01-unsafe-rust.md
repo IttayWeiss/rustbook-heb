@@ -1,311 +1,168 @@
-## Unsafe Rust
+## ראסט לא מאובטחת
 
-All the code we’ve discussed so far has had Rust’s memory safety guarantees
-enforced at compile time. However, Rust has a second language hidden inside it
-that doesn’t enforce these memory safety guarantees: it’s called *unsafe Rust*
-and works just like regular Rust, but gives us extra superpowers.
+בכל הקוד בו דנו עד כה ערובות בטיחות הזיכרון של ראסט היו בתוקף בזמן הקומפילציה. אבל, לראסט יש שפה שניה, מוחבאת מעט, שלא מיישמת את ערובות הביטחון האלה: היא נקראת *ראסט לא מאובטחת* והיא עובדת כמו ראסט, אבל מספקת למתכנתים כוחות-על נוספים.
 
-Unsafe Rust exists because, by nature, static analysis is conservative. When
-the compiler tries to determine whether or not code upholds the guarantees,
-it’s better for it to reject some valid programs than to accept some invalid
-programs. Although the code *might* be okay, if the Rust compiler doesn’t have
-enough information to be confident, it will reject the code. In these cases,
-you can use unsafe code to tell the compiler, “Trust me, I know what I’m
-doing.” Be warned, however, that you use unsafe Rust at your own risk: if you
-use unsafe code incorrectly, problems can occur due to memory unsafety, such as
-null pointer dereferencing.
+ראסט לא מאובטחת קיימת כי, באופן טבעי, ניתוח סטטי הוא שמרני. כאשר הקומפיילר מנסה לקבוע אם קוד מסויים מקיים את דרישות הבטיחות הקפדניות של ראסט, הקומפיילר נוקט בקפדנות רבה ומעדיף לדחות קוד תקין מאשר לקבל קוד בעייתי. למרות שהקוד *עשוי* להיות תקין, אם לקומפיילר של ראסט אין מספיק מידע כדי לקבוע זאת בוודאות, הוא ידחה את הקוד. במקרים כאלה, ניתן להשתמש בקוד לא מאובטח כדי לאמר לקומפיילר, "סמוך עלי, אני יודע מה אני עושה." אבל, היו מודעים לכך ששימוש בראסט לא מאובטחת הוא באחריותכם: אם אתם משתמשים בראסט לא מאובטחת בצורה שגויה, אתם עלולים להתקל בבעיות שנובעות מחוסר בטיחות בניהול זיכרון, כמו דירף של מצביעי null.
 
-Another reason Rust has an unsafe alter ego is that the underlying computer
-hardware is inherently unsafe. If Rust didn’t let you do unsafe operations, you
-couldn’t do certain tasks. Rust needs to allow you to do low-level systems
-programming, such as directly interacting with the operating system or even
-writing your own operating system. Working with low-level systems programming
-is one of the goals of the language. Let’s explore what we can do with unsafe
-Rust and how to do it.
+סיבה נוספת לכך שלראסט יש תאומה לא מאובטחת היא שחומרת המחשב ביא ביסודה לא מאובטחת. אם ראסט לא הייתה מאפשרת פעולות לא מאובטחות, משימות מסויימות לא היו ניתנות לביצוע. ראסט צריכה לאפשר ביצוע תכנות מערכות ברמת סף, כמו התעסקות ישירות עם מערכת ההפעלה או אפילו כתיבה של מערכת הפעלה. עבודה ברמת סף עבור תכנות מערכות היא אחת ממטרות השפה. הבה נראה מה ניתן להשגה באמצעות ראסט לא מאובטחת.
 
-### Unsafe Superpowers
+### כוחות-על לא מאובטחים
 
-To switch to unsafe Rust, use the `unsafe` keyword and then start a new block
-that holds the unsafe code. You can take five actions in unsafe Rust that you
-can’t in safe Rust, which we call *unsafe superpowers*. Those superpowers
-include the ability to:
+כדי לעבור לכתיבת ראסט לא מאובטחת, יש להשתמש במילת המפתח `unsafe` ואז להתחיל בלוק חדש עבור הקוד הלא מאובטח. בראסט לא מאובטחת, ניתן לבצע חמש פעולות שלא ניתן לבצע בראסט מאובטחת, ולפעולות אלה אנו קוראים *כוחות-על לא מאובטחים</0. כוחות-על אלה כוללים את היכולות לבצע את הפעולות הבאות:</p>
 
-* Dereference a raw pointer
-* Call an unsafe function or method
-* Access or modify a mutable static variable
-* Implement an unsafe trait
-* Access fields of `union`s
+* ביצוע דירף למצביע גולמי (raw pointer)
+* קריאה לפונקציה או מתודה לא מאובטחת
+* גישה או שינוי של משתנה סטטי בר-שינוי
+* מימוש של תכונה לא מאובטחת
+* גישה לשדות של `union`
 
-It’s important to understand that `unsafe` doesn’t turn off the borrow checker
-or disable any other of Rust’s safety checks: if you use a reference in unsafe
-code, it will still be checked. The `unsafe` keyword only gives you access to
-these five features that are then not checked by the compiler for memory
-safety. You’ll still get some degree of safety inside of an unsafe block.
+חשוב להבין ש- `unsafe` לא מכבה את בודק ההשאלות או מנטרל אי-אלו מבדיקות הבטיחות של ראסט: אם תשתמשו בהפניה בקוד לא מאובטח, ראסט עדיין תבצע בדיקות. כל שמילת המפתח `unsafe` עושה היא לספק לכם גישה לחמשת התכונות האלה, ובטיחות הזיכרון בקשר לפעולות אלה לא נבדקת על-ידי הקומפיילר. עדיין תהנו ממידה מסויימת של בטיחות בתוך בלוק לא מאובטח.
 
-In addition, `unsafe` does not mean the code inside the block is necessarily
-dangerous or that it will definitely have memory safety problems: the intent is
-that as the programmer, you’ll ensure the code inside an `unsafe` block will
-access memory in a valid way.
+בנוסף, `unsafe` לא אומר שהקוד בתוך הבלוק הוא בהכרח מסוכן או שהוא בוודאות כולל בעיות בטיחות זיכרון: הכוונה היא שהמתכנת לוקח את האחריות על כך שהקוד בבלוק לא מאובטח ניגש לזיכרון בצורה תקינה.
 
-People are fallible, and mistakes will happen, but by requiring these five
-unsafe operations to be inside blocks annotated with `unsafe` you’ll know that
-any errors related to memory safety must be within an `unsafe` block. Keep
-`unsafe` blocks small; you’ll be thankful later when you investigate memory
-bugs.
+טעויות תמיד יכולות לקרות, אבל הדרישה למקם פעולות לא מאובטחות בבלוקים שמבוארים עם `unsafe` משמעה שתדעו ששורש כל בעיה שקשורה לביטחון זיכרון חייבת להימצא בבלוק לא מאובטח. יש לשמור על כך שבלוקים לא מאובטחים יהיו קצרים; זה יקל עליכם מאוחר יותר כאשר תטפלו בבאגים הקשורים לזיכרון.
 
-To isolate unsafe code as much as possible, it’s best to enclose unsafe code
-within a safe abstraction and provide a safe API, which we’ll discuss later in
-the chapter when we examine unsafe functions and methods. Parts of the standard
-library are implemented as safe abstractions over unsafe code that has been
-audited. Wrapping unsafe code in a safe abstraction prevents uses of `unsafe`
-from leaking out into all the places that you or your users might want to use
-the functionality implemented with `unsafe` code, because using a safe
-abstraction is safe.
+כדי לבודד קוד לא מאובטח ככל שניתן, מומלץ להקיף קוד לא מאובטח בתוך אבסטרקציית קוד מאובטח ולספק API מאובטח, נושא בו נדון מאוחר יותר בפרק זה כשנתבונן בפונקציות ומתודות לא מאובטחות. חלקים מהספריה הסטנדרטית ממומשים כאבסטרקציות על פני קוד לא מאובטח שאבל בדיקה קפדנית. עיטוף קוד לא מאובטח באבסטרקציה מאובטחת מונעת זליגה של שימוש ב- `unsafe` לתוך כל החלקים בהם אתם, או המשתמשים שלכם, רוצים לעשות שימוש בפונקציונאליות שממומשת עם קוד לא מאובטח, מכיוון ששימוש באבסטרקציה מאובטחת הוא בטוח.
 
-Let’s look at each of the five unsafe superpowers in turn. We’ll also look at
-some abstractions that provide a safe interface to unsafe code.
+הבה נתבונן בכל אחד מחמשת כוחות-העל הלא מאובטחים, אחד לאחד. נראה גם כמה אבסטרקציות שמספקות ממשק מאובטח לקוד לא מאובטח.
 
-### Dereferencing a Raw Pointer
+### דירף למצביע גולמי
 
-In Chapter 4, in the [“Dangling References”][dangling-references]<!-- ignore
---> section, we mentioned that the compiler ensures references are always
-valid. Unsafe Rust has two new types called *raw pointers* that are similar to
-references. As with references, raw pointers can be immutable or mutable and
-are written as `*const T` and `*mut T`, respectively. The asterisk isn’t the
-dereference operator; it’s part of the type name. In the context of raw
-pointers, *immutable* means that the pointer can’t be directly assigned to
-after being dereferenced.
+בפרק 4, בסעיף ["הפניות משתלשלות"](),<!-- ignore
+--> הזכרנו שהקומפיילר מוודא תקפות של הפניות. בראסט לא מאובטחת יש שני סוגים חדשים של טיפוסים שנקראים 
 
-Different from references and smart pointers, raw pointers:
+*מצביעים גולמיים* (raw pointers), והם דומים להפניות. כמו עם הפניות, מצביעים גולמיים יכולים להיות מנועי-שינוי או ברי-שינוי והתחביר לכך הוא `*const T` ו-`*mut T`, בהתאמה. הכוכבית אינה אופרטור הדי-הפניה; היא מהווה חלק משם הטיפוס. בהקשר של מצביעים גולמיים, המשמעות של *מניעות-שינוי* היא שלא ניתן לבצע השמה ישירות למבציע לאחר ביצוע די-רף.
 
-* Are allowed to ignore the borrowing rules by having both immutable and
-  mutable pointers or multiple mutable pointers to the same location
-* Aren’t guaranteed to point to valid memory
-* Are allowed to be null
-* Don’t implement any automatic cleanup
+בשונה מהפנייות ומצביעים חכמים, התכנונות הבאות תקפות עבור מצביעים גולמיים:
 
-By opting out of having Rust enforce these guarantees, you can give up
-guaranteed safety in exchange for greater performance or the ability to
-interface with another language or hardware where Rust’s guarantees don’t apply.
+* ניתן להתעלם מכללי הבעלות, וליצור מצביעים מנועי-שינוי וברי-שינוי, או ריבוי מצביעים ברי-שינוי, לאותו מיקום בזיכרון
+* אין ערובה לכך שהמצביע מפנה למיקום תקין בזיכרון
+* מצביעי null הם אפשריים
+* חסרים מימוש אוטומטי לניכוי זיכרון
 
-Listing 19-1 shows how to create an immutable and a mutable raw pointer from
-references.
+על-ידי בחירה מודעת לנטרל את בדיקות ערובות הביטחון בניהול זיכרון של ראסט, ניתן להחליף את קבלת הערובות בתמורה לביצועים טובים יותר או ליכולת לנהל תקשורת עם שפה אחרת, או עם חומרה, עבורם הערובות של ראסט אינן תקפות.
+
+רשימה 19-1 מראה כיצד ליצור מצביע גולמי מנוע-שינוי ובר-שינוי מהפניות.
 
 ```rust
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-01/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 19-1: Creating raw pointers from references</span>
+<span class="caption">רשימה 19-1: יצירת משתנים גולמיים מהפניות</span>
 
-Notice that we don’t include the `unsafe` keyword in this code. We can create
-raw pointers in safe code; we just can’t dereference raw pointers outside an
-unsafe block, as you’ll see in a bit.
+שימו לב שלא הכללנו את מילת המפתח `unsafe` בקוד זה. ניתן ליצור מצביעים גולמיים בקוד מאובטח; אבל לא נוכל לבצע די-רף מחוץ לבלוק לא מאובטח למצביעים גולמיים, כפי שתראו בקרוב.
 
-We’ve created raw pointers by using `as` to cast an immutable and a mutable
-reference into their corresponding raw pointer types. Because we created them
-directly from references guaranteed to be valid, we know these particular raw
-pointers are valid, but we can’t make that assumption about just any raw
-pointer.
+יצרנו מצביעים גולמיים על-ידי שימוש ב-`as` כדי להתמיר הפניה מנועת-שינוי והפניה ברת-שינוי לטיפוסי המצביעים הגולמיים המתאימים להם. כיוון שיצרנו אותם מהפניות שתקפותן מובטחת, אנו יודעים שמצביעים גולמיים אלה תקפים גם הם, אבל אי-אפשר להניח זאת עבור כל מצביע גולמי כלשהוא.
 
-To demonstrate this, next we’ll create a raw pointer whose validity we can’t be
-so certain of. Listing 19-2 shows how to create a raw pointer to an arbitrary
-location in memory. Trying to use arbitrary memory is undefined: there might be
-data at that address or there might not, the compiler might optimize the code
-so there is no memory access, or the program might error with a segmentation
-fault. Usually, there is no good reason to write code like this, but it is
-possible.
+כדי להדגים זאת, מייד ניצור מצביע גולמי שלא ניתן להיות כל-כך בטוחים בקשר לתקפותו. רשימה 19-2 מראה כיצד ליצור מצביע גולמי למיקום שרירותי בזיכרון. שימוש במקום אקראי בזיכרון יכול להוביל להתנהגות בלתי-צפויה: יתכן שיש דאטה בכתובת, ויתכן שלא, וכן יכול להיות שהקומפיילר יבצע אופטימיזצית קוד כך שלא תהיה גישה לזיכרון, ויתכן גם שהתוכנית תיצור שגיאה מסוג segmentation fault. לרוב, אין סיבה מוצדקת לכתוב קוד שכזה, אבל זו אפשרות.
 
 ```rust
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-02/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 19-2: Creating a raw pointer to an arbitrary
-memory address</span>
 
-Recall that we can create raw pointers in safe code, but we can’t *dereference*
-raw pointers and read the data being pointed to. In Listing 19-3, we use the
-dereference operator `*` on a raw pointer that requires an `unsafe` block.
+<span class="caption">רשימה 19-2: יצירת מצביע גולמי לכתובת שרירותית בזיכרון</span>
+
+זכרו שניתן ליצור מצביעים גולמיים בראסט מאובטחת, אבל לא ניתן לבצע *דירף* למצביעים גולמיים ולקרוא את הדאטה אליהם הם מצביעים. ברשימה 19-3, אנו משתמשים באופרט הדירף `*` על מצביע גולמי, וזה דורש בלוק לא מאובטח.
 
 ```rust
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-03/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 19-3: Dereferencing raw pointers within an
-`unsafe` block</span>
 
-Creating a pointer does no harm; it’s only when we try to access the value that
-it points at that we might end up dealing with an invalid value.
+<span class="caption">רשימה 19-3: דירף למצביע גולמי בתוך בלוק לא מאובטח</span>
 
-Note also that in Listing 19-1 and 19-3, we created `*const i32` and `*mut i32`
-raw pointers that both pointed to the same memory location, where `num` is
-stored. If we instead tried to create an immutable and a mutable reference to
-`num`, the code would not have compiled because Rust’s ownership rules don’t
-allow a mutable reference at the same time as any immutable references. With
-raw pointers, we can create a mutable pointer and an immutable pointer to the
-same location and change data through the mutable pointer, potentially creating
-a data race. Be careful!
+יצירת מצביע לא יכולה לגרום נזק; רק כאשר ניגשים לערך אליו המצביע מצביע יכולה להיווצר בעיה של גישה לערך לא תקף.
 
-With all of these dangers, why would you ever use raw pointers? One major use
-case is when interfacing with C code, as you’ll see in the next section,
-[“Calling an Unsafe Function or
-Method.”](#calling-an-unsafe-function-or-method)<!-- ignore --> Another case is
-when building up safe abstractions that the borrow checker doesn’t understand.
-We’ll introduce unsafe functions and then look at an example of a safe
-abstraction that uses unsafe code.
+שימו לב שברשימה 19-1 וברשימה 19-3 יצרנו את מצביעים הגולמיים `*const i32` ו-`*mut i32`, ושניהם מצביעים לאותו מקום בזיכרון, קריא למקום בו `num` מאוכסן. אם, לחילופין, היינו מנסים ליצור הפניה מנועת-שינוי והפניה ברת-שינוי ל-`num`, הקוד לא היה עובר קומפילציה מכיוון שכללי הבעלות של ראסט לא מאפשרים להפניה ברת-שינוי להיות בתוקף באותו זמן בו הפניה מנועת-שינוי קיימת לאותו ערך. עם מצביעים גלומיים כן ניתן ליצור מצביע בר-שינוי ומצביע מנוע-שינוי לאותו מקום בזיכרון ולשנות דאטה דרך המצביע בר-השינוי, ופוטנאציאלית להוביל למרוץ דאטה. על כן יש לנקטו בזהירות!
 
-### Calling an Unsafe Function or Method
+עם כל הסכנות העורבות מסביב, מדוע שנרצה בכלל להשתמש במצביעים גולמיים? אחד מהשימושים העיקריים במצביעים גולמיים הוא כאשר עובדים על ממשק שמתקשר עם קוד בשפת C, כפי שתראו בסעיף הבא, ["קריאה לפונקציה או מתודה לא מאובטחת".](#calling-an-unsafe-function-or-method)<!-- ignore --> שימוש נוסף הוא בעת יצירת אבסטרקציות מאובטחות שבודק ההשאלות לא יכול להבין. אנו נציג פונקציות לא מאובטחות ולאחר מכן נראה דוגמא לאבסטרקציה מאובטחת שמשתמשת בקוד לא מאובטח.
 
-The second type of operation you can perform in an unsafe block is calling
-unsafe functions. Unsafe functions and methods look exactly like regular
-functions and methods, but they have an extra `unsafe` before the rest of the
-definition. The `unsafe` keyword in this context indicates the function has
-requirements we need to uphold when we call this function, because Rust can’t
-guarantee we’ve met these requirements. By calling an unsafe function within an
-`unsafe` block, we’re saying that we’ve read this function’s documentation and
-take responsibility for upholding the function’s contracts.
+### קריאה לפונקציה או למתודה לא מאובטחת
 
-Here is an unsafe function named `dangerous` that doesn’t do anything in its
-body:
+הסוג השני של פעולות שניתן לבצע בבלוק לא מאובטח הוא קריאה לפונקציות לא מאובטחות. פונקציות ומתודות לא מאובטחות נראות בדיוק כמו פונקציות ומתודות רגילות, פרט לכך שהן מוכרזות עם `unsafe` בתחילת ההגדרה. מילת המפתח `unsafe` בהקשר זה מציינת שלפונקציה יש דרישות שעלינו לקיים כאשר קוראים לפונקציה, מכיוון שראסט לא יכולה להבטיח שדרישות אלה מתקיימות. על-ידי קריאה לפונקציה לא מאובטחת בתוך בלוק לא מאובטח אנו מתחייבים שקראנו את התיעוד של הפונקציה ושאנחנו לוקחים אחריות על ווידוא נכונות התנאים לפעולה תקינה של הפונקציה.
+
+הינה פונקציה לא מאובטח בשם `dangerous` שלא דבר:
 
 ```rust
 {{#rustdoc_include ../listings/ch19-advanced-features/no-listing-01-unsafe-fn/src/main.rs:here}}
 ```
 
-We must call the `dangerous` function within a separate `unsafe` block. If we
-try to call `dangerous` without the `unsafe` block, we’ll get an error:
+חייבים לקרוא לפונקציה זו בתוך בלוק לא מאובטח נפרד. אם ננסה לקרוא ל- `dangerous` מחוץ לבלוק לא מאובטח, נקבל הודעת שגיאה:
 
 ```console
 {{#include ../listings/ch19-advanced-features/output-only-01-missing-unsafe/output.txt}}
 ```
 
-With the `unsafe` block, we’re asserting to Rust that we’ve read the function’s
-documentation, we understand how to use it properly, and we’ve verified that
-we’re fulfilling the contract of the function.
+בעצם השימוש בבלוק לא מאובטח, אנחנו מידעים את ראסט שקראנו את התיעוד של הפונקציה, אנחנו מבינים כיצד להישתמש בה בצורה נכונה, ושבדקנו שכל התנאים להרצה תקינה של הפונקציה מתקיימים.
 
-Bodies of unsafe functions are effectively `unsafe` blocks, so to perform other
-unsafe operations within an unsafe function, we don’t need to add another
-`unsafe` block.
+הגוף של פונקציה לא מאובטחת הוא למעשה לא מאובטח, ולכן אין צורך לציין בלוק לא מאובטח נוסף בתוך גוף הפונקציה במידה ואנחנו רוצים לבצע פעולות לא מאובטחות כחלק מהפונקציה.
 
-#### Creating a Safe Abstraction over Unsafe Code
+#### יצירת אבסטרקציה מאובטחת לקוד לא מאובטח
 
-Just because a function contains unsafe code doesn’t mean we need to mark the
-entire function as unsafe. In fact, wrapping unsafe code in a safe function is
-a common abstraction. As an example, let’s study the `split_at_mut` function
-from the standard library, which requires some unsafe code. We’ll explore how
-we might implement it. This safe method is defined on mutable slices: it takes
-one slice and makes it two by splitting the slice at the index given as an
-argument. Listing 19-4 shows how to use `split_at_mut`.
+פונקציה יכולה להכיל קוד לא מאובטח ועדיין להיות מאובטחת בעצמה. למעשה, פונקציה מאובטחת שעוטפת קוד לא מאובטח זה אבסטרקציה נפוצה. כדוגמא, הבה נתבונן בפונקציה `split_at_mut` מהספריה הסטנדרטית, שמשתמשת בקוד לא מאובטח. אנחנו נראה כיצד לממש זאת. מתודה מאובטחת זו מוגדרת על חיתוכים ברי-שינוי: היא מקבלת חיתוך אחד ומייצרת ממנו שני חיתוכים על-ידי פיצול החיתוך הנתון באינדקס שמועבר כארגומנט. רשימה 19-4 מראה שימוש ב-`split_at_mut`.
 
 ```rust
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-04/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 19-4: Using the safe `split_at_mut`
-function</span>
 
-We can’t implement this function using only safe Rust. An attempt might look
-something like Listing 19-5, which won’t compile. For simplicity, we’ll
-implement `split_at_mut` as a function rather than a method and only for slices
-of `i32` values rather than for a generic type `T`.
+<span class="caption">רשימה 19-4: שימוש בפונקציה הלא מאובטחת `split_at_mut`</span>
+
+לא ניתן לממש פונקציה זו רק באמצעות ראסט מאובטחת. ניסיון לעשות זאת יראה בערך כמו הקוד ברשימה 19-5, אשר לא עובר קומפילציה. למען הפשטות, נממש את `split_at_mut` כפונקציה במקום כמתודה ורק עבור ערכי חיתוך `i32` במקום להשתמש בטיפוס גנרי `T`.
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-05/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 19-5: An attempted implementation of
-`split_at_mut` using only safe Rust</span>
 
-This function first gets the total length of the slice. Then it asserts that
-the index given as a parameter is within the slice by checking whether it’s
-less than or equal to the length. The assertion means that if we pass an index
-that is greater than the length to split the slice at, the function will panic
-before it attempts to use that index.
+<span class="caption">רשימה 19-5: ניסון לממש את `split_at_mut` באמצעות ראסט מאובטחת בלבד</span>
 
-Then we return two mutable slices in a tuple: one from the start of the
-original slice to the `mid` index and another from `mid` to the end of the
-slice.
+פונקציה זו מחשבת תחילה את אורך החיתוך. אחר-כך היא מוודאת שהאינדקס שהיא קיבלה כפרמטר מייצג מיקום בתוך החיתוך על-ידי בדיקה האם האינדקס קטן או שווה לאורך החיתוך. משמעות הבדיקה היא שאם מעבירים אינדקס לביצוע הפיצול שגדול מאורך החיתוך, הפונקציה תיכנס לפאניקה לפני שתנסה להשתמש באינדקס.
 
-When we try to compile the code in Listing 19-5, we’ll get an error.
+לבסוף, הפונקציה מחזירה מרצף של שני חיתוכים ברי-שינוי: אחד מתחילת החיתוך המקורי על לאינדקס `mid`, והשני מ-`mid` עד לסוף החיתוך.
+
+כאשר מנסים לקמפל את הקוד ברשימה 19-5, מקבלים שגיאה.
 
 ```console
 {{#include ../listings/ch19-advanced-features/listing-19-05/output.txt}}
 ```
 
-Rust’s borrow checker can’t understand that we’re borrowing different parts of
-the slice; it only knows that we’re borrowing from the same slice twice.
-Borrowing different parts of a slice is fundamentally okay because the two
-slices aren’t overlapping, but Rust isn’t smart enough to know this. When we
-know code is okay, but Rust doesn’t, it’s time to reach for unsafe code.
+בודק ההשאלות של ראסט לא יכול להבין שאנו שואלים חלקים שונים של החיתוך; כל שהוא יודע זה שאנחנו שואלים מאותו החיתוך פעמיים. ההשאלה של חלקים השונים האלה של החיתוך היא פעולה תקינה ביסודה כיוון שהחלקים זרים זה לזה, אבל ראסט אינה חכמה מספיק כדי להסיק זאת. כאשר אנו יודעים שקוד מסויים הוא תקין, אבל ראסט לא יודעת זאת, זה הזמן לעשות שימוש בקוד לא מאובטח.
 
-Listing 19-6 shows how to use an `unsafe` block, a raw pointer, and some calls
-to unsafe functions to make the implementation of `split_at_mut` work.
+רשימה 19-6 מראה כיצד להשתמש בבלוק לא מאובטח, מצביע גולמי, וכמה קריאות לפונקציות לא מאובטחות כדי לגרום למימוש של `split_at_mut` לעבוד.
 
 ```rust
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-06/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 19-6: Using unsafe code in the implementation of
-the `split_at_mut` function</span>
 
-Recall from [“The Slice Type”][the-slice-type]<!-- ignore --> section in
-Chapter 4 that slices are a pointer to some data and the length of the slice.
-We use the `len` method to get the length of a slice and the `as_mut_ptr`
-method to access the raw pointer of a slice. In this case, because we have a
-mutable slice to `i32` values, `as_mut_ptr` returns a raw pointer with the type
-`*mut i32`, which we’ve stored in the variable `ptr`.
+<span class="caption">רשימה 19-6: שימוש בקוד לא מאובטח במימוש של הפונקציה `split_at_mut`</span>
 
-We keep the assertion that the `mid` index is within the slice. Then we get to
-the unsafe code: the `slice::from_raw_parts_mut` function takes a raw pointer
-and a length, and it creates a slice. We use this function to create a slice
-that starts from `ptr` and is `mid` items long. Then we call the `add`
-method on `ptr` with `mid` as an argument to get a raw pointer that starts at
-`mid`, and we create a slice using that pointer and the remaining number of
-items after `mid` as the length.
+זכרו, מסעיף ["טיפוס החיתוך"][the-slice-type]<!-- ignore --> מפרק 4, שחיתוך הינו מצביע לדאטה יחד עם אורך החיתוך. אנחנו משתמשים במתודה `len` כדי לקבל את אורך החיתוך ובמתודה `as_mut_ptr` כדי לגשת אל המצביע הגולמי של החיתוך. במקרה זה, בגלל שיש לנו חיתוך בר-שינוי לערכי `i32`, הפונקציה `as_mut_ptr` מחזירה מצביע גולמי מטיפוס `*mut i32`, שאותו אנו מאכסנים למשתנה `ptr`.
 
-The function `slice::from_raw_parts_mut` is unsafe because it takes a raw
-pointer and must trust that this pointer is valid. The `add` method on raw
-pointers is also unsafe, because it must trust that the offset location is also
-a valid pointer. Therefore, we had to put an `unsafe` block around our calls to
-`slice::from_raw_parts_mut` and `add` so we could call them. By looking at
-the code and by adding the assertion that `mid` must be less than or equal to
-`len`, we can tell that all the raw pointers used within the `unsafe` block
-will be valid pointers to data within the slice. This is an acceptable and
-appropriate use of `unsafe`.
+אנו שומרים על הבדיקה שהאינדקס `mid` מייצג ערך תקין. ואז אנו מגיעים לקוד הלא מאובטח: הפונקציה `slice::from_raw_parts_mut` מקבלת מצביע גולמי ואורך, ויוצרת חיתוך. אנו משתמשים בפונקציה זו כדי ליצור חיתוך שמתחיל ב-`ptr` ואורכו `mid`. אחר-כך, אנו קוראים למתודה `add` על `ptr` עם `mid` כארגומנט על מנת לקבל מצביע גולמי שמתחיל ב-`mid`, ואנחנו יוצרים חיתוך באמצעות מצביע זה שאורכו כמספר שארית הפריטים אחרי `mid`.
 
-Note that we don’t need to mark the resulting `split_at_mut` function as
-`unsafe`, and we can call this function from safe Rust. We’ve created a safe
-abstraction to the unsafe code with an implementation of the function that uses
-`unsafe` code in a safe way, because it creates only valid pointers from the
-data this function has access to.
+הפונקציה `slice::from_raw_parts_mut` אינה מאובטחת כיוון שהיא משתמשת במצביע גולמי ולכן חייבת להניח שהבצביע תקף. המתודה `add` על מצביעים גולמיים גם היא לא מאובטחת, ביות והיא חייבת לסמוך על כך שהמיקום המוזז גם הוא מצביע תקף. לכן היה עלינו למקם את הקריאות ל-`slice::from_raw_parts_mut` ול-`add` בבלוק לא מאובטח, שכן לולא זאת היה ניתן לקרוא להן. על-ידי התבוננות בקוד והוספת הבדיקה ש-`mid` חייב להיות קטן או שווה ל-`len`, אנו, המתכנתים, יכולים להסיק שהמצביעים הגולמיים בהם אנו משתמשים בתוך הבלוק הלא מאובטח תמיד יהיו מצביעים תקינים לדאטה בתוך החיתוך. זהו שימוש נאות ומקובל במילת המפתח `unsafe`.
 
-In contrast, the use of `slice::from_raw_parts_mut` in Listing 19-7 would
-likely crash when the slice is used. This code takes an arbitrary memory
-location and creates a slice 10,000 items long.
+שימו לב שאין צורך לסמן את הפונקציה `split_at_mut` עצמה כלא מאובטחת, ושניתן לקרוא לפונקציה זו כחלק מקוד מאובטח של ראסט. יצרנו אבסטרקציה מאובטחת לקוד הלא מאובטח עם מימוש של הפונקציה שמשתמש בקוד לא-מאובטח בצורה בטוחה, כיוון שהוא יוצר אך ורק מצביעים תקפים מהדטא אליו לפונקציה יש גישה.
+
+בניגוד לכך, בסבירות גבוהה השימוש ב-`slice::from_raw_parts_mut` ברשימה 19-7 יגרום לקריסה בזמן שימוש בחיתוך. קוד זה מקבל מיקום שרירותי בזיכרון ויוצר חיתוך בארך 10,000 פריטים.
 
 ```rust
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-07/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 19-7: Creating a slice from an arbitrary memory
-location</span>
 
-We don’t own the memory at this arbitrary location, and there is no guarantee
-that the slice this code creates contains valid `i32` values. Attempting to use
-`values` as though it’s a valid slice results in undefined behavior.
+<span class="caption">רשימה 19-7: יצירת חיתוך ממיקום שרירותי בזיכרון</span>
 
-#### Using `extern` Functions to Call External Code
+אין לנו בעלות על הזיכרון במיקום זה, ואין שוב ערובה שהחיתוך שקוד זה יוצר מכיל ערכי `i32` תקפים. שימוש ב-`values` כאילו מדובר בחיתוך תקף יוביל להתנהגות שאינה מוגדרת היטב.
 
-Sometimes, your Rust code might need to interact with code written in another
-language. For this, Rust has the keyword `extern` that facilitates the creation
-and use of a *Foreign Function Interface (FFI)*. An FFI is a way for a
-programming language to define functions and enable a different (foreign)
-programming language to call those functions.
+#### שימוש בפונקציות מסוג `extern` לקריאה לקוד חיצוני
 
-Listing 19-8 demonstrates how to set up an integration with the `abs` function
-from the C standard library. Functions declared within `extern` blocks are
-always unsafe to call from Rust code. The reason is that other languages don’t
-enforce Rust’s rules and guarantees, and Rust can’t check them, so
-responsibility falls on the programmer to ensure safety.
+לפעמים, על קוד ראסט להשתלב עם קוד שכתוב בשפה אחרת. לצורך כך, לראסט יש את מילת מפתח `extern` אשר מיישמת שימוש ב-*Foreign Function Interface (FFI)*. FFI הוא ממשק שמאפשר לשפת תכנות להגדיר פונקציות ולאפשר לשפה אחרת לקרוא לפונקציות אלה.
+
+רשימה 19-8 מדגימה כיצד לבצע אינטגרציה בראסט עם הפונקציה `abs` מהספריה הסטנדרטית של C. פונקציות שמוכרזות בתוך בלוק חיצוני (extern block) הן תמיד לא מאובטחות לקריאה מתוך קוד ראסט. הסיבה לכך היא ששפות אחרות לא כופות את כללי הבטיחות של ראסט, וראסט לא יכולה לבדוק אותם, ולכן האחריות לבטיחות הקוד נופלת על המתכנת.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -313,49 +170,31 @@ responsibility falls on the programmer to ensure safety.
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-08/src/main.rs}}
 ```
 
-<span class="caption">Listing 19-8: Declaring and calling an `extern` function
-defined in another language</span>
 
-Within the `extern "C"` block, we list the names and signatures of external
-functions from another language we want to call. The `"C"` part defines which
-*application binary interface (ABI)* the external function uses: the ABI
-defines how to call the function at the assembly level. The `"C"` ABI is the
-most common and follows the C programming language’s ABI.
+<span class="caption">רשימה 19-8: הכרזה על פונקציה כפונקציה חיצונית המוגדרת בשפה אחרת</span>
 
-> #### Calling Rust Functions from Other Languages
->
-> We can also use `extern` to create an interface that allows other languages
-> to call Rust functions. Instead of creating a whole `extern` block, we add
-> the `extern` keyword and specify the ABI to use just before the `fn` keyword
-> for the relevant function. We also need to add a `#[no_mangle]` annotation to
-> tell the Rust compiler not to mangle the name of this function. *Mangling* is
-> when a compiler changes the name we’ve given a function to a different name
-> that contains more information for other parts of the compilation process to
-> consume but is less human readable. Every programming language compiler
-> mangles names slightly differently, so for a Rust function to be nameable by
-> other languages, we must disable the Rust compiler’s name mangling.
->
-> In the following example, we make the `call_from_c` function accessible from
-> C code, after it’s compiled to a shared library and linked from C:
->
+בתוך הבלוק `extern "C"`, אנו רושמים את השמות והחותמים של הפונקציות החיצוניות מהשפה האחרת להן אני מעוניינים לקרוא. הסימון `"C"` מצהיר באיזה ממשק ABI (application binary interface) הפונקציה החיצונית משתמשת: ה-ABI מגדיר כיצד לקרוא לפונקציה ברמת האסמבלי. הישמוש ב-`"C"` כ-ABI הוא השימוש הנפוץ ביותר והוא עוקב אחר ה-ABI של שפת התכנות C.
+
+> #### קריאה לפונקציות ראסט משפות אחרות
+> 
+> ניתן גם להשתמש ב-`extern` על מנת ליצור ממשק שמאפשר לשפות אחרות לקרוא לפונקציות ראסט. במקום ליצור בלוק `extern` שלם, אנו מוסיפים את מילת המפתח `extern` ומציינים את ה-ABI בו אנו רוצים להשתמש מייד לפני מילת המפתח `fn` עבור הפונקציה הרלוונטית. יש גם להוסיף את הביאור `#[no_mangle]` כדי לאמר לקומפיילר של ראסט לא להשחית את שם הפונקציה. *השחתה* (manglin) זהו התהליך בו הקומפיילר משנה את השם שאנחנו נתנו לפונקציה מסויימת לשם אחר (הרבה פחות קריא למשתמש) שכולל יותר מידע, וזאת כהכנה עבור חלקים אחרים של הקומפיילר כחלק מתהליך הקומפילציה. קומפיילרים שונים של שפות תכנות שונות משחיתים שמות בצורות קצת שונות זו מזו, כך שעל מנת שיהיה ניתן לקרוא לפונקציה של ראסט על-ידי שפות אחרות, חייבים למנוע מהקומפיילר של ראסט להשחית את שם הפונקציה.
+> 
+> בדוגמא הבאה, אנו הופכים את הפונקציה `call_from_c` לזמינה מקוד C, לאחר שהיא מקומפלת לספריה משותפת ומקושרת מ-C:
+> 
 > ```rust
 > #[no_mangle]
 > pub extern "C" fn call_from_c() {
 >     println!("Just called a Rust function from C!");
 > }
 > ```
->
-> This usage of `extern` does not require `unsafe`.
+> 
+> השימוש ב-`extern` לא מחייב שימוש ב-`unsafe`.
 
-### Accessing or Modifying a Mutable Static Variable
+### גישה ושינוי משתנים סטטיים ברי-שינוי
 
-In this book, we’ve not yet talked about *global variables*, which Rust does
-support but can be problematic with Rust’s ownership rules. If two threads are
-accessing the same mutable global variable, it can cause a data race.
+בספר זה, עוד לא דיברנו על *משתנים גלובלים*, לא משום שהם לא קיימים בראסט, אלה בגלל שהשימוש בהם עלול להיות בעייתי בהתחשב בכללי הבעלות של ראסט. אם שני פתילים ניגשים לאותו משתנה גלובלי, עלול להיווצר מרוץ דאטה.
 
-In Rust, global variables are called *static* variables. Listing 19-9 shows an
-example declaration and use of a static variable with a string slice as a
-value.
+בראסט, משתנים גלובלים נקראים משתנים *סטטים*. רשימה 19-9 מציגה דוגמא להכרזה ושימוש במשתנה סטטי עם חיתוך מחרוזת בתור ערך.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -363,25 +202,12 @@ value.
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-09/src/main.rs}}
 ```
 
-<span class="caption">Listing 19-9: Defining and using an immutable static
-variable</span>
 
-Static variables are similar to constants, which we discussed in the
-[“Differences Between Variables and
-Constants”][differences-between-variables-and-constants]<!-- ignore --> section
-in Chapter 3. The names of static variables are in `SCREAMING_SNAKE_CASE` by
-convention. Static variables can only store references with the `'static`
-lifetime, which means the Rust compiler can figure out the lifetime and we
-aren’t required to annotate it explicitly. Accessing an immutable static
-variable is safe.
+<span class="caption">רשימה 19-9: הגדרה ושימוש במשתנה סטטי מנוע-שינוי</span>
 
-A subtle difference between constants and immutable static variables is that
-values in a static variable have a fixed address in memory. Using the value
-will always access the same data. Constants, on the other hand, are allowed to
-duplicate their data whenever they’re used. Another difference is that static
-variables can be mutable. Accessing and modifying mutable static variables is
-*unsafe*. Listing 19-10 shows how to declare, access, and modify a mutable
-static variable named `COUNTER`.
+משתנים סטטים דומים לקבועים, בהם דנו בסעיף ["הבדלים בין משתנים לקבועים"]()<!-- ignore --> בפרק 3. קונבנצית השמות למשתנים סטטים בראסט היא `SCREAMING_SNAKE_CASE`. משתנים סטטים יכולים לאכסן הפניות אך ורק עם משך חיים `'static`, ומשמעות הדבר היא כי הקומפיילר של ראסט יכול להסיק לבדו מהו משך החיים ואנחנו לא מוחייבים לבאר אותו מפורשות. גישה למשתנה סטטי מנוע-שינוי היא פעולה בטוחה.
+
+הבדל עדין בין קבועים ומשתנים סטטים מנועי-שינוי הוא שלערכים במשתנים סטטים יש כתובת קבועה בזיכרון. שימוש בערך תמיד ייגש לאותו דאטה. קבועים, לאומת זאת, יכולים לשכפל את הדאטה שלהם בכל פעם שמשתמשים בהם. הבדל נוסף הוא שמשתנים סטטים יכולים להיות ברי-שינוי. גישה ושינוי של משתנים סטטים ברי-שינוי אינן פעולות מאובטחות. רשימה 19-10 מראה כיצד ליצור, לגשת, ולשנות משתנה סטטי בר-שינוי בשם `COUNTER`.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -389,72 +215,37 @@ static variable named `COUNTER`.
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-10/src/main.rs}}
 ```
 
-<span class="caption">Listing 19-10: Reading from or writing to a mutable
-static variable is unsafe</span>
 
-As with regular variables, we specify mutability using the `mut` keyword. Any
-code that reads or writes from `COUNTER` must be within an `unsafe` block. This
-code compiles and prints `COUNTER: 3` as we would expect because it’s single
-threaded. Having multiple threads access `COUNTER` would likely result in data
-races.
+<span class="caption">רשימה 19-10: קריאה וכתיבה עם משתנה סטטי בר-שינוי אינם מאובטחות</span>
 
-With mutable data that is globally accessible, it’s difficult to ensure there
-are no data races, which is why Rust considers mutable static variables to be
-unsafe. Where possible, it’s preferable to use the concurrency techniques and
-thread-safe smart pointers we discussed in Chapter 16 so the compiler checks
-that data accessed from different threads is done safely.
+כמו עם משתנים רגילים, אנו מציינים ברות-שינוי באמצעות מילת המפתח `mut`. כל קוד שקורא או כותב אל `COUNTER` חייב להיות בתוך בלוק לא מאובטח. הקוד לעיל עובר קומפילציה ומדפיס `COUNTER: 3`, כצפוי, כיוון שזהו פתיל חישוב יחיד. לו היו כמה פתילי חישוב שניגשים ל-`COUNTER`, היתה סכנה להיווצרות מרוץ דאטה.
 
-### Implementing an Unsafe Trait
+עם דאטה גלובלי שנגיש גלובלית, קשה להבטיח שאין מרוצי דאטה, ולכן ראסט מתייחס למשתנים סטטים ברי-שינוי כלא מאובטחים. עדיף, ככל שניתן, להשתמש בטכניקות המקביליות ובמצביעים כחמים בטוחי-פתילים שראינו בפרק 16, כדי שהקומפיילר יבדוק שדאטה שהגישה אליו מפתילים שונים נעשית בצורה בטוחה.
 
-We can use `unsafe` to implement an unsafe trait. A trait is unsafe when at
-least one of its methods has some invariant that the compiler can’t verify. We
-declare that a trait is `unsafe` by adding the `unsafe` keyword before `trait`
-and marking the implementation of the trait as `unsafe` too, as shown in
-Listing 19-11.
+### מימוש תכונה לא מאובטחת
+
+ניתן להשתמש ב-`unsafe` כדי לממש תכונה לא מאובטחת. תכונה נחשבת לא מאובטחת כאשר לפחות לאחת המתודות שבה יש אינווריאנט שהקומפיילר אינו יכול לוודא. אנו מכריזים על תכונה כלא מאובטחת על-ידי הוספת מילת המפתח `unsafe` לפני השימוש ב-`trait` ומסמנים את המימוש של התכונה גם כן כ-`unsafe`, כמוצג ברשימה 19-11.
 
 ```rust
 {{#rustdoc_include ../listings/ch19-advanced-features/listing-19-11/src/main.rs}}
 ```
 
-<span class="caption">Listing 19-11: Defining and implementing an unsafe
-trait</span>
 
-By using `unsafe impl`, we’re promising that we’ll uphold the invariants that
-the compiler can’t verify.
+<span class="caption">רשימה 19-11: הגדרה ומימוש של תכונה לא מאובטחת</span>
 
-As an example, recall the `Sync` and `Send` marker traits we discussed in the
-[“Extensible Concurrency with the `Sync` and `Send`
-Traits”][extensible-concurrency-with-the-sync-and-send-traits]<!-- ignore -->
-section in Chapter 16: the compiler implements these traits automatically if
-our types are composed entirely of `Send` and `Sync` types. If we implement a
-type that contains a type that is not `Send` or `Sync`, such as raw pointers,
-and we want to mark that type as `Send` or `Sync`, we must use `unsafe`. Rust
-can’t verify that our type upholds the guarantees that it can be safely sent
-across threads or accessed from multiple threads; therefore, we need to do
-those checks manually and indicate as such with `unsafe`.
+על-ידי השימוש ב-`unsafe impl`, אנו מבטיחים לקחת את האחריות על כל האינווריאנטים שהקומפיילר לא יכול לוודא.
 
-### Accessing Fields of a Union
+למשל, הזכרו בסמני התכונה `Sync` ו-`Send` בהם דנו בסעיף ["מקביליות ניתנת להרחבה עם `Sync` ו-`Send`"]()<!-- ignore -->
+בפרק 16: הקומפיילר מממש תכונות אלה באופן אוטומטי במידה והטיפוסים שלנו מורכבים אך ורק מטיפוסי `Sync` ו-`Send`. אם אנו מממשים טיפוס שמכיל טיפוס שאינו מסוג `Sync` או `Send`, כמו מצביע גולמי, ואנחנו רוצים לסמן אותו כ`Sync` או `Send`, עלינו להשתמש ב-`unsafe`. ראסט לא יכולה לוודא שהטיפוס מקיים את כל הדרישות שמבטיחות שניתן לשלוח אותו בבטחה לאורך פתילי חישוב או שניתן לגשת אליו בבטחון מפתילי-חישוב מרובים; לכן, עלינו לבצע בדיקות אלה באופן ידני, ולציין זאת באמצעות `unsafe`.
 
-The final action that works only with `unsafe` is accessing fields of a
-*union*. A `union` is similar to a `struct`, but only one declared field is
-used in a particular instance at one time. Unions are primarily used to
-interface with unions in C code. Accessing union fields is unsafe because Rust
-can’t guarantee the type of the data currently being stored in the union
-instance. You can learn more about unions in [the Rust Reference][reference].
+### גישה לשדות של איחוד
 
-### When to Use Unsafe Code
+הפעולה האחרונה שדורשת שימוש ב-`unsafe` היא גישה לשדות את *איחוד*. `איחוד` (union) דומה למבנה, אבל רק שדה אחד שלו יכול להיות פעיל בכל מופע שהוא בכל זמן שהוא. באיחודים משתמשים בדרך-כלל כחלק מממשקים עם איחודים של קוד C. גישה לשדות של איחוד היא פעולה לא מאובטחת משום שראסט לא יכולה להבטיח את הטיפוס של הדאטה שכרגע מאוכסן במופע האיחוד. תוכלו ללמוד עוד אודות איחודים [בתיעוד של ראסט][reference].
 
-Using `unsafe` to take one of the five actions (superpowers) just discussed
-isn’t wrong or even frowned upon. But it is trickier to get `unsafe` code
-correct because the compiler can’t help uphold memory safety. When you have a
-reason to use `unsafe` code, you can do so, and having the explicit `unsafe`
-annotation makes it easier to track down the source of problems when they occur.
+### מתי להשתמש בקוד לא מאובטח
 
-[dangling-references]:
-ch04-02-references-and-borrowing.html#dangling-references
-[differences-between-variables-and-constants]:
-ch03-01-variables-and-mutability.html#constants
-[extensible-concurrency-with-the-sync-and-send-traits]:
-ch16-04-extensible-concurrency-sync-and-send.html#extensible-concurrency-with-the-sync-and-send-traits
+שימוש ב- `unsafe` על מנת לנקוט באחת מחמש פעולות (העל) בהן דנו לעיל אינו טעות וגם לא מושא לנזיפה. אבל, יותר מאתגר לייצר קוד לא מאובטח שעובד בצורה בטוחה מכיוון שהקומפיילר לא מבצע עבורנו בדיקות בטיחות זיכרון. כאשר ישנה סיבה להשתמש בקוד לא מאובטח, ראוי לעשות זאת. שימוש בביאור `unsafe` מבהיר את המתרחש ומקל על איתור אחר מקורות בעיות לכשהן נוצרות.
+ch04-02-references-and-borrowing.html#dangling-references ch03-01-variables-and-mutability.html#constants ch16-04-extensible-concurrency-sync-and-send.html#extensible-concurrency-with-the-sync-and-send-traits
+
 [the-slice-type]: ch04-03-slices.html#the-slice-type
 [reference]: ../reference/items/unions.html

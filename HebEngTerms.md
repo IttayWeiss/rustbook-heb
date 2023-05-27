@@ -7,6 +7,7 @@
 | arm                         | זרוע                          |
 | array                       | מערך                          |
 | associated function         | פונקציה משויכת                |
+| associated type             | טיפוס משוייך                  |
 | backtrace                   | מעקב-לאחור                    |
 | borrowing                   | השאלה                         |
 | borrow checker              | בודק ההשאלות                  |
@@ -44,6 +45,7 @@
 | expression                  | ביטוי                         |
 | Ferris                      | פריס, פריס הסרטן              |
 | field                       | שדה                           |
+| fully qualified syntax      | תחביר מוסמך לחלוטין           |
 | function                    | פונקציה                       |
 | function signature          | חותם פונקציה                  |
 | garbage collector           | מאסף אשפה                     |
@@ -98,6 +100,7 @@
 | shell                       | מעטפת                         |
 | slice                       | חיתוך                         |
 | smart pointer               | מצביע חכם                     |
+| supertrait                  | תכנות-על                      |
 | stack                       | מחסנית                        |
 | state pattern               | תבנית מצבים                   |
 | statement                   | פקודה , הַצְהָרָה             |
@@ -112,7 +115,9 @@
 | tuple                       | מרצף                          |
 | tuple struct                | מבנה מרצף                     |
 | type                        | טיפוס                         |
+| type alias                  | כינוי טיפוס                   |
 | unicode                     | יוניקוד                       |
+| unsafe Rust                 | ראסט לא מאובטח                |
 | value is dropped            | ערך נעזב                      |
 | variant                     | וריאנט (או "סוג")             |
 | vector                      | וקטור                         |
