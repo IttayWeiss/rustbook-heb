@@ -100,10 +100,10 @@
 | shell                       | מעטפת                         |
 | slice                       | חיתוך                         |
 | smart pointer               | מצביע חכם                     |
-| supertrait                  | תכנות-על                      |
+| supertrait                  | תכונת-על                      |
 | stack                       | מחסנית                        |
 | state pattern               | תבנית מצבים                   |
-| statement                   | פקודה , הַצְהָרָה             |
+| statement                   | פקודה , הַצְהָרָה                 |
 | static dispatch             | שיגור סטטי                    |
 | statically typed            | טיפוסים סטטיים                |
 | string                      | מחרוזת                        |
