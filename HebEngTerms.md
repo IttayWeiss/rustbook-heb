@@ -8,6 +8,7 @@
 | array                       | מערך                          |
 | associated function         | פונקציה משויכת                |
 | associated type             | טיפוס משוייך                  |
+| backtrace                   | מעקב-לאחור                    |
 | borrowing                   | השאלה                         |
 | borrow checker              | בודק ההשאלות                  |
 | byte                        | בית, בייט                     |
@@ -38,14 +39,14 @@
 | dynamic dispatch            | שיגור דינמי                   |
 | encapsulation               | אפסון                         |
 | enum                        | מבחר                          |
+| error                       | שגיאה                         |
+| error: recoverable          | שגיאה ברת-שיקום               |
+| error: unrecoverable        | שגיאה סופנית                  |
 | expression                  | ביטוי                         |
 | Ferris                      | פריס, פריס הסרטן              |
 | field                       | שדה                           |
-<<<<<<< HEAD
-| fully qualified syntac      | תחביר מוסמך לחלוטין           |
-=======
+| fully qualified syntax      | תחביר מוסמך לחלוטין           |
 | function                    | פונקציה                       |
->>>>>>> main
 | function signature          | חותם פונקציה                  |
 | garbage collector           | מאסף אשפה                     |
 | generic                     | גנרי                          |
@@ -88,6 +89,7 @@
 | path                        | מסלול                         |
 | polymorphism                | פולימורפיזם, רב־צורתיות       |
 | prelude                     | פרליוד                        |
+| propagation                 | השנעה                         |
 | reference                   | הפניה                         |
 | Rust                        | (נ') ראסט                     |
 | Rust idiom                  | אידיאומות ראסט                |
@@ -101,7 +103,7 @@
 | supertrait                  | תכנות-על                      |
 | stack                       | מחסנית                        |
 | state pattern               | תבנית מצבים                   |
-| statement                   | פקודה , הַצְהָרָה                 |
+| statement                   | פקודה , הַצְהָרָה             |
 | static dispatch             | שיגור סטטי                    |
 | statically typed            | טיפוסים סטטיים                |
 | string                      | מחרוזת                        |
