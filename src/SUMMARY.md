@@ -58,7 +58,7 @@
 - [Generic Types, Traits, and Lifetimes](ch10-00-generics.md)
     - [Generic Data Types](ch10-01-syntax.md)
     - [Traits: Defining Shared Behavior](ch10-02-traits.md)
-    - [Validating References with Lifetimes](ch10-03-lifetime-syntax.md)
+    - [וידוא הפניות באמצעות משך-חיים](ch10-03-lifetime-syntax.md)
 
 - [Writing Automated Tests](ch11-00-testing.md)
     - [How to Write Tests](ch11-01-writing-tests.md)
