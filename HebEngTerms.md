@@ -64,6 +64,7 @@
 | iterator                    | איטרטור                       |
 | keyword                     | מילת מפתח                     |
 | lifetime                    | משך חיים                      |
+| lifetime elision rules      | כללי השמטת משך-חיים           |
 | linker                      | מקשר                          |
 | Listing                     | רשימה                         |
 | local                       | מקומי                         |

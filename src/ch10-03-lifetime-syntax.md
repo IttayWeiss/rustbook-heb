@@ -1,108 +1,61 @@
-## Validating References with Lifetimes
+## וידוא הפניות באמצעות משך-חיים
 
-Lifetimes are another kind of generic that we’ve already been using. Rather
-than ensuring that a type has the behavior we want, lifetimes ensure that
-references are valid as long as we need them to be.
+משך-חיים הוא סוג נוסף של ג'נריק בו כבר עשינו שימוש. במקום להבטיח שלטיפוס יש את ההתנהגות שאנו רוצים, משך-חיים מבטיח תקפות הפניות למשך הזמן בו הן נחוצות.
 
-One detail we didn’t discuss in the [“References and
-Borrowing”][references-and-borrowing]<!-- ignore --> section in Chapter 4 is
-that every reference in Rust has a *lifetime*, which is the scope for which
-that reference is valid. Most of the time, lifetimes are implicit and inferred,
-just like most of the time, types are inferred. We only must annotate types
-when multiple types are possible. In a similar way, we must annotate lifetimes
-when the lifetimes of references could be related in a few different ways. Rust
-requires us to annotate the relationships using generic lifetime parameters to
-ensure the actual references used at runtime will definitely be valid.
+פרט בו לא דנו בסעיף ["הפניות והשאלות"]()<!-- ignore --> בפרק 4 הוא העובדה שלכל הפניה בראסט יש *משך-חיים* (lifetime), שהוא המתחם בו ההפניה תקפה. רוב הזמן, משך-החיים של הפניות אינו מפורש והקומפיילר יכול להסיק אותו, בדיוק כמו שרוב הזמן הקומפיילר מסיק טיפוסים של משתנים. יש חובה לבאר טיפוסים כאשר יש כמה טיפוסים אפשריים ולכן הקומפיילר לא יכול להסיק לבדו את הטיפוס. באופן דומה, יש חובה לבאר את משך החיים של הפניה כאשר משך החיים יכול להיות מקושר בכמה דרכים, והקומפיילר לא יכול להסיק חד-משמעית את משך החיים. ראסט דורשת מאיתנו לבאר את היחסים באמצעות פרמטרי משך-חיים גנריים על מנת להבטיח שההפניות שיהיו בשימוש בזמן הריצה יהיו תקפות בוודאות.
 
-Annotating lifetimes is not even a concept most other programming languages
-have, so this is going to feel unfamiliar. Although we won’t cover lifetimes in
-their entirety in this chapter, we’ll discuss common ways you might encounter
-lifetime syntax so you can get comfortable with the concept.
+ברוב שפות התכנות, המושג של ביאור משך-חיים אינו קיים, ולכן סביר שהדיון כאן ירגיש מעט זר. למרות שבפרק זה לא נכסה את כל פרטי המושג משך-חיים, נדון בדרכים נפוצות שעשויות להוביל אתכם לתחביר של משך-חיים כך שתוחלו להתרגל למושג.
 
-### Preventing Dangling References with Lifetimes
+### מניעת הפניות משתלשלות באמצעות ביאור משך-חיים
 
-The main aim of lifetimes is to prevent *dangling references*, which cause a
-program to reference data other than the data it’s intended to reference.
-Consider the program in Listing 10-16, which has an outer scope and an inner
-scope.
+השימוש העיקרי של ביאור משך-חיים הוא כדי למנוע *הפניות משתלשלות*, שגורמות לתכנית להפנות לדאטה שאינו דאטה שאמורים להפנות אליו. התבוננו ברשימה 10-16, בה יש מתחם חיצונים ומתחם פנימי.
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-16/src/main.rs}}
 ```
 
-<span class="caption">Listing 10-16: An attempt to use a reference whose value
-has gone out of scope</span>
 
-> Note: The examples in Listings 10-16, 10-17, and 10-23 declare variables
-> without giving them an initial value, so the variable name exists in the
-> outer scope. At first glance, this might appear to be in conflict with Rust’s
-> having no null values. However, if we try to use a variable before giving it
-> a value, we’ll get a compile-time error, which shows that Rust indeed does
-> not allow null values.
+<span class="caption">רשימה 10-16: ניסיון להשתמש בהפניה שערכה יצא מהמתחם</span>
 
-The outer scope declares a variable named `r` with no initial value, and the
-inner scope declares a variable named `x` with the initial value of 5. Inside
-the inner scope, we attempt to set the value of `r` as a reference to `x`. Then
-the inner scope ends, and we attempt to print the value in `r`. This code won’t
-compile because the value `r` is referring to has gone out of scope before we
-try to use it. Here is the error message:
+> שימו לב: הדוגמאות ברשימות 10-16, 10-17, ו-10-23 מכריזות על משתנים מבלי לספק עבורם ערך תחילי, כך ששם המשתנה מופיע במתחם החיצוני. במבט ראשון, נראה שזה עומד בסתירה עם העובדה שבראסט אין ערכי null. אולם, אם ננסה להשתמש במשתנה לפני שנתנו לו ערך, נקבל שגיאת קומפילציה, זאת-אומרת שראסט אכן לא מאפשרת ערכי null.
+
+המתחם החיצוני מכריז על משתנה בשם `r` ללא ערך תחילי, והמתחם הפנימי מכריז על משתנה בשם `x` עם הערך התחילי 5. בתוך המתחם הפנימי, אנו מנסים לגרום לכך ש- `r` יהיה הפניה ל- `x`. אחר-כך, המתחם הפנימי מסתיים, ואנו מנסים להדפיס את הערך ב-`r`. קוד זה לא עובר קומפילציה כיוון שהערך אליו `r` מפנה יצא מחוץ למתחם לפני הניסיון להשתמש בו. הינה הודעת השגיאה:
 
 ```console
 {{#include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-16/output.txt}}
 ```
 
-The variable `x` doesn’t “live long enough.” The reason is that `x` will be out
-of scope when the inner scope ends on line 7. But `r` is still valid for the
-outer scope; because its scope is larger, we say that it “lives longer.” If
-Rust allowed this code to work, `r` would be referencing memory that was
-deallocated when `x` went out of scope, and anything we tried to do with `r`
-wouldn’t work correctly. So how does Rust determine that this code is invalid?
-It uses a borrow checker.
+המשתנה `x` אינו "שורד מספיק זמן" הסיבה היא ש-`x` יהיה מחוץ למתחם כאשר המתחם הפנימי מסתיים בשורה 7. אבל `r` עדיין תקף במתחם החיצוני; כיוון שהמתחם שלו מסתיים מאוחר יותר, אנו אומרים שהוא "שורד יותר זמן". לו ראסט היתה מאפשרת לקוד לעבוד, `r` היה מפנה למקום בזיכרון שאיבד את תוקפו כאשר `x` יצא מן המתחם, וכל דבר שהיינו מנסים לעשות עם `r` היה מסוכן, או לכל הפחות חסר משמעות. אם כן, כיצד קובעת ראסט שהקוד הזה אינו תקין? היא משתמשת בבודק ההשאלות.
 
-### The Borrow Checker
+### בודק ההשאלות
 
-The Rust compiler has a *borrow checker* that compares scopes to determine
-whether all borrows are valid. Listing 10-17 shows the same code as Listing
-10-16 but with annotations showing the lifetimes of the variables.
+לקומפיילר של ראסט יש *בודק השאלות* (borrow checker) שמשווה בין מתחמים כדי לקבוע את תקפות כל ההפניות. רשימה 10-17 מציגה את אותו הקוד כמו ברשימה 10-16, בתוספת ביאורים שמראים את משך-החיים של המשתנים.
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-17/src/main.rs}}
 ```
 
-<span class="caption">Listing 10-17: Annotations of the lifetimes of `r` and
-`x`, named `'a` and `'b`, respectively</span>
 
-Here, we’ve annotated the lifetime of `r` with `'a` and the lifetime of `x`
-with `'b`. As you can see, the inner `'b` block is much smaller than the outer
-`'a` lifetime block. At compile time, Rust compares the size of the two
-lifetimes and sees that `r` has a lifetime of `'a` but that it refers to memory
-with a lifetime of `'b`. The program is rejected because `'b` is shorter than
-`'a`: the subject of the reference doesn’t live as long as the reference.
+<span class="caption">רשימה 10-17: ביאורים של משך-החיים של `r` ושל `x`, להם קוראים `'a` ו- `'b`, בהתאמה</span>
 
-Listing 10-18 fixes the code so it doesn’t have a dangling reference and
-compiles without any errors.
+כאן, ביארנו את משך-החיים של `r` עם `'a` ואת משך-החיים של `x` עם `'b`. כפי שאתם רואים, בלוק ה-`'b` הפנימי קטן יותר מבלוק ה-`'a` החיצוני. בזמן הקומפילציה, ראסט משווה בין משך-החיים של שני המשתנים ורואה שמשך-החיים של `r` הוא `'a` ושהוא מפנה לזיכרון שמשך החיים שלו הוא `'b`. ראסט אינה מקבלת את התכנית משום ש-`'b` קצר יותר מ-`'a`: ההפניה שורדת מעבר לזמן השרידות של מושא ההפניה.
+
+רשימה 10-18 מתקנת את הקוד כך שלא יהיה בו משתנה משתלשל, והוא עובר קומפילציה ללא שגיאות.
 
 ```rust
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-18/src/main.rs}}
 ```
 
-<span class="caption">Listing 10-18: A valid reference because the data has a
-longer lifetime than the reference</span>
 
-Here, `x` has the lifetime `'b`, which in this case is larger than `'a`. This
-means `r` can reference `x` because Rust knows that the reference in `r` will
-always be valid while `x` is valid.
+<span class="caption">רשימה 10-18: הפניה תקפה משום שלדאטה יש משך חיים ארוך יותר ממשך החיים של ההפניה</span>
 
-Now that you know where the lifetimes of references are and how Rust analyzes
-lifetimes to ensure references will always be valid, let’s explore generic
-lifetimes of parameters and return values in the context of functions.
+כאן, משך החיים של `x` הוא `'b`, שבקרה זה אורך יותר ממשך החיים `'a`. זאת אומר ש-`r` יכול להפנות ל-`x` כיוון שראסט יודעת שההפניה ב-`r` תקפה כל עוד `x` עצמו תקף.
 
-### Generic Lifetimes in Functions
+עכשיו משאתם יודעים היכן נמצא משך-החיים של הפניות וכיצד ראסט מנתחת משכי-חיים על מנת להבטיח שהפניות תמיד יהיו תקפות, הבה נתבונן במשך-חיים גנרי עבור פרמטרים ועבור ערכים חוזרים בהקשר של פונקציות.
 
-We’ll write a function that returns the longer of two string slices. This
-function will take two string slices and return a single string slice. After
-we’ve implemented the `longest` function, the code in Listing 10-19 should
-print `The longest string is abcd`.
+### משך-חיים גנרי בפונקציות
+
+הבה נכתוב פונקציה שמחזירה את הארוכה מבין שתי מחרוזות. פונקציה זו מקבלת שני חיתוכי מחרוזת ומחזירה חיתוך מחרוזת יחיד. לאחר המימוש של הפונקציה `longest`, הקוד ברשימה 10-19 אמור להדפיס `The longest string is abcd`.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -110,18 +63,12 @@ print `The longest string is abcd`.
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-19/src/main.rs}}
 ```
 
-<span class="caption">Listing 10-19: A `main` function that calls the `longest`
-function to find the longer of two string slices</span>
 
-Note that we want the function to take string slices, which are references,
-rather than strings, because we don’t want the `longest` function to take
-ownership of its parameters. Refer to the [“String Slices as
-Parameters”][string-slices-as-parameters]<!-- ignore --> section in Chapter 4
-for more discussion about why the parameters we use in Listing 10-19 are the
-ones we want.
+<span class="caption">רשימה 10-19: פונקצית `main` אשר קוראת לפונקציה `longest` כל מנת למצוא את המחרוזת הארוכה מבין שני חיתוך מחרוזת</span>
 
-If we try to implement the `longest` function as shown in Listing 10-20, it
-won’t compile.
+שימו לב שאנחנו רוצים שהפונקציה תקבל חיתוכי מחרוזת, שהם הפניות, ולא מחרוזות, כיוון שאנחנו לא רוצים שהפונקציה `longest` תיקח בעלות על הפרמטרים שלה. פנו, אם צריך, לסעיף ["חיתוכי מחרוזת כפרמטרים"]()<!-- ignore --> בפרק 4 לדיון נוסף אודות השימוש בפרמטרים כמו שמופיעים ברשימה 10-19.
+
+ניסיון לממש את הפונקציה `longest` כפי שמוצג ברשימה 10-20, לא יעבור קומפילציה.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -129,50 +76,26 @@ won’t compile.
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-20/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 10-20: An implementation of the `longest`
-function that returns the longer of two string slices but does not yet
-compile</span>
 
-Instead, we get the following error that talks about lifetimes:
+<span class="caption">רשימה 10-20: מימוש של הפונקציה `longest` שמחזיר את המחרוזת הארוכה מבין שני חיתוכי מחרוזת, אבל עדיין לא עובר קומפילציה</span>
+
+אנו מקבלים את הודעת השגיאה הבאה, אודות משך-החיים של כמה מהמשתנים:
 
 ```console
 {{#include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-20/output.txt}}
 ```
 
-The help text reveals that the return type needs a generic lifetime parameter
-on it because Rust can’t tell whether the reference being returned refers to
-`x` or `y`. Actually, we don’t know either, because the `if` block in the body
-of this function returns a reference to `x` and the `else` block returns a
-reference to `y`!
+הטקסט המלווה את הודעת השגיאה מבהיר שהטיפוס המוחזר זקוק לפרמטר משך-חיים גנרי מכיוון שראסט אינה יכולה להסיק האם ההפניה שתוחזר תהיה הפניה ל-`x` או ל-`y`. למעשה, גם אנחנו לא יודעים זאת, כי בלוק ה-`if` של הפונקציה מחזיר הפניה ל-`x` בעוד בלוק ה- `else` מחזיר הפניה ל-`y`!
 
-When we’re defining this function, we don’t know the concrete values that will
-be passed into this function, so we don’t know whether the `if` case or the
-`else` case will execute. We also don’t know the concrete lifetimes of the
-references that will be passed in, so we can’t look at the scopes as we did in
-Listings 10-17 and 10-18 to determine whether the reference we return will
-always be valid. The borrow checker can’t determine this either, because it
-doesn’t know how the lifetimes of `x` and `y` relate to the lifetime of the
-return value. To fix this error, we’ll add generic lifetime parameters that
-define the relationship between the references so the borrow checker can
-perform its analysis.
+כאשר אנו מגדירים פונקציה זו, אנחנו לא יודעים מה יהיו הערכים הקונקרטיים שיועברו לפונקציה, ולכן אנחנו לא יודעים איזה בלוק קוד, זה של ה-`if` או זה של ה-`else` יבוצע. אנחנו גם לא יודעים מהם משכי-החיים של ההפניות שיועברו, ולכן לא ניתן להסתכל על המתחמים המתאימים, כמו שעשינו ברשימה 10-17 וברשימה 10-18, על מנת לקבוע האם ההפניה שנחזיר תמיד תהיה תקפה. גם בודק-ההשאלות לא יכול לקבוע זאת, כיוון שהוא לא יודע איך משכי-החיים של `x` ושל `y` מתייחסים לערך המוחזר. על מנת לתקן מצב זה, נוסיף פרמטר משך-חיים גנרי שמגדיר את היחס בין ההפניות כדי שבודק ההשאלות יוכל לבצע את הבדיקות שלו.
 
-### Lifetime Annotation Syntax
+### תחביר ביאור משך-חיים
 
-Lifetime annotations don’t change how long any of the references live. Rather,
-they describe the relationships of the lifetimes of multiple references to each
-other without affecting the lifetimes. Just as functions can accept any type
-when the signature specifies a generic type parameter, functions can accept
-references with any lifetime by specifying a generic lifetime parameter.
+ביאורי משך-חיים אינן משנות את משך החיים של ההפניות. הן מתארות את היחסים בין משכי-החיים של כמה הפניות, ללא השפעה על משכי-חיים אלה. בדיוק כמו שפונקציה יכולה לקבל כל טיפוס שהוא כאשר החותם שלה מציין פרמטר טיפוס גנרי, כך גם יכולה פונקציה לקבל הפניה עם כל משך-חיים שהוא על-ידי ציון פרמטר משך-חיים גנרי.
 
-Lifetime annotations have a slightly unusual syntax: the names of lifetime
-parameters must start with an apostrophe (`'`) and are usually all lowercase
-and very short, like generic types. Most people use the name `'a` for the first
-lifetime annotation. We place lifetime parameter annotations after the `&` of a
-reference, using a space to separate the annotation from the reference’s type.
+לביאורי משך-חיים יש תחביר קצת יוצא-דופן: שמות של פרמטרי משך-חיים חייבים להתחיל עם גרש (`'`), ובדרך-כלל הם כתובים באותיות קטנות ובעלי שמות קצרים מאוד, בדומה לטיפוסים גנריים. רוב המתכנתים משתמשים ב-`'a` עבור ביאור משך-החיים הראשון. אנו ממקמים ביאורי פרמטרים של משך-חיים לאחר הסימן `&` של הפניה, תוך שימוש ברווח כדי להפריד את הביאור מטיפוס ההפניה.
 
-Here are some examples: a reference to an `i32` without a lifetime parameter, a
-reference to an `i32` that has a lifetime parameter named `'a`, and a mutable
-reference to an `i32` that also has the lifetime `'a`.
+הנה כמה דוגמאות: הפניה ל-`i32` ללא פרמטר משך-חיים, הפניה ל-`i32` עם פרמטר משך-חיים בשם `'a`, והפניה ברת-שינוי ל-`i32` שגם לה פרמטר משך-חיים בשם `'a`.
 
 ```rust,ignore
 &i32        // a reference
@@ -180,22 +103,13 @@ reference to an `i32` that also has the lifetime `'a`.
 &'a mut i32 // a mutable reference with an explicit lifetime
 ```
 
-One lifetime annotation by itself doesn’t have much meaning, because the
-annotations are meant to tell Rust how generic lifetime parameters of multiple
-references relate to each other. Let’s examine how the lifetime annotations
-relate to each other in the context of the `longest` function.
+לביאור משך-חיים בודד, בפני עצמו, אין משמעות רבה, כיוון שמטרת הביאורים היא לאמר לראסט כיצד פרמטרי משך-חיים גנריים של כמה הפניות מתחייסים זה לזה. הבה נבחן איך משכי-החיים מתייחסים זה לזה בהקשר של הפונקציה `longest`.
 
-### Lifetime Annotations in Function Signatures
+### ביאור משך-חיים בחותמי פונקציות
 
-To use lifetime annotations in function signatures, we need to declare the
-generic *lifetime* parameters inside angle brackets between the function name
-and the parameter list, just as we did with generic *type* parameters.
+על מנת להשתמש בביאורי משך-חיים בחותמי פונקציות, יש להכריז על פרמטר משך-החיים הגנרי בתוך סוגרים משולשים בין שם הפונקציה לרשימת הפרמטרים שלה, בדיוק כפי שעושים עם פרמטרי טיפוסים גנריים.
 
-We want the signature to express the following constraint: the returned
-reference will be valid as long as both the parameters are valid. This is the
-relationship between lifetimes of the parameters and the return value. We’ll
-name the lifetime `'a` and then add it to each reference, as shown in Listing
-10-21.
+אנחנו רוצים שהחותם יבטא את המגבלה הבאה: ההפניה המוחזרת צריכה להיות תקפה כל עוד שני הפרמטרים תקפים. זהו היחס בין משכי-החיים של הפרמטרים והערך המוחזר. לפרמטר משך-החיים נקרא `'a` ונוסיף אותו לכל הפניה, כפי שמוצג ברשימה 10-21.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -203,51 +117,20 @@ name the lifetime `'a` and then add it to each reference, as shown in Listing
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-21/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 10-21: The `longest` function definition
-specifying that all the references in the signature must have the same lifetime
-`'a`</span>
 
-This code should compile and produce the result we want when we use it with the
-`main` function in Listing 10-19.
+<span class="caption">רשימה 10-21: הגדרת הפונקציה `longest` וציון שלכל ההפניות בחותם יש את אותו משך-החיים `'a`</span>
 
-The function signature now tells Rust that for some lifetime `'a`, the function
-takes two parameters, both of which are string slices that live at least as
-long as lifetime `'a`. The function signature also tells Rust that the string
-slice returned from the function will live at least as long as lifetime `'a`.
-In practice, it means that the lifetime of the reference returned by the
-`longest` function is the same as the smaller of the lifetimes of the values
-referred to by the function arguments. These relationships are what we want
-Rust to use when analyzing this code.
+קוד זה אמור לעבור קומפילציה ולהפיק את התוצאה המבוקשת כאשר נשתמש בו עם הפונקציה `main` מרשימה 10-19.
 
-Remember, when we specify the lifetime parameters in this function signature,
-we’re not changing the lifetimes of any values passed in or returned. Rather,
-we’re specifying that the borrow checker should reject any values that don’t
-adhere to these constraints. Note that the `longest` function doesn’t need to
-know exactly how long `x` and `y` will live, only that some scope can be
-substituted for `'a` that will satisfy this signature.
+חותם הפונקציה אומר לראסט שקיים משך-חיים `'a`, שביחס אליו הפונקציה מקבלת שני משתנים, ושכל אחד מהם הוא חיתוך מחרוזת ששורד לפחות במשך `'a`. חותם הפונקציה גם אומר לראסט שחיתוך המחרוזת שמוחזר מהפונקציה ישרוד גם הוא לפחות במשך `'a`. למעשה, משמעות הדבר היא שמשך החיים של הערך המוחזר על-ידי הפונקציה `longest` הוא הקצר מבין משך החיים של הארגומנט הראשון לפונקציה ומשך החיים של הארגומנט השני. יחסים אלה הם מה שאנחנו רוצים שראסט תאכוף כאשר היא מנתחת את הקוד.
 
-When annotating lifetimes in functions, the annotations go in the function
-signature, not in the function body. The lifetime annotations become part of
-the contract of the function, much like the types in the signature. Having
-function signatures contain the lifetime contract means the analysis the Rust
-compiler does can be simpler. If there’s a problem with the way a function is
-annotated or the way it is called, the compiler errors can point to the part of
-our code and the constraints more precisely. If, instead, the Rust compiler
-made more inferences about what we intended the relationships of the lifetimes
-to be, the compiler might only be able to point to a use of our code many steps
-away from the cause of the problem.
+זכרו, כאשר אנו מציינים פרמטרי משך-חיים בחותם של פונקציה, אין אנו משנים את משך החיים של אף ערך המועבר לפונקציה. כל שאנו עושים הוא לציין שבודק ההשאלות צריך לדחות ערכים שמשכי החיים שלהם לא מקיימים את היחסים שפרמטרי משך-החיים מקיימים. שימו לב שהפונקציה `longest` לא צריכה לדעת בדיוק כמה זמן `x` ו-`y` ישרדו, אלא רק שקיים מתחם כל שהוא שניתן להחליף עבור `'a` שמקיים את תנאי החותם.
 
-When we pass concrete references to `longest`, the concrete lifetime that is
-substituted for `'a` is the part of the scope of `x` that overlaps with the
-scope of `y`. In other words, the generic lifetime `'a` will get the concrete
-lifetime that is equal to the smaller of the lifetimes of `x` and `y`. Because
-we’ve annotated the returned reference with the same lifetime parameter `'a`,
-the returned reference will also be valid for the length of the smaller of the
-lifetimes of `x` and `y`.
+כאשר מבארים משכי-חיים בפונקציה, הביאורים נכתבים בחותם הפונקציה, ולא בגוף הפונקציה. ביאורי משכי-החיים הופכים לחלק מהחוזה של הפונקציה, בדומה לתפקיד של טיפוסים בחותם. כאשר חותמי הפונקציות כוללים תנאי משך-חיים, מלאכת הניתוח שהקומפיילר של ראסט צריך לעשות נהיית פשוטה יותר. במידה ויש בעיה עם דרך ביאור הפונקציה או בדרך בה קוראים לה, שגיאות הקומפיילר יכולות להצביע אל החלק בקוד, ואל המגבלות, ביתר דיוק. אם, לחילופין, הקומפיילר של ראסט היה עושה יותר הסקות בעצמו אודות מה שאנחנו התכוונו שהיחסים בין משכי-החיים אמורים להיות, הקומפיילר יכול להתקשות יותר לספק הודעות מועילות ולמקם את הבעיה בצורה פחות מדוייקת.
 
-Let’s look at how the lifetime annotations restrict the `longest` function by
-passing in references that have different concrete lifetimes. Listing 10-22 is
-a straightforward example.
+כאשר מעבירים הפניות קונקרטיות ל- `longest`, משך החיים הקונקרטי שמחליף את `'a` הוא החלק של המתחם של `x` שחופף עם המתחם של `y`. במילים אחרות, משך-החיים הגנרי `'a` יקבל את משך החיים הקונקרטי ששווה לקטן מבין משך החיים של `x` ומשך החיים של `y`. כיוון שביארנו את הערך המוחזר כבעל או`'a`, ההפניה המוחזרת תהיה תקפה גם במשך התקופה הקצרה מבין משכי-החיים של `x` ושל `y`.
+
+הבה נתבונן כיצד ביאורי משך-החיים מגבילים את השימוש בפונקציה `longest` על-ידי כך שנעביר לה הפניות בעלות משכי-חיים קונקרטיים שונים. רשימה 10-22 הינה דוגמא די ברורה מעליה.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -255,22 +138,13 @@ a straightforward example.
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-22/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 10-22: Using the `longest` function with
-references to `String` values that have different concrete lifetimes</span>
 
-In this example, `string1` is valid until the end of the outer scope, `string2`
-is valid until the end of the inner scope, and `result` references something
-that is valid until the end of the inner scope. Run this code, and you’ll see
-that the borrow checker approves; it will compile and print `The longest string
+<span class="caption">רשימה 10-22: שימוש בפונקציה `longest` עם הפניות לערכי `String` בעלות משכי-חיים קונקרטיים שונים</span>
+
+בדוגמא זו, `string1` תקף עד סוף המתחם החיצוני, `string2` תקף עד סוף המתחם הפנימי, ו-`result` מפנה למשהו שתקף עד סוף המתחם הפנימי. הריצו קוד זה, ותיווכחו שבודק ההשאלות מאשר אותו; הקוד יעבור קומפילציה וידפיס `The longest string
 is long string is long`.
 
-Next, let’s try an example that shows that the lifetime of the reference in
-`result` must be the smaller lifetime of the two arguments. We’ll move the
-declaration of the `result` variable outside the inner scope but leave the
-assignment of the value to the `result` variable inside the scope with
-`string2`. Then we’ll move the `println!` that uses `result` to outside the
-inner scope, after the inner scope has ended. The code in Listing 10-23 will
-not compile.
+כעת, הבה ננסה דוגמא שמראה שמשך החיים של `result` חייב להיות הקצר מבין משכי-החיים של הארגומנטים. נעביר את ההכרזה על המשתנה `result` אל מחוץ למתחם אבל נשאיר את ההשמה של הערך למשתנה `result` בתוך המתחם עם `string2`. ואז נעביר את הקריאה ל- `println!` שמשתמשת ב-`result` אל מחוץ למתחם הפנימי, לאחר שהמתחם הפנימי מסתיים. הקוד ברשימה 10-23 לא יעבור קומפילציה.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -278,41 +152,24 @@ not compile.
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-23/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 10-23: Attempting to use `result` after `string2`
-has gone out of scope</span>
 
-When we try to compile this code, we get this error:
+<span class="caption">רשימה 10-23: ניסיון להשתמש ב- `result` לאחר ש-`string2` יצא מהמתחם</span>
+
+כאשר מנסים לקמפל את הקוד מקבלים את השגיאה הבאה:
 
 ```console
 {{#include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-23/output.txt}}
 ```
 
-The error shows that for `result` to be valid for the `println!` statement,
-`string2` would need to be valid until the end of the outer scope. Rust knows
-this because we annotated the lifetimes of the function parameters and return
-values using the same lifetime parameter `'a`.
+שגיאה זו מראה שבשביל ש- `result` יהיה תקף לשימוש בפקודת ה-`println!`, על `string2` להיות תקף עד לסוף המתחם החיצוני. ראסט יודעת זאת משום שביארנו את משכי-החיים של הפרמטרים של הפונקציה ושל הערך המוחרזר באמצאות אותו פרמטר משך-החיים `'a`.
 
-As humans, we can look at this code and see that `string1` is longer than
-`string2` and therefore `result` will contain a reference to `string1`.
-Because `string1` has not gone out of scope yet, a reference to `string1` will
-still be valid for the `println!` statement. However, the compiler can’t see
-that the reference is valid in this case. We’ve told Rust that the lifetime of
-the reference returned by the `longest` function is the same as the smaller of
-the lifetimes of the references passed in. Therefore, the borrow checker
-disallows the code in Listing 10-23 as possibly having an invalid reference.
+אנו, כבני-אדם, מסוגלים להתבונן בקוד ולראות ש-`string1` ארוכה יותר מ-`string2` ולכן `result` יכיל הפניה של `string1`. בגלל ש-`string1` עוד לא יצא אל מחוץ למתחם, הפניה ל-`string1` עדיין תהיה תקפה בקריאה ל-`println!`. אבל, הקומפיילר לא יכול לראות שההפניה תקפה במקרה זה. אמרנו לראסט שמשך החיים של ההפניה המוחזרת על-ידי הפונקציה `longest` הוא הקצר מבין משכי-החיים של ההפניות שהועברו לפונקציה. לכן, בודק ההשאלות לא מקבל את הקוד מרשימה 10-23 שכן לא ניתן לשלול הפניה לא תקפה.
 
-Try designing more experiments that vary the values and lifetimes of the
-references passed in to the `longest` function and how the returned reference
-is used. Make hypotheses about whether or not your experiments will pass the
-borrow checker before you compile; then check to see if you’re right!
+נסו לתכנן ניסויים נוספים תוך התאמת הערכים ומשכי-החיים של ההפניות המועברות לפונקציה `longest`, והדרך בה משתמשים בהפניה המוחזרת. נסו לנתח את המצב בעצמכם ושארו, לפני הקימפול, האם הקוד יקבל את אישור בודק ההשאלות, או לא; ואז בדקו האם צדקתם!
 
-### Thinking in Terms of Lifetimes
+### חשיבה במונחי משך-חיים
 
-The way in which you need to specify lifetime parameters depends on what your
-function is doing. For example, if we changed the implementation of the
-`longest` function to always return the first parameter rather than the longest
-string slice, we wouldn’t need to specify a lifetime on the `y` parameter. The
-following code will compile:
+הדרך בה יש לציין את משך-החיים של פרמטרים תלויה במה שהקוד אמור לבצע. למשל, לו היינו משנים את המימוש של הפונקציה `longest` כך שתמיד תחזיר את הפרמטר הראשון במקום את חיתוך המחרוזת הארוכה ביותר, לא היה צורך לציין משך-חיים עבור הפרמטר `y`. הקוד הבא עובר קומפילציה:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -320,17 +177,9 @@ following code will compile:
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/no-listing-08-only-one-reference-with-lifetime/src/main.rs:here}}
 ```
 
-We’ve specified a lifetime parameter `'a` for the parameter `x` and the return
-type, but not for the parameter `y`, because the lifetime of `y` does not have
-any relationship with the lifetime of `x` or the return value.
+ציינו את פרמטר משך-החיים `'a` כפרמטר של `x` ושל הערך המוחזר, אבל לא של הפרמטר `y`, משום שמשך החיים של `y` כלל לא קשור למשך החיים של `x` או של הערך המוחזר.
 
-When returning a reference from a function, the lifetime parameter for the
-return type needs to match the lifetime parameter for one of the parameters. If
-the reference returned does *not* refer to one of the parameters, it must refer
-to a value created within this function. However, this would be a dangling
-reference because the value will go out of scope at the end of the function.
-Consider this attempted implementation of the `longest` function that won’t
-compile:
+כאשר מחזירים הפניה מפונקציה, פרמטר משך-החיים עבור הטיפוס המוחזר חייב להתאים למשך החיים של אחד הפרמטרים של שהועברו לפונקציה. אם ההפניה המוחזרת *אינה* מתייחסת לאף אחד מהפרמטרים, משמע שהיא חייבת להפנות לערך שנוצר בתוך הפונקציה. אולם, ערך שכזה בהכרח יהיה הפניה משתלשלת כיוון שהערך יצא מהמתחם בסוף הפונקציה. התבוננו בניסיון הבא, שלא יעבור קומפילציה, למימוש של הפונקציה `longest`:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -338,34 +187,19 @@ compile:
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/no-listing-09-unrelated-lifetime/src/main.rs:here}}
 ```
 
-Here, even though we’ve specified a lifetime parameter `'a` for the return
-type, this implementation will fail to compile because the return value
-lifetime is not related to the lifetime of the parameters at all. Here is the
-error message we get:
+כאן, למרות שציינו את פרמטר משך-החיים `'a` עבור הטיפוס המוחזר, מימוש זה לא יעבור קומפילציה בגלל שמשך-החיים של הערך המוחזר אינו קשור למשך-החיים של אף אחד מהפרמטרים של הפונקציה. הינה הודעת השגיאה שנקבל:
 
 ```console
 {{#include ../listings/ch10-generic-types-traits-and-lifetimes/no-listing-09-unrelated-lifetime/output.txt}}
 ```
 
-The problem is that `result` goes out of scope and gets cleaned up at the end
-of the `longest` function. We’re also trying to return a reference to `result`
-from the function. There is no way we can specify lifetime parameters that
-would change the dangling reference, and Rust won’t let us create a dangling
-reference. In this case, the best fix would be to return an owned data type
-rather than a reference so the calling function is then responsible for
-cleaning up the value.
+הבעיה היא שהמשתנה `result` יוצא מהמתחם והזיכרון שלו מנוקא בסוף גוף הפונקציה `longest`. אנחנו גם מנסים להחזיר מהפונקציה הפניה ל-`result`. אין דרך לציין פרמטרי משך-חיים שלא יצרו הפניה משתלשלת זו, וראסט אינה מאפשרת יצירת הפניות משתלשלות. במקרה זה, הפתרון הטוב ביותר יהיה להחזיר משתנה שהערך שלו בבעלותו במקום הפניה, וכך הפונקציה הקוראת היא זאת שאחראית לניקיון הזיכרון של הערך.
 
-Ultimately, lifetime syntax is about connecting the lifetimes of various
-parameters and return values of functions. Once they’re connected, Rust has
-enough information to allow memory-safe operations and disallow operations that
-would create dangling pointers or otherwise violate memory safety.
+בסופו של דבר, המטרה של תחביר משך-חיים היא לקשר את משכי-החיים של כמה פרמטרים וערכים מוחזרים של פונקציות. ברגע שהקשרים התחביריים נוצרו, ראסט משתמשת במידע זה כדי לאפשר פעולות בעלות בטיחות זיכרון ואינה מאפשרת פעולות שיוצרות מצביעים משתלשלים, או כאלה שמפרות בכל דרך שהיא את ערובות הביטחון של ראסט לגבי ניהול זיכרון.
 
-### Lifetime Annotations in Struct Definitions
+### ביאורי משך-חיים בהגדרות מבנים
 
-So far, the structs we’ve defined all hold owned types. We can define structs to
-hold references, but in that case we would need to add a lifetime annotation on
-every reference in the struct’s definition. Listing 10-24 has a struct named
-`ImportantExcerpt` that holds a string slice.
+עד כה, המבנים שהגדרנו אכסנו ערכים בבעלות עצמית. ניתן להגדיר מבנים שמכילים הפניות, אבל במקרה שכזה יש צורך להוסיף ביאורי משך-חיים עבור ההפניות שבהגדרת המבנה. ברשימה 10-24 יש מבנה בשם `ImportantExcerpt` שמכיל חיתוך מחרוזת.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -373,29 +207,16 @@ every reference in the struct’s definition. Listing 10-24 has a struct named
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-24/src/main.rs}}
 ```
 
-<span class="caption">Listing 10-24: A struct that holds a reference, requiring
-a lifetime annotation</span>
 
-This struct has the single field `part` that holds a string slice, which is a
-reference. As with generic data types, we declare the name of the generic
-lifetime parameter inside angle brackets after the name of the struct so we can
-use the lifetime parameter in the body of the struct definition. This
-annotation means an instance of `ImportantExcerpt` can’t outlive the reference
-it holds in its `part` field.
+<span class="caption">רשימה 10-24: למבנה שמכיל הפניה נדרש ביאור משך-חיים</span>
 
-The `main` function here creates an instance of the `ImportantExcerpt` struct
-that holds a reference to the first sentence of the `String` owned by the
-variable `novel`. The data in `novel` exists before the `ImportantExcerpt`
-instance is created. In addition, `novel` doesn’t go out of scope until after
-the `ImportantExcerpt` goes out of scope, so the reference in the
-`ImportantExcerpt` instance is valid.
+למבנה זה יש שדה יחיד בשם `part` שמאחסן חיתוך מחרוזת, דהיינו הפניה. כמו עם טיפוסי גנריים, אנו מכריזים על השם של פרמטר משך החיים בתוך סוגריים משולשים לאחר השם של המבנה כדי בנוכל להשתמש בפרמטר משך החיים בגוף ההגדרה של המבנה. משמעות ביאור זה היא שמופע של `ImportantExcerpt` לא יכול לשרוד מעבר למשך החיים של ההפנה שהוא מאחסן בשדה `part` שלו.
 
-### Lifetime Elision
+כאן, הפונקציה `main` יוצרת מופע של המבנה `ImportantExcerpt` שמאחסן הפניה למשפט הראשון של ה- `String` שבבעלות המשתנה `novel`. הדאטה ב-`novel` קיים לפני יצירת המופע של `ImportantExcerpt`. בנוסף, `novel` אינו יוצא מן המתחם עד אחרי שהמופע של `ImportantExcerpt` יוצר מהמתחם, ולכן ההפניה במופע תקפה.
 
-You’ve learned that every reference has a lifetime and that you need to specify
-lifetime parameters for functions or structs that use references. However, in
-Chapter 4 we had a function in Listing 4-9, shown again in Listing 10-25, that
-compiled without lifetime annotations.
+### השמטת משך-חיים
+
+למדתם שלכל הפניה יש משך-חיים ושצריך לציין פרמטרי משך-חיים עבור פונקציות או מבנים שמשתמשים בהפניות. אולם, בפרק 4 ראינו פונקציה ברשימה 4-9, שמוצגת שוב ברשימה 10-25, שעברה קומפילציה ללא ביאור משך-חיים.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -403,220 +224,122 @@ compiled without lifetime annotations.
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-25/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 10-25: A function we defined in Listing 4-9 that
-compiled without lifetime annotations, even though the parameter and return
-type are references</span>
 
-The reason this function compiles without lifetime annotations is historical:
-in early versions (pre-1.0) of Rust, this code wouldn’t have compiled because
-every reference needed an explicit lifetime. At that time, the function
-signature would have been written like this:
+<span class="caption">רשימה 10-25: פונקציה, שהוגדרה ברשימה 4-9, שעוברת קומפילציה ללא ביאור משך-חיים, למרות שהפרמטר והערך המוחזר שלה הם הפניות</span>
+
+הסיבה שניתן לקמפל פונקציה זו ללא צורך בביאור משך-חיים היא הסטורית: בגרסאות קודמות ל-1.0 של ראסט, קוד זה לא היה עובר קומפילציה מכיוון שכל הפניה היתה צריכה משך-חיים מפורש. בזמנו, חותם הפונקציה היה נכתב כך:
 
 ```rust,ignore
 fn first_word<'a>(s: &'a str) -> &'a str {
 ```
 
-After writing a lot of Rust code, the Rust team found that Rust programmers
-were entering the same lifetime annotations over and over in particular
-situations. These situations were predictable and followed a few deterministic
-patterns. The developers programmed these patterns into the compiler’s code so
-the borrow checker could infer the lifetimes in these situations and wouldn’t
-need explicit annotations.
+לאחר התנסות עם כתיבה ראסט בגרסתה זו, צוות ראסט מצא שמתכנתי ראסט הקלידו ביאורי משך-חיים, בצורה רפטטיבית, שוב ושוב. מצבים אלו היו צפויים מראש והופיעו בתבניות דטרמיניסטיות. צוות הפיתוח קודד תבניות אלה ישירות לקומפיילר כדי שבודק ההשאלות יוכל להסיק את משכי-החיים במצבים אלה ולא ידרוש ביאור מפורש.
 
-This piece of Rust history is relevant because it’s possible that more
-deterministic patterns will emerge and be added to the compiler. In the future,
-even fewer lifetime annotations might be required.
+פיסת הסטוריה זו בהתפתחות ראסט רלוונטית כיוון שיתכן שתבניות נוספות יוספו לקומפיילר. יתכן שבעתיד עוד פחות ביאורי משך-חיים יהיו נחוצים.
 
-The patterns programmed into Rust’s analysis of references are called the
-*lifetime elision rules*. These aren’t rules for programmers to follow; they’re
-a set of particular cases that the compiler will consider, and if your code
-fits these cases, you don’t need to write the lifetimes explicitly.
+התבנייות שבנויות לתוך הניתוח שראסט מבצעת על הפניות נקראות *כללי השמטת משך-חיים*. כללים אלה אינם כללי שמתכנתים צריכים לציית להם; הכללים האלה הם אוסף של מקרים ספציפיים שהקומפיילר מזהה, ואם הקוד שלכם מתאים למקרים אלה, אז אין צורך לציין משך-חיים באופן מפורש.
 
-The elision rules don’t provide full inference. If Rust deterministically
-applies the rules but there is still ambiguity as to what lifetimes the
-references have, the compiler won’t guess what the lifetime of the remaining
-references should be. Instead of guessing, the compiler will give you an error
-that you can resolve by adding the lifetime annotations.
+כללי ההשמטה לא מספקים ממשק מלא. ראסט מיישמת את הכללים באופן דטרמינסטי, ואם נותר עוד ספק באשר למשך החיים של הפניה זו או אחרת, הקומפיילר לא ינסה לנחש משך-חיים שכזה. במקום זאת, הקומפיילר יספק הודעת שגיאה שאותה תצטרכו לפתור על-ידי הוספת ביאורי משך-חיים.
 
-Lifetimes on function or method parameters are called *input lifetimes*, and
-lifetimes on return values are called *output lifetimes*.
+משך-חיים של פרמטר של פונקציה או מתודה נקרא *משך-חיים של קלט*, ומשך-חיים של ערך מוחזר נקרא *משך-חיים של פלט*.
 
-The compiler uses three rules to figure out the lifetimes of the references
-when there aren’t explicit annotations. The first rule applies to input
-lifetimes, and the second and third rules apply to output lifetimes. If the
-compiler gets to the end of the three rules and there are still references for
-which it can’t figure out lifetimes, the compiler will stop with an error.
-These rules apply to `fn` definitions as well as `impl` blocks.
+הקומפיילר משתמש בשלושה כללים כדי לבצע הסקות אודות משך-חיים של הפניות במקרה בו לי ניתנים ביאורים מפורשים. הכלל הראשון מיושם עבור משך-חיים של קלט, והכללים השני והשלישי מייושמים עבור משך-חיים של פלט. אם הקומפיילר ממצא את שלושת הכללים האלה ועדיין ישנה הפנייה שמשך-החיים שלה לא נקבע, הקומפיילר יעצור עם הודעת שגיאה. הכללים האלה תקפים עבור הגדרות `fn` ועבור בלוקי `impl`.
 
-The first rule is that the compiler assigns a lifetime parameter to each
-parameter that’s a reference. In other words, a function with one parameter gets
-one lifetime parameter: `fn foo<'a>(x: &'a i32)`; a function with two
-parameters gets two separate lifetime parameters: `fn foo<'a, 'b>(x: &'a i32,
-y: &'b i32)`; and so on.
+הכלל הראשון הוא שהקומפיילר מייחס פרמטר משך-חיים לכל פרמטר שהוא הפניה. במילים אחרות, פונקציה עם פרמטר אחד מקבלת פרמטר משך-חיים אחד: `fn foo<'a>(x: &'a i32)`; פונקציה עם שני פרמטרים מקבלת שני פרמטרי משך-חיים: `fn foo<'a, 'b>(x: &'a i32,
+y: &'b i32)`; וכן הלאה.
 
-The second rule is that, if there is exactly one input lifetime parameter, that
-lifetime is assigned to all output lifetime parameters: `fn foo<'a>(x: &'a i32)
+הכלל השני הוא שאם יש בדיוק פרמטר אחד של משך-חיים של קלט, משך-חיים זה הוא גם משך החיים של כל פרמטרי משך-החיים של פלט: `fn foo<'a>(x: &'a i32)
 -> &'a i32`.
 
-The third rule is that, if there are multiple input lifetime parameters, but
-one of them is `&self` or `&mut self` because this is a method, the lifetime of
-`self` is assigned to all output lifetime parameters. This third rule makes
-methods much nicer to read and write because fewer symbols are necessary.
+הכלל השלישי הוא שאם יש כמה פרמטרי משך-חיים של קלט, אבל אחד מהם הוא `&self` או `&mut self` משום שמדובר במתודה, אז משך החיים של `self` הוא גם משך החיים של כל פרמטרי ערך החיים של פלט. הכלל השלישי מקל על כתיבת וקריאת מתודות, שכן הוא מאפשר הפחתה בכמות הסימנים הנדרשים לכתיבה.
 
-Let’s pretend we’re the compiler. We’ll apply these rules to figure out the
-lifetimes of the references in the signature of the `first_word` function in
-Listing 10-25. The signature starts without any lifetimes associated with the
-references:
+הבה נעמיד פנים שאנחנו הקומפיילר. ניישם כללים אלה כדי להסיק את משך החיים של כל הפניה בחותם של הפונקציה `first_word` ברשימה 10-25. תחילה, בחותם אין כלל משך-חיים שמקושר עם ההפניות:
 
 ```rust,ignore
 fn first_word(s: &str) -> &str {
 ```
 
-Then the compiler applies the first rule, which specifies that each parameter
-gets its own lifetime. We’ll call it `'a` as usual, so now the signature is
-this:
+הקומפיילר מיישם את הכלל הראשון, לפיו כל פרמט מקבל משך-חיים משלו. נקרא לו `'a`, כרגיל, ולכן כעת החותם נראה כך:
 
 ```rust,ignore
 fn first_word<'a>(s: &'a str) -> &str {
 ```
 
-The second rule applies because there is exactly one input lifetime. The second
-rule specifies that the lifetime of the one input parameter gets assigned to
-the output lifetime, so the signature is now this:
+הכלל השני ניתן ליישום כאן כיוון שיש בדיוק משך-חיים אחד. לפי הכלל השני, משך-החיים של פרמטר הקלט משוייך למשך החיים של הפלט, ולכן החותם נראה כך:
 
 ```rust,ignore
 fn first_word<'a>(s: &'a str) -> &'a str {
 ```
 
-Now all the references in this function signature have lifetimes, and the
-compiler can continue its analysis without needing the programmer to annotate
-the lifetimes in this function signature.
+עכשיו כל ההפניות בחותם הפונקציה מתוייגות עם פרמטרי משך-חיים, והקומפיילר יכול להמשיך במלאכת ניתוח הקוד מבלי שצריך לספק ביאורי משך-חיים נוספים בחותם הפונקציה.
 
-Let’s look at another example, this time using the `longest` function that had
-no lifetime parameters when we started working with it in Listing 10-20:
+הבה נתבונן בדוגמא נוספת, הפעם תוך שימוש בפונקציה `longest` שהתחילה את דרכה ברשימה 10-20 ללא פרמטרי משך-חיים:
 
 ```rust,ignore
 fn longest(x: &str, y: &str) -> &str {
 ```
 
-Let’s apply the first rule: each parameter gets its own lifetime. This time we
-have two parameters instead of one, so we have two lifetimes:
+הבה ניישם את הכלל הראשון: כל פרמטר מקבל משך-חיים משלו. הפעם יש לנו שני פרמטרים במקום אחד, ולכן גם שני פרמטרי משך-חיים:
 
 ```rust,ignore
 fn longest<'a, 'b>(x: &'a str, y: &'b str) -> &str {
 ```
 
-You can see that the second rule doesn’t apply because there is more than one
-input lifetime. The third rule doesn’t apply either, because `longest` is a
-function rather than a method, so none of the parameters are `self`. After
-working through all three rules, we still haven’t figured out what the return
-type’s lifetime is. This is why we got an error trying to compile the code in
-Listing 10-20: the compiler worked through the lifetime elision rules but still
-couldn’t figure out all the lifetimes of the references in the signature.
+ניתן לראות שהכלל השני אינו יישים כאן כי יש יותר מפרמטר אחד של משך-חיים של קלט. הכלל השלישי אינו יישים אף הוא, כיוון ש-`longest` היא פונקציה ולא מתודה, ולכן אף אחד מהפרמטרים אינו `self`. לאחר מעבר על שלושת הכללים, אנחנו עדיין לא יודעים מהו משך-החיים של הטיפוס המוחזר. זו הסיבה להודעת השגיאה שקיבלנו כשניסינו לקמפל את הקוד ברשימה 10-20: הקומפיילר יישם את כללי השמטת משך-החיים אבל לא הצליח לדעת מהו משך החיים של כל אחת מההפניות בחותם.
 
-Because the third rule really only applies in method signatures, we’ll look at
-lifetimes in that context next to see why the third rule means we don’t have to
-annotate lifetimes in method signatures very often.
+בכלל שהכלל השלישי ניתן ליישום רק עבור חותמי מתודות, נעבור כעת להתבונן במשכי-חיים בהקשר זה על מנת לראות מדוע הכלל השלישי מאפשר לנו להימנע, לעיתים קרובות, מביאורי משך-חיים בחותמי מתודות.
 
-### Lifetime Annotations in Method Definitions
+### ביאורי משך-חיים בהגדרת מתודות
 
-When we implement methods on a struct with lifetimes, we use the same syntax as
-that of generic type parameters shown in Listing 10-11. Where we declare and
-use the lifetime parameters depends on whether they’re related to the struct
-fields or the method parameters and return values.
+כאשר אנו מממשים מתודות עבור מבנים עם משכי-חיים, אנו משתמשים בתחביר דומה לתחביר של פרמטרי טיפוסים גנריים שמוצג ברשימה 10-11. איפה מכריזים והיכן ומשתמשים בפרמטרי משך-חיים תלוי בהאם הם מקושרים לשדות המבנה או לפרמטרי המתודה והערכים המוחזרים.
 
-Lifetime names for struct fields always need to be declared after the `impl`
-keyword and then used after the struct’s name, because those lifetimes are part
-of the struct’s type.
+שמות משכי חיים עבור שדות של מבנה תמיד חייבים להיות מוכרזים מייד לאחר מילת המפתח `impl` ואז משתמשים בהם לאחר שם המבנה, כיוון שמשכי-חיים אלה הם חלק מהטיפוס של המבנה.
 
-In method signatures inside the `impl` block, references might be tied to the
-lifetime of references in the struct’s fields, or they might be independent. In
-addition, the lifetime elision rules often make it so that lifetime annotations
-aren’t necessary in method signatures. Let’s look at some examples using the
-struct named `ImportantExcerpt` that we defined in Listing 10-24.
+בחותמים של מתודות בתוך בלוק ה-`impl`, הפניות יכולות להיות קשורות למשך החיים של הפניות בשדות המבנה, או שהן בלתי תלויות. בנוסף, כללי השמטת משך-חיים בדרך-כלל גורמות לכך שביאורי משך-חיים אינם נחוצים בחותמים של מתודות. הבה נתבונן בכמה דוגמאות המשתמשות במבנה `ImportantExcerpt` אותו הגדרנו ברשימה 10-24.
 
-First, we’ll use a method named `level` whose only parameter is a reference to
-`self` and whose return value is an `i32`, which is not a reference to anything:
+ראשית, נשתמש במתודה בשם `level` שלה פרמטר אחד והוא הפניה ל-`self` והערך המוחזר שלה הוא `i32`, שהוא אינו הפניה:
 
 ```rust
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/no-listing-10-lifetimes-on-methods/src/main.rs:1st}}
 ```
 
-The lifetime parameter declaration after `impl` and its use after the type name
-are required, but we’re not required to annotate the lifetime of the reference
-to `self` because of the first elision rule.
+ההכרזה על פרמטר משך-החיים אחרי ה-`impl` והשימוש בפרמטר אחרי שם הטיפוס הם הכרחיים, אבל אין חובה לבאר את משך-החיים של ההפניה ל-`self` הודות לכלל הראשון של השמטת משך-חיים.
 
-Here is an example where the third lifetime elision rule applies:
+הינה דוגמא בה הכלל השלישי של השמטת משך-חיים ניתן ליישום:
 
 ```rust
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/no-listing-10-lifetimes-on-methods/src/main.rs:3rd}}
 ```
 
-There are two input lifetimes, so Rust applies the first lifetime elision rule
-and gives both `&self` and `announcement` their own lifetimes. Then, because
-one of the parameters is `&self`, the return type gets the lifetime of `&self`,
-and all lifetimes have been accounted for.
+יש כאן שני משכי-חיים של קלט, ולכן ראסט מפעילה את הכלל הראשון של השמטת משך-חיים ונותנת ל-`&self` ול-`announcement` משך-חיים משלהם. אז, כיוון שאחד הפרמטרים הוא `&self`, הערך המוחזר מקבל את משך-החיים של `&self`, וכך משך החיים של כל אחת מההפניות ידוע.
 
-### The Static Lifetime
+### משך החיים הסטטי
 
-One special lifetime we need to discuss is `'static`, which denotes that the
-affected reference *can* live for the entire duration of the program. All
-string literals have the `'static` lifetime, which we can annotate as follows:
+משך-חיים מיוחד בו אנו צריכים עוד לדון הוא משך החיים `'static`, שמציין שההפניה שהוא מתייג יכולה לשרוד לכל אורך החיים של התכנית כולה. לכל מחרוזת מפורשת יש את משך החיים `'static`, עובדה שניתן לבאר כך:
 
 ```rust
 let s: &'static str = "I have a static lifetime.";
 ```
 
-The text of this string is stored directly in the program’s binary, which
-is always available. Therefore, the lifetime of all string literals is
-`'static`.
+הטקסט של מחרוזת זו מאוחסן ישירות בבינרי של התכנית, שהוא תמיד נגיש. לכן, משך החיים של כל מחרוזת מפורשת הוא `'static`.
 
-You might see suggestions to use the `'static` lifetime in error messages. But
-before specifying `'static` as the lifetime for a reference, think about
-whether the reference you have actually lives the entire lifetime of your
-program or not, and whether you want it to. Most of the time, an error message
-suggesting the `'static` lifetime results from attempting to create a dangling
-reference or a mismatch of the available lifetimes. In such cases, the solution
-is fixing those problems, not specifying the `'static` lifetime.
+יתכן ותראו הצעות מהקומפיילר להשתמש במשך החיים `'static`,. אבל לפני שמציינים `'static` כמשך החיים של הפניה, חשבו האם ההפניה שלכם באמת שורדת לכל אורך התכנית שלכם או לאו, והאם אתם רוצים שכך יהיה. רוב הזמן, הודעת שגיאה שמציעה להשתמש במשך החיים `'static` נובעת מניסיון ליצור הפניה משתלשלת או מחוסר התאמה בין משכי-החיים שבנמצא. במקרים כאלה, הפתרון נעוץ בפתרון בעיות אלה, ולא בשימוש במשך החיים `'static`.
 
-## Generic Type Parameters, Trait Bounds, and Lifetimes Together
+## פרמטרי טיפוס גנריים, מגבלות תכונה, ומשכי-חיים כולם יחדיו
 
-Let’s briefly look at the syntax of specifying generic type parameters, trait
-bounds, and lifetimes all in one function!
+הבה נעיף מבט בתחביר לציון פרמטרי טיפוס גנריים, מגבלות תכונה, ומשכי-חיים, כולם בפונקציה אחת!
 
 ```rust
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/no-listing-11-generics-traits-and-lifetimes/src/main.rs:here}}
 ```
 
-This is the `longest` function from Listing 10-21 that returns the longer of
-two string slices. But now it has an extra parameter named `ann` of the generic
-type `T`, which can be filled in by any type that implements the `Display`
-trait as specified by the `where` clause. This extra parameter will be printed
-using `{}`, which is why the `Display` trait bound is necessary. Because
-lifetimes are a type of generic, the declarations of the lifetime parameter
-`'a` and the generic type parameter `T` go in the same list inside the angle
-brackets after the function name.
+זוהי הפונקציה `longest` f מרשימה 10-21 שמחזירה את המחרוזת הארוכה מבין שני חיתוכי מחרוזת. אבל הפעם יש לה פרמטר נוסף בשם `ann` מהטיפוס הגנרי `T`, שניתן להחליפו בכל טיפוס שמממש את התכונה `Display`, כפי שמצויין על-ידי ה-`where`. פרמטר נוסף זה יודפס תוך שימוש ב- `{}`, וזו הסיבה לכך שהתכונה `Display` הכרחית. היות ומשכי-חיים הם סוג של ג'נריק, ההכרזות של פרמטר משך-החיים `'a` ושל פרמטר הטיפוס הגנרי `T` נמצאים באותה הרשימה בתוך סוגריים משולשים אחרי שם הפונקציה.
 
-## Summary
+## סיכום
 
-We covered a lot in this chapter! Now that you know about generic type
-parameters, traits and trait bounds, and generic lifetime parameters, you’re
-ready to write code without repetition that works in many different situations.
-Generic type parameters let you apply the code to different types. Traits and
-trait bounds ensure that even though the types are generic, they’ll have the
-behavior the code needs. You learned how to use lifetime annotations to ensure
-that this flexible code won’t have any dangling references. And all of this
-analysis happens at compile time, which doesn’t affect runtime performance!
+כיסינו הרבה חומר בפרק זה! כעת, כשאתם יודעים אודות פרמטרי טיפוס גנריים, תכונות ומגבלות תכונה, ופרמטרי משך-חיים גנריים, אתם מוכנים לכתוב קוד ללא שכפול שעובד במצבים רבים ושונים. פרמטרי טיפוס גנריים מאפשרים לכם ליישם את הקוד עבור טיפוסים שונים. תכונות ומגבלות תכונה מוודאים שאפילו כאשר טיפוסים הם גנריים, הם עדיין יתנהגו כפי שהקוד דורש. למדתם כיצד להשתמש בביאורי משך-חיים כדי להבטיח שקוד גמיש זה לא יצור הפניות משתלשלות. וכל הניתוחים האלה מתבצעים בזמן הקומפילציה, ואינם משפיעים לרעה על יעילות הריצה!
 
-Believe it or not, there is much more to learn on the topics we discussed in
-this chapter: Chapter 17 discusses trait objects, which are another way to use
-traits. There are also more complex scenarios involving lifetime annotations
-that you will only need in very advanced scenarios; for those, you should read
-the [Rust Reference][reference]. But next, you’ll learn how to write tests in
-Rust so you can make sure your code is working the way it should.
+תאמינו או לא, אבל יש עוד הרבה מה להוסיף אודות הנושאים בהם דנו בפרק זה: פרק 17 דן באובייקטי תכונה, שהם דרך נוספת להשתמש בתכונות. יש מצבים יותר סבוכים המערבים ביאורי משך-חיים שישמשו אתכם במצבים מתקדמים למדי; עבור אלה, פנו [לתיעוד של ראסט][reference]. אבל עכשיו תעברו ללמוד איך לכתוב מבחנים בראסט כדי שתוכלו לוודא שהקוד שלכם פועל כשורה.
+ch04-02-references-and-borrowing.html#references-and-borrowing ch04-03-slices.html#string-slices-as-parameters
 
-[references-and-borrowing]:
-ch04-02-references-and-borrowing.html#references-and-borrowing
-[string-slices-as-parameters]:
-ch04-03-slices.html#string-slices-as-parameters
 [reference]: ../reference/index.html
