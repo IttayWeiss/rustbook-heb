@@ -2,9 +2,11 @@
 This is a translation into Hebrew of the main branch of the GitHub repository of the original book. The translation proceeds by replacing each of the files in the src directory by its translation. In this way, building the translated book is identical to building the original: mdbook build. This would build the entire book, and so the portions that have been translated would be in Hebrew, while the rest would be in the original English. 
 
 ## Translation status and auxiliary files
-Chapters 1-7 have been translated.
+Chapters 1-9 have been translate and reviwed. Chapter 17, 18, and 19 have been translated but not reviewed yet. Some of Chapter 10 has been translated. 
 
-A HebEngTerm.txt file in the root directory contains a list of standard Rust-related terminology with the chosen translations into Hebrew. 
+the file HebEngTerm.txt in the root directory contains a list of standard Rust-related terminology with the chosen translations into Hebrew. 
+
+The file HebEditingGuidelines.md in the rood directory contains general guidlines for contributors interested in translating. 
 
 ## Style of translation
 The translation aims to preserve the feel of the original text, while ahering to Hebrew idioms. That means that time tenses are mostly preserved, except when sounding very awkward in Hebrew, or if deviating from the original style significantly improves clarity. 
