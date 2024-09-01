@@ -1,31 +1,16 @@
-## Traits: Defining Shared Behavior
+## תכונות: הגדרת התנהגות משותפת
 
-A *trait* defines functionality a particular type has and can share with other
-types. We can use traits to define shared behavior in an abstract way. We can
-use *trait bounds* to specify that a generic type can be any type that has
-certain behavior.
+_תכונה_ מגדירה פונקציונאליות שטיפוס יכול לשתף עם טיפוסים אחרים. ניתן להשתמש בתכונות על מנת להגדיר התנהגות משותפת בצורה אבסטרקטית. בהקשר זה, משתמשים _במגבילי תכונות_ כדי לציין שטיפוס גנרי חייב לקיים תכונות מסוימות.
 
-> Note: Traits are similar to a feature often called *interfaces* in other
-> languages, although with some differences.
+> הערה: תכונות בראסט דומות לקונספט שבשפות תכנות אחרות נקרא אינטרפייס (interface), אולם עם כמה הבדלים.
 
-### Defining a Trait
+### הגדרת תכונה
 
-A type’s behavior consists of the methods we can call on that type. Different
-types share the same behavior if we can call the same methods on all of those
-types. Trait definitions are a way to group method signatures together to
-define a set of behaviors necessary to accomplish some purpose.
+ההתנהגות של טיפוס מורכבת מהמתודות שזמינות לקריאה על הטיפוס. טיפוסים שונים משתפים את אותה ההתנהגות אם ניתן לקרוא לאותן המתודות על כל הטיפוסים האלה. הגדרה של תכונה היא דרך לקבץ יחדיו חותמי מתודות ובכך להגדיר אוסף של התנהגויות הדרושות למטרה כלשהיא.
 
-For example, let’s say we have multiple structs that hold various kinds and
-amounts of text: a `NewsArticle` struct that holds a news story filed in a
-particular location and a `Tweet` that can have at most 280 characters along
-with metadata that indicates whether it was a new tweet, a retweet, or a reply
-to another tweet.
+לדוגמא, נאמר שיש לנו כמה מבנים שמכילים כמה סוגים וכמויות של טקסט: מבנה בשם `NewsArticle` עם כתבה עיתונאית, ומבנה בשם `Tweet` שמכיל טקסט של לא יותר מ-280 תוים יחד עם מטה-דאטה שמציין האם זה ציוץ חדש, ציוץ חוזר, או תגובה לציוץ אחר.
 
-We want to make a media aggregator library crate named `aggregator` that can
-display summaries of data that might be stored in a `NewsArticle` or `Tweet`
-instance. To do this, we need a summary from each type, and we’ll request
-that summary by calling a `summarize` method on an instance. Listing 10-12
-shows the definition of a public `Summary` trait that expresses this behavior.
+אנו מעוניינים ליצור מכולה בשם `aggregator` לניהול אוספי מדיה שתוכל להציג סיכומים של דאטה שיכול להיות מאוכסן במופעי `NewsArticle` או `Tweet`. על מנת לעשות זאת, נצטרך סיכום מכל טיפוס, ונרצה לקבל סיכום זה מהפעלת מתודה בשם `summarize` על מופעים. רשימה 10-12 מציגה את ההגדרה של התכונה הפומבית `Summary` שמבטאת התנהגות זו.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -33,34 +18,17 @@ shows the definition of a public `Summary` trait that expresses this behavior.
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-12/src/lib.rs}}
 ```
 
-<span class="caption">Listing 10-12: A `Summary` trait that consists of the
-behavior provided by a `summarize` method</span>
+<span class="caption">רשימה 10-12: התכונה `Summary` שמורכבת מההתנהגות שהמתודה `summarize` מספקת</span>
 
-Here, we declare a trait using the `trait` keyword and then the trait’s name,
-which is `Summary` in this case. We’ve also declared the trait as `pub` so that
-crates depending on this crate can make use of this trait too, as we’ll see in
-a few examples. Inside the curly brackets, we declare the method signatures
-that describe the behaviors of the types that implement this trait, which in
-this case is `fn summarize(&self) -> String`.
+כאן, אנו מכריזים על תכונה תוך שימוש במילת המפתח `trait` ולאחריה שם התכונה, שבמקרה זה הוא `Summary`. בנוסף, הכרזנו שהתכונה היא פומבית, על-ידי שימוש ב-`pub`, כך שמכולות המסתמכות על המכולה שלנו יוכלו להשתמש בתכונה זו, כפי שנראה בכמה דוגמאות. בתוך הסוגרים המסולסלים, אנו מכריזים על חותמי המתודות שמתארות את ההתנהגות של הטיפוסים שממשים את התכונה, ובמקרה זה מדובר על `fn summarize(&self) -> String`.
 
-After the method signature, instead of providing an implementation within curly
-brackets, we use a semicolon. Each type implementing this trait must provide
-its own custom behavior for the body of the method. The compiler will enforce
-that any type that has the `Summary` trait will have the method `summarize`
-defined with this signature exactly.
+אחרי חותם המתודה, במקום לספק מימוש בתוך סוגרים מסולסלים, אנו מסיימים בסימן הנקודה-פסיק. כל טיפוס שמממש תכונה זו חייב לספק את ההתנהגות הרצויה שלו על-ידי מימוש גוף המתודה. הקומפילר יוודא שכל טיפוס שמקיים את התכונה `Summary` מממש את המתודה `summarize` עם החותם הזה בדיוק.
 
-A trait can have multiple methods in its body: the method signatures are listed
-one per line and each line ends in a semicolon.
+תכונה יכולה להכריז על מספר רק של מתודות: חותמי המתודות מופיעות אחת לאחת ברשימה המופרדת על-ידי סימני נקודה-פסיק.
 
-### Implementing a Trait on a Type
+### מימוש תכונה עבור טיפוס
 
-Now that we’ve defined the desired signatures of the `Summary` trait’s methods,
-we can implement it on the types in our media aggregator. Listing 10-13 shows
-an implementation of the `Summary` trait on the `NewsArticle` struct that uses
-the headline, the author, and the location to create the return value of
-`summarize`. For the `Tweet` struct, we define `summarize` as the username
-followed by the entire text of the tweet, assuming that tweet content is
-already limited to 280 characters.
+כעת משהגדרנו את החותמים הרצויים של המתודות בתכונה `Summary`, ניתן לממש את התכונה עבור הטיפוסים שלנו במכולה לניהול אוספי מדיה. רשימה 10-13 מציגה מימוש של התכונה `Summary` עבור המבנה `NewsArticle` שמשתמש בכותרת, שם הכותב\ת, והמיקום לל מנת ליצור את הערך המוחזר של `summarize`. עבור המבנה `Tweet`, אנו מגדירים את `summarize` כשם המשתמש ולאחריו הציוץ במלואו, תחת ההנחה שתוכן הציוץ תמיד מוגבל ל-280 תווים.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -68,61 +36,29 @@ already limited to 280 characters.
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-13/src/lib.rs:here}}
 ```
 
-<span class="caption">Listing 10-13: Implementing the `Summary` trait on the
-`NewsArticle` and `Tweet` types</span>
+<span class="caption">רשימה 10-13: מימוש של התכונה `Summary` עבור המבנים `NewsArticle` ו-`Tweet`</span>
 
-Implementing a trait on a type is similar to implementing regular methods. The
-difference is that after `impl`, we put the trait name we want to implement,
-then use the `for` keyword, and then specify the name of the type we want to
-implement the trait for. Within the `impl` block, we put the method signatures
-that the trait definition has defined. Instead of adding a semicolon after each
-signature, we use curly brackets and fill in the method body with the specific
-behavior that we want the methods of the trait to have for the particular type.
+מימוש של תכונה עבור טיפוס דומה למימוש רגיל של מתודות. ההבדל הוא שאחרי ה-`impl` מציינים את שם התכונה שאנו מממשים, ואז את מילת המפתח `for`, ולאחריה את שם הטיפוס שעבורו אנו מממשים את התכונה. בתוך בלוק ה-`impl` אנו ממקמים את חותמי המתודות עליהם התכונה מכריזה. במקום לסיים כל חותם כזה בנקודה-פסיק, אנו משתמשים בסוגרים מסולסלים וכותבים את גוף המתודה עם קוד שמממש את הלוגיקה של ההתנהגות הרצויה של התכונה עבור הטיפוס הספציפי עבורו אנו מממשים את התכונה.
 
-Now that the library has implemented the `Summary` trait on `NewsArticle` and
-`Tweet`, users of the crate can call the trait methods on instances of
-`NewsArticle` and `Tweet` in the same way we call regular methods. The only
-difference is that the user must bring the trait into scope as well as the
-types. Here’s an example of how a binary crate could use our `aggregator`
-library crate:
+כעת, משהספריה מימשה את התכונה `Summary` עבור `NewsArticle` ו-`Tweet`, משתמשי המכולה יכולים לקרוא למתודות על מופעים של `NewsArticle` ושל `Tweet` באותה הדרך בה קוראים למתודות רגילות. ההבדל היחיד הוא שיש להכניס גם את התכונה, ולא רק את הטיפוסים, למתחם. הינה דוגמא כיצד מכולה בינארית יכולה להשתמש במכולת הספריה `aggregator`:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/no-listing-01-calling-trait-method/src/main.rs}}
 ```
 
-This code prints `1 new tweet: horse_ebooks: of course, as you probably already
+קוד זה מדפיס `1 new tweet: horse_ebooks: of course, as you probably already
 know, people`.
 
-Other crates that depend on the `aggregator` crate can also bring the `Summary`
-trait into scope to implement `Summary` on their own types. One restriction to
-note is that we can implement a trait on a type only if at least one of the
-trait or the type is local to our crate. For example, we can implement standard
-library traits like `Display` on a custom type like `Tweet` as part of our
-`aggregator` crate functionality, because the type `Tweet` is local to our
-`aggregator` crate. We can also implement `Summary` on `Vec<T>` in our
-`aggregator` crate, because the trait `Summary` is local to our `aggregator`
-crate.
+מכולות אחרות שמסתמכות על המכולה `aggregator` יכולות להכניס את התכונה `Summary` למתחם ולממש את `Summary` על טיפוסים משלהם. מגבלה חשובה היא שניתן לממש תכונה על טיפוס בתנאי שאו שהתכונה או שהטיפוס מוגדרים לוקאלית במכולה בה מתבצע המימוש. למשל, ניתן לממש תכונות של הספריה הסטנדרטית, כמו `Display`, על טיפוסים כמו `Tweet` כחלק מהמכולה `aggregator`, כיוון שהטיפוס `Tweet` מוגדר לוקאלית במכולה `aggregator`. ניתן גם לממש את התכונה `Summary` עבור `Vec<T>` במכולה `aggregator`, כיוון שהתכונה `Summary` מוגדרת לוקאלית במכולה `aggregator`.
 
-But we can’t implement external traits on external types. For example, we can’t
-implement the `Display` trait on `Vec<T>` within our `aggregator` crate,
-because `Display` and `Vec<T>` are both defined in the standard library and
-aren’t local to our `aggregator` crate. This restriction is part of a property
-called *coherence*, and more specifically the *orphan rule*, so named because
-the parent type is not present. This rule ensures that other people’s code
-can’t break your code and vice versa. Without the rule, two crates could
-implement the same trait for the same type, and Rust wouldn’t know which
-implementation to use.
+אבל אי-אפשר לממש תכונות חיצוניות עבור טיפוסים חיצוניים. למשל, לא ניתן לממש את התכונה `Display` עבור `Vec<T>` בתוך המכולה `aggregator`, משום שגם התכונה `Display` וגם הטיפוס `Vec<T>` מוגדרים בספריה הסטנדרטית, ולכן אינם לוקאלים למכולה `aggregator`. מגבלה זו מהווה חלק מתכונה של ראסט שנקראת _קוהרנטיות_ (coherence), וביתר פירוט _כלל היתמות_ (the orphan rule), שנקרא כך מכיוון שטיפוס האב אינו נמצא. כלל זה מבטיח שקוד של אחרים לא יוכל לשבור את הקוד שלכם, ולהפך. ללא כלל זה, שתי מכולות היו יכולות לממש את אותה התכונה עבור אותו הטיפוס, וראסט לא תוכל לדעת באיזה מימוש להשתמש.
 
-### Default Implementations
+### מימושי ברירת-מחדל
 
-Sometimes it’s useful to have default behavior for some or all of the methods
-in a trait instead of requiring implementations for all methods on every type.
-Then, as we implement the trait on a particular type, we can keep or override
-each method’s default behavior.
+לעיתים מועיל שיש התנהגות ברירת-מחדל עבור כמה, או כל, המתודות בתכונה במקום להצטרך לממש את כל המתודות עבור כל טיפוס וטיפוס.
+במצב זה, בעודנו מממשים את התכונה עבור טיפוס מסוים, ניתן לשמור על המימוש הקיים או להחליפו במימוש אחר שמיישם התנהגות שונה מברירת המחדל.
 
-In Listing 10-14 we specify a default string for the `summarize` method of the
-`Summary` trait instead of only defining the method signature, as we did in
-Listing 10-12.
+ברשימה 10-14 אנו מספקים מחרוזת כברירת מחדל עבור המתודה `summarize` שבתכונה `Summary` במקום רק להכריז על חותם המתודה, כפי שעשינו ברשימה 10-12.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -130,90 +66,59 @@ Listing 10-12.
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-14/src/lib.rs:here}}
 ```
 
-<span class="caption">Listing 10-14: Defining a `Summary` trait with a default
-implementation of the `summarize` method</span>
+<span class="caption">רשימה 10-14: הגדרת התכונה `Summary` עם מימוש ברירת-מחדל עבור המתודה `summarize`</span>
 
-To use a default implementation to summarize instances of `NewsArticle`, we
-specify an empty `impl` block with `impl Summary for NewsArticle {}`.
+בכדי להשתמש במימוש ברירת המחדל כדי לסכם מופעים של `NewsArticle`, כל שיש לעשות הוא לספק בלוק `impl` ריק: `impl Summary for NewsArticle {}`.
 
-Even though we’re no longer defining the `summarize` method on `NewsArticle`
-directly, we’ve provided a default implementation and specified that
-`NewsArticle` implements the `Summary` trait. As a result, we can still call
-the `summarize` method on an instance of `NewsArticle`, like this:
+אומנם לא הגדרנו ישירות את המתודה `summarize` עבור `NewsArticle`, אולם בתכונה קיים מימוש ברירת מחדל וציינו כי `NewsArticle` מקיים את התכונה `Summary`. כתוצאה מכך, עדיין ניתן לקרוא למתודה `summarize` על מופעים של `NewsArticle`, כך:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/no-listing-02-calling-default-impl/src/main.rs:here}}
 ```
 
-This code prints `New article available! (Read more...)`.
+קוד זה מדפיס `New article available! (Read more...)`.
 
-Creating a default implementation doesn’t require us to change anything about
-the implementation of `Summary` on `Tweet` in Listing 10-13. The reason is that
-the syntax for overriding a default implementation is the same as the syntax
-for implementing a trait method that doesn’t have a default implementation.
+יצירת מימוש ברירת המחדל אינה דורשת מאיתנו לשנות דבר בקשר למימוש של `Summary` עבור `Tweet` ברשימה 10-13. הסיבה היא שהתחביר שמחליף מימוש ברירת מחדל קיימת הוא זהה לתחביר של מימוש מתודה של תכונה שאין לה מימוש ברירת מחדל.
 
-Default implementations can call other methods in the same trait, even if those
-other methods don’t have a default implementation. In this way, a trait can
-provide a lot of useful functionality and only require implementors to specify
-a small part of it. For example, we could define the `Summary` trait to have a
-`summarize_author` method whose implementation is required, and then define a
-`summarize` method that has a default implementation that calls the
-`summarize_author` method:
+מימושי ברירת מחדל יכולים לקרוא למתודות אחרות בתכונה, אפילו אם למתודות אלה אין מימושי ברירת מחדל. בצורה זו, תכונה יכולה לספק פונקציונאליות שימושית רבה ולדרוש ממממשים לספק רק חלק קטן של המימושים הדרושים לתכונה. למשל, ניתן להכריז כי בתכונה `Summary` יש את המתודה `summarize_author`, שמימושה נדרש, ואז להגדיר את המתודה `summarize` עם מימוש ברירת מחדל שקורא למתודה `summarize_author`:
 
 ```rust,noplayground
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/no-listing-03-default-impl-calls-other-methods/src/lib.rs:here}}
 ```
 
-To use this version of `Summary`, we only need to define `summarize_author`
-when we implement the trait on a type:
+כדי להשתמש בגרסה זו של `Summary`, כל שיש לעשות הוא לתת מימוש עבור המתודה `summarize_author` בזמן שמממשים את התכונה עבור טיפוס:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/no-listing-03-default-impl-calls-other-methods/src/lib.rs:impl}}
 ```
 
-After we define `summarize_author`, we can call `summarize` on instances of the
-`Tweet` struct, and the default implementation of `summarize` will call the
-definition of `summarize_author` that we’ve provided. Because we’ve implemented
-`summarize_author`, the `Summary` trait has given us the behavior of the
-`summarize` method without requiring us to write any more code.
+מרגע שנגדיר את `summarize_author`, נוכל לקרוא ל-`summarize` על מופעים של המבנה `Tweet`, ומימוש ברירת המחדל של `summarize` ישתמש במימוש שסיפקנו עבור המתודה `summarize_author`. בגלל שמימשנו את `summarize_author`, התכונה `Summary` מספקת לנו את ההתנהגות של המתודה `summarize` ללא צורך בכתיבת קוד נוסף.
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/no-listing-03-default-impl-calls-other-methods/src/main.rs:here}}
 ```
 
-This code prints `1 new tweet: (Read more from @horse_ebooks...)`.
+קוד זה מדפיס `1 new tweet: (Read more from @horse_ebooks...)`.
 
-Note that it isn’t possible to call the default implementation from an
-overriding implementation of that same method.
+שימו לב שלא ניתן ניתן לקרוא למימוש ברירת מחדל מתוך יישום שמחליף את ברירת המחדל של אותה המתודה.
 
-### Traits as Parameters
+### תכונות כפרמטרים
 
-Now that you know how to define and implement traits, we can explore how to use
-traits to define functions that accept many different types. We'll use the
-`Summary` trait we implemented on the `NewsArticle` and `Tweet` types in
-Listing 10-13 to define a `notify` function that calls the `summarize` method
-on its `item` parameter, which is of some type that implements the `Summary`
-trait. To do this, we use the `impl Trait` syntax, like this:
+כעת שאתם יודעים כיצד להגדיר ולממש תכונות, נוכל להבין כיצד להשתמש בתכונות על מנת להגדיר פונקציות שמקבלות טיפוסים רבים. אנו עומדים להשתמש בתכונה `Summary` שיישמנו ברשימה 10-13 עבור הטיפוסים `NewsArticle` ו-`Tweet` כדי להגדיר את הפונקציה `notify` שקוראת למתודה `summarize` על הפרמטר `item` שלה, שהוא יכול מהיות מכל טיפוס שהוא שמממש את התכונה `Summary`. לשם כך, אנו משתמשים בתחביר ה-`impl Trait`, כך:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/no-listing-04-traits-as-parameters/src/lib.rs:here}}
 ```
 
-Instead of a concrete type for the `item` parameter, we specify the `impl`
-keyword and the trait name. This parameter accepts any type that implements the
-specified trait. In the body of `notify`, we can call any methods on `item`
-that come from the `Summary` trait, such as `summarize`. We can call `notify`
-and pass in any instance of `NewsArticle` or `Tweet`. Code that calls the
-function with any other type, such as a `String` or an `i32`, won’t compile
-because those types don’t implement `Summary`.
+במקום טיפוס קונקרטי עבור הפרמטר `item`, השתמשנו במילת המפתח `impl` ובשם של התכונה. פרמטר זה מקבל כל טיפוס שמממש את התכונה המצויינת. בגוף של הפונקציה `notify`, ניתן לקרוא על `item` לכל תכונה שמגיעה מהתכונה `Summary`, כגון המתודה `summarize`. ניתן לקרוא ל-`notify` ולהעביר לה כל מופע של `NewsArticle` או של `Tweet`. קוד שינסה לקרוא לפונקציה על כל טיפוס אחד, כמו `String` או `i32`, לא יעבור קומפילציה שכן טיפוסים אלה לא מממשים את התכונה `Summary`.
 
 <!-- Old headings. Do not remove or links may break. -->
+
 <a id="fixing-the-largest-function-with-trait-bounds"></a>
 
-#### Trait Bound Syntax
+#### תחביר מגבילי תכונות
 
-The `impl Trait` syntax works for straightforward cases but is actually syntax
-sugar for a longer form known as a *trait bound*; it looks like this:
+תחביר ה-`impl Trait` עובד במקרים פשוטים אבל הוא בעצם סוכר תחבירי לתצורה ארוכה יותר הידועה _כמגביל תכונה_, שנראית כך:
 
 ```rust,ignore
 pub fn notify<T: Summary>(item: &T) {
@@ -221,122 +126,77 @@ pub fn notify<T: Summary>(item: &T) {
 }
 ```
 
-This longer form is equivalent to the example in the previous section but is
-more verbose. We place trait bounds with the declaration of the generic type
-parameter after a colon and inside angle brackets.
+תצורה ארוכה זו שקולה לדוגמא מהסעיף הקודם, אולם היא יותר מפורטת. יש למקם מגבלות תכונה כחלק מההכרזה על פרמטר טיפוס גנרי לאחר הנקודותים ובתוך הסוגרים המשולשים.
 
-The `impl Trait` syntax is convenient and makes for more concise code in simple
-cases, while the fuller trait bound syntax can express more complexity in other
-cases. For example, we can have two parameters that implement `Summary`. Doing
-so with the `impl Trait` syntax looks like this:
+תחביר ה-`impl Trait` הוא נוח ומאפשר קוד יותר מתומצת במקרים פשוטים, בעוד שתחביר מגבילי התכונה המלא יכול לבטא מצבים מורכבים יותר. לדוגמא, יכולים להיות שני פרמטרים שמממשים את `Summary`. תוך שימוש בתחביר `impl Trait` זה יראה כך:
 
 ```rust,ignore
 pub fn notify(item1: &impl Summary, item2: &impl Summary) {
 ```
 
-Using `impl Trait` is appropriate if we want this function to allow `item1` and
-`item2` to have different types (as long as both types implement `Summary`). If
-we want to force both parameters to have the same type, however, we must use a
-trait bound, like this:
+שימוש ב-`impl Trait` מומלץ אם אנחנו רוצים שהפונקציה תאפשר ל-`item1` ול-`item2` להיות מטיפוסים שונים (כל עוד שניתהם מממשים את `Summary`). אם נרצה לאכוף על שני הפרמטרים להיות מאותו טיפוס, לאומת זאת, יהיה עלינו להשתמש במגביל תכונה, בצורה הזאת:
 
 ```rust,ignore
 pub fn notify<T: Summary>(item1: &T, item2: &T) {
 ```
 
-The generic type `T` specified as the type of the `item1` and `item2`
-parameters constrains the function such that the concrete type of the value
-passed as an argument for `item1` and `item2` must be the same.
+הטיפוס הגנרי `T` מתפקד כטיפוס של הפרמטרים `item1` ו-`item2` והוא מגביל את הפונקציה ומוודא שהטיפוסים הקונקרטים של הערכים המועברים כארגומנטים ל-`item1` ול-`item2` זהים זה לזה.
 
-#### Specifying Multiple Trait Bounds with the `+` Syntax
+#### ציון ריבוי מגבילי תכונה באמצעות התחביר `+`
 
-We can also specify more than one trait bound. Say we wanted `notify` to use
-display formatting as well as `summarize` on `item`: we specify in the `notify`
-definition that `item` must implement both `Display` and `Summary`. We can do
-so using the `+` syntax:
+ניתן גם לציין יותר מתכונה אחת במגביל תכונה. נניח שאנו רוצים ש-`notify` תשתמש בהצגה מפורמטת בנוסף ל-`summarize` עבור `item`: נציין בהגדרת `notify` ש-`item` חייב לממש גם את `Display` וגם את `Summary`. עושים זאת באמצעות התחביר `+`:
 
 ```rust,ignore
 pub fn notify(item: &(impl Summary + Display)) {
 ```
 
-The `+` syntax is also valid with trait bounds on generic types:
+התחביר `+` תקף גם עם מגבילי תכונה על טיפוסים גנרים:
 
 ```rust,ignore
 pub fn notify<T: Summary + Display>(item: &T) {
 ```
 
-With the two trait bounds specified, the body of `notify` can call `summarize`
-and use `{}` to format `item`.
+מששני מגבילי התכונה מצויינים, בגוף של `notify` ניתן לקרוא ל-`summarize` וכן להשתמש ב-`{}` כדי לפרמט את `item`.
 
-#### Clearer Trait Bounds with `where` Clauses
+#### מגבילי תכונה ברורים יותר באמצעות סעיפי `where`
 
-Using too many trait bounds has its downsides. Each generic has its own trait
-bounds, so functions with multiple generic type parameters can contain lots of
-trait bound information between the function’s name and its parameter list,
-making the function signature hard to read. For this reason, Rust has alternate
-syntax for specifying trait bounds inside a `where` clause after the function
-signature. So instead of writing this:
+לשימוש בהרבה מגבילי תכונה יש חסרונות. לכל טיפוס גנרי יש את מגבילי התכונה שלו, כך שפונקציות עם כמה פרמטרי טיפוס גנרים יכולות לכלול כמות נכבדת של מגבילי תכונה בין שם הפונקציה ורשימת הפרמטרים שלה, וזה יכול להקשות על קריאת חותם הפונקציה. בשל כך, ראסט מאפשרת תחביר חלופי לציון מגבילי תכונה בתוך סעיף `where` המופיע אחרי חותם הפונקציה. כך שבמקום לכתוב כך:
 
 ```rust,ignore
 fn some_function<T: Display + Clone, U: Clone + Debug>(t: &T, u: &U) -> i32 {
 ```
 
-we can use a `where` clause, like this:
+ניתן להשתמש בסעיף `where`, בצורה הזאת:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/no-listing-07-where-clause/src/lib.rs:here}}
 ```
 
-This function’s signature is less cluttered: the function name, parameter list,
-and return type are close together, similar to a function without lots of trait
-bounds.
+כך חותם הפונקציה פחות עמוס: שם הפונקציה, רשימת הפרמטרים, וטיפוס הערך המוחזר נמצאים יחדיו, בדומה למצב עבור פונקציה ללא כל מגבילי תכונה.
 
-### Returning Types that Implement Traits
+### החזרת טיפוסים שמממשים תכונות
 
-We can also use the `impl Trait` syntax in the return position to return a
-value of some type that implements a trait, as shown here:
+ניתן גם להשתמש בתחביר `impl Trait` בערך המוחזר כדי להחזיר ערך של טיפוס כלשהו שמממש תכונה, כמוצג כאן:
 
 ```rust,ignore
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/no-listing-05-returning-impl-trait/src/lib.rs:here}}
 ```
 
-By using `impl Summary` for the return type, we specify that the
-`returns_summarizable` function returns some type that implements the `Summary`
-trait without naming the concrete type. In this case, `returns_summarizable`
-returns a `Tweet`, but the code calling this function doesn’t need to know that.
+תוך שימוש ב-`impl Summary` כטיפוס הערך המוחזר, אנו מציינים שהפונקציה `returns_summarizable` מחזירה איזשהו טיפוס שמממש את התכונה `Summary`, מבלי שאנו מספקים טיפוס מוחזר קונקרטי. במקרה זה, `returns_summarizable` מחזיר טיפוס `Tweet`, אבל הקוד הקורא לפונקציה זו לא צריך לדעת זאת.
 
-The ability to specify a return type only by the trait it implements is
-especially useful in the context of closures and iterators, which we cover in
-Chapter 13. Closures and iterators create types that only the compiler knows or
-types that are very long to specify. The `impl Trait` syntax lets you concisely
-specify that a function returns some type that implements the `Iterator` trait
-without needing to write out a very long type.
+היכולת לציין טיפוס לערך המוחזר רק לפי התכונה שהוא מיישם היא יעילה במיוחד בהקשר של סגורים ואיטרטורים, עליהם נדון בפרק 13. סגורים ואיטרטורים יוצרים טיפוסים שרק הקומפילר יודע מה הטיפוס שלהם או שהם ארוכים מידי מלציין מפורשות. תחביר ה-`impl Trait` מאפשר לציין בקצרה שפונקציה מחזירה ערך שמממש את התכונה `Iterator` ללא צורך לכתוב טיפוס ארוך ומייגע.
 
-However, you can only use `impl Trait` if you’re returning a single type. For
-example, this code that returns either a `NewsArticle` or a `Tweet` with the
-return type specified as `impl Summary` wouldn’t work:
+אבל, ניתן להשתמש ב-`impl Trait` רק אם מחזירים ערך יחיד. למשל, קוד זה, שמחזיר או `NewsArticle` או `Tweet`, לא יעבוד אם נציין את הטיפוס המוחזר כ-`impl Summary`:
 
 ```rust,ignore,does_not_compile
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/no-listing-06-impl-trait-returns-one-type/src/lib.rs:here}}
 ```
 
-Returning either a `NewsArticle` or a `Tweet` isn’t allowed due to restrictions
-around how the `impl Trait` syntax is implemented in the compiler. We’ll cover
-how to write a function with this behavior in the [“Using Trait Objects That
-Allow for Values of Different
-Types”][using-trait-objects-that-allow-for-values-of-different-types]<!--
-ignore --> section of Chapter 17.
+החזרה של טיפוס `NewsArticle` או `Tweet` לא מותרת בשל מגבלות הקשורות לדרך בה תחביר ה-`impl Trait` מיושם בקומפילר. אנו נראה כיצד ליצור פונקציה עם התנהגות זו בפרק 17.
 
-### Using Trait Bounds to Conditionally Implement Methods
+### שימוש במגבילי תכונה לשם מימוש מותנה של מתודות
 
-By using a trait bound with an `impl` block that uses generic type parameters,
-we can implement methods conditionally for types that implement the specified
-traits. For example, the type `Pair<T>` in Listing 10-15 always implements the
-`new` function to return a new instance of `Pair<T>` (recall from the
-[“Defining Methods”][methods]<!-- ignore --> section of Chapter 5 that `Self`
-is a type alias for the type of the `impl` block, which in this case is
-`Pair<T>`). But in the next `impl` block, `Pair<T>` only implements the
-`cmp_display` method if its inner type `T` implements the `PartialOrd` trait
-that enables comparison *and* the `Display` trait that enables printing.
+על-ידי שימוש במגבילי תכונה עם בלוק `impl` שמשתמש בפרמטרי טיפוס גנרים, ניתן לממש מתודות באופן מותנה עבור טיפוסים שמממשים את התכונה הספציפית. למשל, הטיפוס `Pair<T>` מרשימה 10-15 תמיד מממש את הפונקציה `new` כך שתחזיר מופע חדש של `Pair<T>` (זכרו מהגדרה [“Defining Methods”][methods]<!-- ignore --> מפרק 5 ש-`Self` הוא טיפוס נרדף לטיפוס של בלוק ה-`impl`, שבמקרה זה הוא `Pair<T>`). אבל בבלוק ה-`impl` הבא, `Pair<T>` מממש את המתודה `cmp_display` רק אם הטיפוס הפנימי `T` מממש את התכונה `PartialOrd` שמאפשרת השוואה _וגם_ את התכונה `Display` שמאפשרת הדפסה.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -344,15 +204,9 @@ that enables comparison *and* the `Display` trait that enables printing.
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-15/src/lib.rs}}
 ```
 
-<span class="caption">Listing 10-15: Conditionally implementing methods on a
-generic type depending on trait bounds</span>
+<span class="caption">רשימה 10-15: מימוש מותנה של מתודות עבור טיפוס גנרי בהתאם למגבילי תכונה</span>
 
-We can also conditionally implement a trait for any type that implements
-another trait. Implementations of a trait on any type that satisfies the trait
-bounds are called *blanket implementations* and are extensively used in the
-Rust standard library. For example, the standard library implements the
-`ToString` trait on any type that implements the `Display` trait. The `impl`
-block in the standard library looks similar to this code:
+ניתן גם לממש תכונה לכל טיפוס בתנאי שהוא מממש תכונה אחרת. מימושים של תכונה על כל טיפוס שמקיים את מגבילי התכונה נקראים _מימושי שמיכה_ (blanket implementations) והם בשימוש נרחב בספריה הסטנדרטית של ראסט. למשל, הספריה הסטנדרטית מממשת את התכונה `ToString` עבור כל טיפוס שמממש את התכונה `Display`. בלוק ה-`impl` בספריה הסטנדרטית נראה כמו הקוד הבא:
 
 ```rust,ignore
 impl<T: Display> ToString for T {
@@ -360,29 +214,16 @@ impl<T: Display> ToString for T {
 }
 ```
 
-Because the standard library has this blanket implementation, we can call the
-`to_string` method defined by the `ToString` trait on any type that implements
-the `Display` trait. For example, we can turn integers into their corresponding
-`String` values like this because integers implement `Display`:
+משום שבספריה הסטנדרטית יש מימוש שמיכה זה, ניתן לקרוא למתודה `to_string` אשר מוגדרת בתכונה `ToString` עבור על טיפוס שמממש את התכונה `Display`. לדוגמא, ניתן להפוך מספרים שלמים ליצוג שלהם כערכי מחרוזות בצורה הבאה, משום שמספרים שלמים מממשים את `Display`:
 
 ```rust
 let s = 3.to_string();
 ```
 
-Blanket implementations appear in the documentation for the trait in the
-“Implementors” section.
+מימושי שמיכה מופיעים בתיעוד התכונה תחת הסעיף “Implementors”.
 
-Traits and trait bounds let us write code that uses generic type parameters to
-reduce duplication but also specify to the compiler that we want the generic
-type to have particular behavior. The compiler can then use the trait bound
-information to check that all the concrete types used with our code provide the
-correct behavior. In dynamically typed languages, we would get an error at
-runtime if we called a method on a type which didn’t define the method. But Rust
-moves these errors to compile time so we’re forced to fix the problems before
-our code is even able to run. Additionally, we don’t have to write code that
-checks for behavior at runtime because we’ve already checked at compile time.
-Doing so improves performance without having to give up the flexibility of
-generics.
+תכונות ומגבילי תכונה מאפשרים לנו לכתוב קוד שמשתמש בפרמטרי טיפוס גנרים על מנת להימנע משכפול קוד אבל גם כדי לציין לקומפילר שאנו מעוניינים שלטיפוס הגנרי תהיה התנהגות מסוימת. הקומפילר יכול אז להשתמש במגביל התכונה כדי לבדוק שכל הטיפוסים הקונקרטים שבשימוש הקוד שלנו מספקים את ההתנהגות הנכונה. בשפות עם טיפוסים דינאמים, נקבל שגיאה בזמן הריצה במידה ונקרא למתודה על טיפוס שלא מממש את המתודה. אבל ראסט מזהה שגיאות אלה בזמן הקומפילציה וכך אנו מטפלים בבעיות לפני שהקוד אפילו רץ. בנוסף, אין הכרח לכתוב קוד שבודק בזמן הריצה האם התנהגות נחוצה קיימת, כיוון שזה כבר מובטח במידה והקוד עבר קומפילציה.
+בצורה זו, יעילות הקוד משתפרת וזאת ללא צורך לוותר על הגמישות של ג'נריקס.
 
 [using-trait-objects-that-allow-for-values-of-different-types]: ch17-02-trait-objects.html#using-trait-objects-that-allow-for-values-of-different-types
 [methods]: ch05-03-method-syntax.html#defining-methods

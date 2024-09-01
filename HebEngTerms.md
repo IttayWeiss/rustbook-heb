@@ -9,6 +9,7 @@
 | associated function         | פונקציה משויכת                |
 | associated type             | טיפוס משוייך                  |
 | backtrace                   | מעקב-לאחור                    |
+| blanket implementation      | הכימש ישומימ                  |
 | borrowing                   | השאלה                         |
 | borrow checker              | בודק ההשאלות                  |
 | byte                        | בית, בייט                     |
@@ -16,6 +17,7 @@
 | char, character             | תו                            |
 | clone                       | שיבוט                         |
 | closure                     | סגור                          |
+| coherence                   | תויטנרהוק                     |
 | collection data type        | טיפוס נתונים מאגד             |
 | cluster                     | אשכול                         |
 | compile (v)                 | לקמפל                         |
@@ -56,6 +58,7 @@
 | grapheme                    | גרפמה                         |
 | hash map                    | מפת גיבוב                     |
 | heap                        | ערימה                         |
+| identifier                  | ההזמ-םש                       |
 | immutable                   | מנוע-שינוי                    |
 | indent (v)                  | להזיח                         |
 | instance                    | מופע                          |
@@ -81,6 +84,7 @@
 | namespace (v)               | למקם                          |
 | nightly rust                | ראסט לילית                    |
 | object-oriented programming | תכנות מונחה-עצמים             |
+| orphan rule                 | תומתיה ללכ                    |
 | overflow                    | גלישה                         |
 | owner                       | בעלים                         |
 | ownership                   | בעלות                         |
@@ -91,6 +95,7 @@
 | polymorphism                | פולימורפיזם, רב־צורתיות       |
 | prelude                     | פרליוד                        |
 | propagation                 | השנעה                         |
+| refactor                    | רטקפל (לעופ)                  |
 | reference                   | הפניה                         |
 | Rust                        | (נ') ראסט                     |
 | Rust idiom                  | אידיאומות ראסט                |

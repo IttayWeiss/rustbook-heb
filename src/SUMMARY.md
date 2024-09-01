@@ -55,9 +55,9 @@
     - [שגיאות ברות-שיקום ו-`Result`](ch09-02-recoverable-errors-with-result.md)
     - [להיכנס לפאניקה -- כן או לא](ch09-03-to-panic-or-not-to-panic.md)
 
-- [Generic Types, Traits, and Lifetimes](ch10-00-generics.md)
-    - [Generic Data Types](ch10-01-syntax.md)
-    - [Traits: Defining Shared Behavior](ch10-02-traits.md)
+- [טיפוסים גנרים, תכונות, ומשך-חיים](ch10-00-generics.md)
+    - [טיפוסי נתונים גנרים](ch10-01-syntax.md)
+    - [תכונות: הגדרת התנהגות משותפת](ch10-02-traits.md)
     - [וידוא הפניות באמצעות משך-חיים](ch10-03-lifetime-syntax.md)
 
 - [Writing Automated Tests](ch11-00-testing.md)

@@ -1,46 +1,20 @@
-# Generic Types, Traits, and Lifetimes
+# טיפוסים גנריים, תכונות, ומשך-חיים
 
-Every programming language has tools for effectively handling the duplication
-of concepts. In Rust, one such tool is *generics*: abstract stand-ins for
-concrete types or other properties. We can express the behavior of generics or
-how they relate to other generics without knowing what will be in their place
-when compiling and running the code.
+בכל שפת תכנות יש כלים לטיפול אפקטיבי בכפילות של מושגים. בראסט, אחד מהכלים האלה הוא _ג'נריקס_: מחזיקי-מקום אבסטרקטים עבור טיפוסים קונקרטים או תכונות אחרות. אנו יכולים לבטא את ההתנהגות של ג'נריקס, או לתאר כיצד הם עומדים ביחס לג'נריקס אחרים, ללא ידיעה מוקדמת אודות מה יתפוס את מקומם בזמן קימפול והרצת הקוד.
 
-Functions can take parameters of some generic type, instead of a concrete type
-like `i32` or `String`, in the same way a function takes parameters with
-unknown values to run the same code on multiple concrete values. In fact, we’ve
-already used generics in Chapter 6 with `Option<T>`, Chapter 8 with `Vec<T>`
-and `HashMap<K, V>`, and Chapter 9 with `Result<T, E>`. In this chapter, you’ll
-explore how to define your own types, functions, and methods with generics!
+פונקציות יכולות לקבל פרמטרים מטיפוס גנרי, במקום טיפוס קונקרטי כמו `i32` או `String`, באותו אופן בו פונקציה מקבלת פרמטרים עם ערכים שאינם ידועים מראש על מנת להריץ את אותו הקוד עם ערכים קונקרטים שונים. למעשה, כבר עשינו שימוש בג'נריקס בפרק 6 עם `Option<T>`, בפרק 8 עם `Vec<T>` ועם `HashMap<K, V>`, ובפרק 9 עם `Result<T, E>`. בפרק זה תראו כיצד להגדיר טיפוסים, פונקציות, ומתודות משלכם עם ג'נריקס!
 
-First, we’ll review how to extract a function to reduce code duplication. We’ll
-then use the same technique to make a generic function from two functions that
-differ only in the types of their parameters. We’ll also explain how to use
-generic types in struct and enum definitions.
+ראשית, נראה כיצד לבודד קוד ולמקם אותו בפונקציה על מנת להימנע מכפילות קוד. לאחר מכן נעשה שימוש באותה הטכניקה כדי ליצור פונקציה גנרית משתי פונקציות שהשוני היחיד ביניהן הוא רק בטיפוסים של המשתנים שלהם. נסביר גם כיצד להשתמש בטיפוסים גנרים בהגדרות של מבנים ומבחרים.
 
-Then you’ll learn how to use *traits* to define behavior in a generic way. You
-can combine traits with generic types to constrain a generic type to accept
-only those types that have a particular behavior, as opposed to just any type.
+הנושא הבא יהיה שימוש _בתכונות_ על מנת להגדיר התנהגויות בצורה גנרית. ניתן לשלב תכונות עם טיפוסים גנרים בכדי להטיל מגבלות על טיפוס גנרי כך שיקבל רק טיפוסים בעלי התנהגות מסוימת, בניגוד לסתם כל טיפוס שהוא.
 
-Finally, we’ll discuss *lifetimes*: a variety of generics that give the
-compiler information about how references relate to each other. Lifetimes allow
-us to give the compiler enough information about borrowed values so that it can
-ensure references will be valid in more situations than it could without our
-help.
+לבסוף, נדון במושג _משך חיים_: סוג של ג'נריקס שמספק לקומפילר מידע אודות יחסים בין הפניות. משכי-חיים מאפשרים לנו לתת לקומפילר מספיק מידע בנוגע לערכים שאולים כך שהוא יוכל לוודא את תקינותן של הפניות במקרים רבים יותר משיוכל לעשות ללא עזרה זו.
 
-## Removing Duplication by Extracting a Function
+## הסרת כפילויות על-ידי מיקום קוד בפונקציה
 
-Generics allow us to replace specific types with a placeholder that represents
-multiple types to remove code duplication. Before diving into generics syntax,
-then, let’s first look at how to remove duplication in a way that doesn’t
-involve generic types by extracting a function that replaces specific values
-with a placeholder that represents multiple values. Then we’ll apply the same
-technique to extract a generic function! By looking at how to recognize
-duplicated code you can extract into a function, you’ll start to recognize
-duplicated code that can use generics.
+ג'נריקס מאפשרים לנו להחליף טיפוסים ספציפים במחזיקי-מקום שמייצגים ריבוי טיפוסים, וזאת על מנת להימנע מכפילות קוד. לפני שנצלול לתחביר של ג'נריקס, הבה נתבונן תחילה כיצד להימנע מכפילות בצורה שאינה משתמשת בטיפוסים גנרים, על-ידי מיקום קוד בפונקציה שמחליפה ערכים ספציפים במחזיק-מקום שמייצג ריבוי ערכים. ואז נתשמש באותה הטכניקה על מנת ליצור פונקציה גנרית! תוך התבוננות כיצד לזהות כפילות קוד שניתנת לפתרון באמצעות פונקציה, תתחילו לזהות כפילות קוד שניתנת לפתרון באמצעות ג'נריקס.
 
-We begin with the short program in Listing 10-1 that finds the largest number
-in a list.
+אנו פוצחים בתכנית הקצרה ברשימה 10-1 המוצאת את המספר הגדול ביותר ברשימה.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -48,21 +22,12 @@ in a list.
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-01/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 10-1: Finding the largest number in a list of
-numbers</span>
+<span class="caption">רשימה 10-1: מציאת המספר הגדול ביותר ברשימת מספרים</span>
 
-We store a list of integers in the variable `number_list` and place a reference
-to the first number in the list in a variable named `largest`. We then iterate
-through all the numbers in the list, and if the current number is greater than
-the number stored in `largest`, replace the reference in that variable.
-However, if the current number is less than or equal to the largest number seen
-so far, the variable doesn’t change, and the code moves on to the next number
-in the list. After considering all the numbers in the list, `largest` should
-refer to the largest number, which in this case is 100.
+אנו מאכסנים רשימת מספרים במשתנה `number_list` וממקמים הפניה במשתנה `largest` למספר הראשון ברשימה. לאחר מכן אנו עוברים באיטרציה על כל המספרים ברשימה, ובמידה והערך הנוכחי גדול מהמספר שמאוכסן ב-`largest`, אנו מחליפים את ההפניה שבמשתנה זה.
+אולם, אם הערך הנוכחי קטן, או שווא, למספר הגדול ביותר שמצאנו עד כה, הערך במשתנה לא משתנה, והקוד עובר הלאה למספר הבא ברשימה. לאחר מעבר על כל המספרים ברשימה, המשתנה `largest` יפנה אל המספר הגדול ביותר, שבמקרה זה הוא 100.
 
-We've now been tasked with finding the largest number in two different lists of
-numbers. To do so, we can choose to duplicate the code in Listing 10-1 and use
-the same logic at two different places in the program, as shown in Listing 10-2.
+כעת הוטל עלינו למצוא את המספר הגדול ביותר בכל אחת משתי רשימות שונות. על מנת לבצע זאת, נוכל לבחור לשכפל את הקוד מרשימה 10-1 ולהשתמש בדיוק באותה לוגיקה בשני מקומות שונים בתכנית, כפי שמוצג ברשימה 10-2.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -70,22 +35,13 @@ the same logic at two different places in the program, as shown in Listing 10-2.
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-02/src/main.rs}}
 ```
 
-<span class="caption">Listing 10-2: Code to find the largest number in *two*
-lists of numbers</span>
+<span class="caption">רשימה 10-2: קוד למציאת המספר הגדול ביותר _בשתי_ רשימות של מספרים</span>
 
-Although this code works, duplicating code is tedious and error prone. We also
-have to remember to update the code in multiple places when we want to change
-it.
+למרות שקוד זה מבצע את הדרוש, שכפול קוד הוא דבר מיגעה ומועד לטעויות. בנוסף, יהיה עלינו לזכור לעדכן את הקוד במספר מקומות שונים כאשר נרצה לעדכן את ההתנהגות הרצויה.
 
-To eliminate this duplication, we’ll create an abstraction by defining a
-function that operates on any list of integers passed in a parameter. This
-solution makes our code clearer and lets us express the concept of finding the
-largest number in a list abstractly.
+בכדי להימנע מכפילות זו, ניצור אבסטרקציה על-ידי הגדרת פונקציה שפועלת על כל רשימה שהיא של מספרים שלמים המועברת אליה כפרמטר. פתרון זה הופך את הקוד שלנו לברור יותר ומאפשר לנו לבטא את הלוגיקה של מציאת המספר הגדול ביותר ברשימת מספרים בצורה אבסטרקטית.
 
-In Listing 10-3, we extract the code that finds the largest number into a
-function named `largest`. Then we call the function to find the largest number
-in the two lists from Listing 10-2. We could also use the function on any other
-list of `i32` values we might have in the future.
+ברשימה 10-3, אנו מייצאים את הקוד שמוצא את המספר הגדול ביותר וממקמים אותו בפונקציה ששמה `largest`. ואז אנו קוראים לפונקציה בכדי למצוא את המספר הגדול ביותר בכל אחת משתי הרשימות מרשימה 10-2. נוכל גם להשתמש באותה פונקציה על כל רשימה אחרת של ערכי `i32` בכל מצב עתידי.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -93,26 +49,16 @@ list of `i32` values we might have in the future.
 {{#rustdoc_include ../listings/ch10-generic-types-traits-and-lifetimes/listing-10-03/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 10-3: Abstracted code to find the largest number
-in two lists</span>
+<span class="caption">רשימה 10-3: אבסטרקטיזציה של קוד על מנת למצוא את המספר הגדול ביותר בכל אחת משתי רשימות</span>
 
-The `largest` function has a parameter called `list`, which represents any
-concrete slice of `i32` values we might pass into the function. As a result,
-when we call the function, the code runs on the specific values that we pass
-in.
+הפונקציה `largest` מקבלת פרמטר בשם `list`, שמייצג כל חיתוך של ערכי `i32` שאי פעם נוכל להעביר לפונקציה. כפועל יוצא, כאשר אנו קוראים לפונקציה, הקוד רץ על הערכים הספציפים אותם אנו מעבירים.
 
-In summary, here are the steps we took to change the code from Listing 10-2 to
-Listing 10-3:
+לסיכום, הינה הצעדים בהם נקטנו שהובילו מהקוד המופיע ברשימה 10-2 לזה המופיע ברשימה 10-3:
 
-1. Identify duplicate code.
-2. Extract the duplicate code into the body of the function and specify the
-   inputs and return values of that code in the function signature.
-3. Update the two instances of duplicated code to call the function instead.
+1. זיהוי קוד משוכפל.
+2. מיצוי הקוד הכפול לגוף של פונקציה ומיתוג הקלט והערך המוחזר של קוד זה בחותם הפונקציה.
+3. עדכון שני המופעים של כפילות הקוד כך שקוראים לפונקציה במקום.
 
-Next, we’ll use these same steps with generics to reduce code duplication. In
-the same way that the function body can operate on an abstract `list` instead
-of specific values, generics allow code to operate on abstract types.
+כעת, נעשה שימוש בצעדים אלא ממש עם ג'נריקס על מנת להימנע מכפילות קוד. באותו האופן בו גוף הפונקציה יכול לפעול על _רשימה_ אבסטרקטית במקום על ערכים ספציפים, ג'נריקס מאפשרים לקוד לפעול על טיפוסים אבסטרקטים.
 
-For example, say we had two functions: one that finds the largest item in a
-slice of `i32` values and one that finds the largest item in a slice of `char`
-values. How would we eliminate that duplication? Let’s find out!
+לדוגמא, נניח שהיו לנו שתי פונקציות: אחת המוצאת את האיבר הגדול ביותר בחיתוך של ערכי `i32` ואחת שמוצאת את האיבר הגדול ביותר בחיתוך של ערכי `char`. כיצד נוכל להימנע מכפילות זו? הבה נגלה!
