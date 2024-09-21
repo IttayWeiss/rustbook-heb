@@ -1,45 +1,25 @@
-# An I/O Project: Building a Command Line Program
+# פרוייקט I/O: בניית תכנית שורת פקודה
 
-This chapter is a recap of the many skills you’ve learned so far and an
-exploration of a few more standard library features. We’ll build a command line
-tool that interacts with file and command line input/output to practice some of
-the Rust concepts you now have under your belt.
+פרק זה הוא סיכום של רבות מהיכולות שלמדתם עד כה וסקירה של תכונות נוספות מהספריה הסטנדרטית. אנו נבנה כלי שורת פקודה שבא במגע קלט ופלט עם קובץ ושורת הפקודה, וכך לראות כמה מהקונספטים שתחת אמתחתכם בפעולה.
 
-Rust’s speed, safety, single binary output, and cross-platform support make it
-an ideal language for creating command line tools, so for our project, we’ll
-make our own version of the classic command line search tool `grep`
-(**g**lobally search a **r**egular **e**xpression and **p**rint). In the
-simplest use case, `grep` searches a specified file for a specified string. To
-do so, `grep` takes as its arguments a file path and a string. Then it reads
-the file, finds lines in that file that contain the string argument, and prints
-those lines.
+המהירות, הבטיחות, קובץ הריצה הבינארי היחיד, והתמיכה במגוון מערכות של ראסט הופכת אותה לשפה אידאלית ליצירת כלי שורת פקודה ולכן, עבור הפרוייקט שלנו, ניצור גרסא משלנו לכלי שרות הפקודה הקלאסי לחיפוש: `grep` (**g**lobally search a **r**egular **e**xpression and **p**rint). בשימוש הכי פשוט, `grep` מחפשת קובץ ספציפי לפי מחרוזת ספציפית. על מנת לעשות זאת, `grep` מקבל כארגומנטים מסלול לקובץ ומחרוזת. אז הוא קורא את הקובץ, מוצא שורות בקובץ זה שמכילות את ארגומנט המחרוזת, ומדפיס שורות אלה.
 
-Along the way, we’ll show how to make our command line tool use the terminal
-features that many other command line tools use. We’ll read the value of an
-environment variable to allow the user to configure the behavior of our tool.
-We’ll also print error messages to the standard error console stream (`stderr`)
-instead of standard output (`stdout`), so, for example, the user can redirect
-successful output to a file while still seeing error messages onscreen.
+לאורך הדרך, נראה כיצד לגרום לכלי שורת הפקודה שלנו להשתמש ביכולות של הטרימנל בהן משתמשים גם כלי שורת פקודה רבים אחרים. נקרא את הערך של משתנה סביבה כדי לאפשר למשתמש לכוונן את ההתנהגות של הכלי שלנו.
+בנוסף, נדפיס הודעת שגירה לזרם קונסול השגירות הסטדנרטי (`stderr`) במקום לפלט הסטנדרטי (`stdout`), וכך לאפשר, למשל, למשתמש לשלוח פלט הצלחה לקובץ בעוד ששגיאות עדיין יוצגו על המסך.
 
-One Rust community member, Andrew Gallant, has already created a fully
-featured, very fast version of `grep`, called `ripgrep`. By comparison, our
-version will be fairly simple, but this chapter will give you some of the
-background knowledge you need to understand a real-world project such as
-`ripgrep`.
+אחד מחברי קהילת ראסט, אנדרו גלאנט (Andrew Gallant), כבר יצר גרסא מלאה של `grep` בראסט, הנקראה `ripgrep`. בהשוואה לכך, הגרסא שלנו תהיה די פשוטה, ובכל זאת פרק זה ייתן לכם חלק מהידע הדרוש כדי להבין פרוייקט אמיתי כמו `ripgrep`.
 
-Our `grep` project will combine a number of concepts you’ve learned so far:
+פרוייקט ה-`grep` שלנו ישלב מספר קונספטים שלמדתם עד כה:
 
-* Organizing code (using what you learned about modules in [Chapter 7][ch7]<!--
+- ניהול קוד (תוך שימוש במה שלמדתם אודות מודולים [בפרק 7][ch7]<!--
   ignore -->)
-* Using vectors and strings (collections, [Chapter 8][ch8]<!-- ignore -->)
-* Handling errors ([Chapter 9][ch9]<!-- ignore -->)
-* Using traits and lifetimes where appropriate ([Chapter 10][ch10]<!-- ignore
+- שימוש בווקטורים ומחרוזות (אוספים, [פרק 8][ch8]<!-- ignore -->)
+- טיפול בשגיאות ([פרק 9][ch9]<!-- ignore -->)
+- שימוש בתכונות ומשכי-חיים היכן שצריך ([פרק 10][ch10]<!-- ignore
   -->)
-* Writing tests ([Chapter 11][ch11]<!-- ignore -->)
+- כתיבת פונקציות מבחן ([פרק 11][ch11]<!-- ignore -->)
 
-We’ll also briefly introduce closures, iterators, and trait objects, which
-Chapters [13][ch13]<!-- ignore --> and [17][ch17]<!-- ignore --> will cover in
-detail.
+כמו כן, נציג בקצרה סגורים, איטרטורים, ואובייקטי תכונה, אשר פרקים [13][ch13]<!-- ignore --> ו-[17][ch17]<!-- ignore --> יכסו בפירוט.
 
 [ch7]: ch07-00-managing-growing-projects-with-packages-crates-and-modules.html
 [ch8]: ch08-00-common-collections.html

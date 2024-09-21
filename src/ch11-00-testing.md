@@ -1,32 +1,11 @@
-# Writing Automated Tests
+# כתיבת בדיקות אוטומטיות
 
-In his 1972 essay “The Humble Programmer,” Edsger W. Dijkstra said that
-“Program testing can be a very effective way to show the presence of bugs, but
-it is hopelessly inadequate for showing their absence.” That doesn’t mean we
-shouldn’t try to test as much as we can!
+במאמר "המתכנת העניו" (“The Humble Programmer”) משנת 1972, אדסגר ו. דייקסטרה כתב: "בדיקות לתכנה יכולה להיות דרך יעילה מאוד להראות את קיומם של באגים, אבל זו דרך ללא מוצא אם המטרה היא להראות את העדרם". אך אין זה אומר שאל לנו לנסות כמיטב יכולתנו לבדוק את התכניות שלנו!
 
-Correctness in our programs is the extent to which our code does what we intend
-it to do. Rust is designed with a high degree of concern about the correctness
-of programs, but correctness is complex and not easy to prove. Rust’s type
-system shoulders a huge part of this burden, but the type system cannot catch
-everything. As such, Rust includes support for writing automated software tests.
+נכונות של תכניות נמדדת בעד כמה הקוד מבצע את מה שהוא אמור לבצע. ראסט מתוכננת עם מידה גדולה של תשומת לב לנכונות התכניות, אבל נכונות היא נושא מורכב שאינו ניתן בקלות להוכחה. מערכת הטיפוסים של ראסט מסייעת רבות בעניין זה, אבל מערכת הטיפוסים אינה יכולה לעשות את הבלתי אפשרי. משכך, ראסט כוללת תמיכה בכתיבת בדיקות אוטומטיות.
 
-Say we write a function `add_two` that adds 2 to whatever number is passed to
-it. This function’s signature accepts an integer as a parameter and returns an
-integer as a result. When we implement and compile that function, Rust does all
-the type checking and borrow checking that you’ve learned so far to ensure
-that, for instance, we aren’t passing a `String` value or an invalid reference
-to this function. But Rust *can’t* check that this function will do precisely
-what we intend, which is return the parameter plus 2 rather than, say, the
-parameter plus 10 or the parameter minus 50! That’s where tests come in.
+נניח שאנו כותבים את הפונקציה `add_two` שמוסיפה 2 לארגומנט שמועבר אליה. חותם הפונקציה מקבל מספר שלם כפרמטר ומחזיר כתוצאה מספר שלם. כאשר מממשים ומקמפלים את הפונקציה, ראסט מבצעת בדיקות טיפוסים ובדיקת השאלות, כפי שלמדתם עד כה, כל מנת להבטיח, למשל, שלא מעבירים לפונקציה ערך מטיפוס `String` או הפניה שאינה בתוקף. אבל ראסט אינה יכולה לבדוק שפונקציה זו אכן מבצעת את מה שאנו מתכוונים שהיא תבצע, קריא החזרת הפרמטר פלוס 2, ולא, למשל פלוס 10 או מינוס 50! וכאן נכנסות לתמונה בדיקות אוטומטיות.
 
-We can write tests that assert, for example, that when we pass `3` to the
-`add_two` function, the returned value is `5`. We can run these tests whenever
-we make changes to our code to make sure any existing correct behavior has not
-changed.
+ניתן לכתוב בדיקות שמוודאות, למשל, שכאשר מעבירים לפונקציה `add_two` את הערך `3`, הערך המוחזר הוא `5`. ניתן להריץ בדיקות אלה בכל פעם שמבצעים שינוי בקוד וכך להבטיח את שימור ההתנהגות הנאותה של הפונקציה.
 
-Testing is a complex skill: although we can’t cover every detail about how to
-write good tests in one chapter, we’ll discuss the mechanics of Rust’s testing
-facilities. We’ll talk about the annotations and macros available to you when
-writing your tests, the default behavior and options provided for running your
-tests, and how to organize tests into unit tests and integration tests.
+ביצוע בדיקות היא משימה מורכבת: למרות שלא נכסה בפרק זה את כל הפרטים אודות כתיבת מקרי מבחן טובים, נציג את המכניקה של כתיבת בדיקות ומקרי מבחן בראסט. נדון בביאורים ומקרואים הזמינים לשימוש בזמן כתיבת בדיקות, התנהגות ברירת המחדל והאופציות השונות של הרצת בדיקות, וכיצד לארגן בדיקות לבדיקות יחידה ובדיקות אינטגרציה.

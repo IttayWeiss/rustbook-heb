@@ -1,10 +1,6 @@
-## Reading a File
+## קריאת קובץ
 
-Now we’ll add functionality to read the file specified in the `file_path`
-argument. First, we need a sample file to test it with: we’ll use a file with a
-small amount of text over multiple lines with some repeated words. Listing 12-3
-has an Emily Dickinson poem that will work well! Create a file called
-*poem.txt* at the root level of your project, and enter the poem “I’m Nobody!
+כעת נוסיף פונקציונאליות לקריאת הקובץ המצויין בארגומנט `file_path`. ראשית, אנו זקוקים לקובץ כדוגמא שנוכל לבחון באמצעותו את הקוד שלנו: אנו נשתמש בקובץ עם מעט טקסט בכמה שורות ועם כמה מילים שחוזרות על עצמן. רשימה 12-3 היא שיר של אמילי דיקינסון והוא ישרת את מטרתנו נאמנה! צרו קובץ בשם _poem.txt_ בבסיס הפרוייקט שלכם, והקלידו את השיר “I’m Nobody!
 Who are you?”
 
 <span class="filename">Filename: poem.txt</span>
@@ -13,11 +9,9 @@ Who are you?”
 {{#include ../listings/ch12-an-io-project/listing-12-03/poem.txt}}
 ```
 
-<span class="caption">Listing 12-3: A poem by Emily Dickinson makes a good test
-case</span>
+<span class="caption">רשימה 12-3: שיר של אמילי דיקינסון שמהווה מקרה-מבחן נוח</span>
 
-With the text in place, edit *src/main.rs* and add code to read the file, as
-shown in Listing 12-4.
+כעת שהטקסט במקומו, ערכו את _src/main.rs_ והוסיפו את הקוד כמופיע ברשימה 12-4.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -25,33 +19,18 @@ shown in Listing 12-4.
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-04/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 12-4: Reading the contents of the file specified
-by the second argument</span>
+<span class="caption">רשימה 12-4: קריאת תוכן הקובץ המופיע כארגומנט השני</span>
 
-First, we bring in a relevant part of the standard library with a `use`
-statement: we need `std::fs` to handle files.
+קודם כל, אנו מכניסים למתחם את החלק הרלוונטי מהספריה הסטנדרטית בעמצאות פקודת `use`: אנו צריכים את `std::fs` כדי לנהל קבצים.
 
-In `main`, the new statement `fs::read_to_string` takes the `file_path`, opens
-that file, and returns a `std::io::Result<String>` of the file’s contents.
+בפונקציה `main`, הפקודה החדשה `fs::read_to_string` לוקחת את `file_path`, פותחת את הקובץ, ומחזירה ערך מטיפוס `std::io::Result<String>` של תוכן הקובץ.
 
-After that, we again add a temporary `println!` statement that prints the value
-of `contents` after the file is read, so we can check that the program is
-working so far.
+לאחר מכן, אנו מוסיפים פקודת `println!` זמנית שמדפיסה את הערך של `contents` לאחר קריאת הקובץ, כדי שנוכל לבדוק שהתכנית עושה את הדרוש.
 
-Let’s run this code with any string as the first command line argument (because
-we haven’t implemented the searching part yet) and the *poem.txt* file as the
-second argument:
+הבה נריץ את הקוד עם סתם מחרוזת כלשהיא עבור הארגומנט הראשון (כיוון שעוד לא מימשנו את את פעולת החיפוש) ועם _poem.txt_ עבור הארגומנט השני:
 
 ```console
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-04/output.txt}}
 ```
 
-Great! The code read and then printed the contents of the file. But the code
-has a few flaws. At the moment, the `main` function has multiple
-responsibilities: generally, functions are clearer and easier to maintain if
-each function is responsible for only one idea. The other problem is that we’re
-not handling errors as well as we could. The program is still small, so these
-flaws aren’t a big problem, but as the program grows, it will be harder to fix
-them cleanly. It’s good practice to begin refactoring early on when developing
-a program, because it’s much easier to refactor smaller amounts of code. We’ll
-do that next.
+מצויין! הקוד קורא ומדפיס את תוכן הקובץ. אבל לקוד יש כמה מגרעות. בשלב זה, לפונקציה `main` אחראית לכמה דברים: באופן כללי, קל יותר לקרוא ולתחזק פונקציות אם כל פונקציה אחראית לבצע רק משהו אחד. הבעיה השניה היא שאנו לא מטפלים בשגיאות בצורה נאותה. התכנית עדיין קצרה, ולכן בעיות אלה אינן גדולות, אבל ככל שהתכנית תגדל, יהיה קשה יותר לתקן אותן בצורה נקיה. מומלץ לבצע ארגון מחדש של הקוד בשלב מוקדם בתהליך הפיתוח, שכן אז קל הרבה יותר לבצע ארגון מחדש של פיסות הקוד השונות, בעודן קטנות. נעשה זאת מייד.

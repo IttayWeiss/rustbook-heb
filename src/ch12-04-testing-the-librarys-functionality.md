@@ -1,39 +1,22 @@
-## Developing the Library’s Functionality with Test-Driven Development
+## פיתוח הפונקציונאליות של הספריה עם פיתוח מונחה-בדיקות
 
-Now that we’ve extracted the logic into *src/lib.rs* and left the argument
-collecting and error handling in *src/main.rs*, it’s much easier to write tests
-for the core functionality of our code. We can call functions directly with
-various arguments and check return values without having to call our binary
-from the command line.
+עכשיו משמיצינו את הלוגיקה לקובץ _src/lib.rs_ והשארנו את איסוף הארגומנטים והטיפול בשגיאות בקובץ _src/main.rs_, הרבה יותר פשוט לכתוב מקרי מבחן לפונקציונאליות הגרעינית של הקוד. ניתן לקרוא ישירות לפונקציות עם כל מיני ארגומנטים ולבדוק את הערכים המוחזרים ללא צורך לקרוא לקובץ הבינרי משורת הפקודה.
 
-In this section, we’ll add the searching logic to the `minigrep` program
-using the test-driven development (TDD) process with the following steps:
+בסעיף זה, נוסיף לתכנית `minigrep` את הלוגיקה של החיפוש תוך שימוש בתהליך של פיתוח מונחה-בדיקות (פמ"ב) לפני הצעדים הבאים:
 
-1. Write a test that fails and run it to make sure it fails for the reason you
-   expect.
-2. Write or modify just enough code to make the new test pass.
-3. Refactor the code you just added or changed and make sure the tests
-   continue to pass.
-4. Repeat from step 1!
+1. כתיבת מקרה מבחן שנכשל והרצתו על מנת לוודא שהוא נכשל מהסיבה הצפויה.
+2. כתיבת או עדכון מינימלי של קוד כדי לאפשר למקרה המבחן לעבור.
+3. ארגון מחדש של הקוד החדש ווידוא שהוא עדיין עובר את המבחן.
+4. חזרה לצעד הראשון!
 
-Though it’s just one of many ways to write software, TDD can help drive code
-design. Writing the test before you write the code that makes the test pass
-helps to maintain high test coverage throughout the process.
+פמ"ב הוא דרך אחת מיני רבות לכתיבת קוד, והוא יכול לסייע בהנעת תהליך תכנון הקוד. כתיבת מקרי המבחן לפני שכותבים את הקוד עצמו מסייעת לתחזק מקרי מבחן שמכסים מגוון התנהגויות במהלך התהליך.
 
-We’ll test drive the implementation of the functionality that will actually do
-the searching for the query string in the file contents and produce a list of
-lines that match the query. We’ll add this functionality in a function called
-`search`.
+אנו נפתח את הפונקציונאליות של חיפוש המחרוזת בתוכן הקובץ והפקת רשימת השורות שמכילות אותה בשיטת פמ"ב. נוסיף פונקציונאליות זו בפונקציה שנקראת `search`.
 
-### Writing a Failing Test
+### כתיבת מקרה מבחן שנכשל
 
-Because we don’t need them anymore, let’s remove the `println!` statements from
-*src/lib.rs* and *src/main.rs* that we used to check the program’s behavior.
-Then, in *src/lib.rs*, add a `tests` module with a test function, as we did in
-[Chapter 11][ch11-anatomy]<!-- ignore -->. The test function specifies the
-behavior we want the `search` function to have: it will take a query and the
-text to search, and it will return only the lines from the text that contain
-the query. Listing 12-15 shows this test, which won’t compile yet.
+כיוון שאין לנו בהם יותר צורך, הבה נסיר את פקודות ה-`println!` מהקבצים _src/lib.rs_ ו-_src/main.rs_ בהן השתמשנו כדי לבדוק את התנהגות התכנית.
+אז, בקובץ _src/lib.rs_, נוסיף מודול בשם `tests`, כפי שעשינו [בפרק 11][ch11-anatomy]<!-- ignore -->. פונקצית הבדיקה מציינת את ההתנהגות שאנו רוצים שתהיה לפונקציה `search`: היא מקבלת מחרוזת חיפוש ואת הטקסט לחפש בו, ומחזירה רק את השורות מהטקסט שמכילות את מחרוזת החיפוש. רשימה 12-15 מראה בדיקה זו, שעדיין לא עוברת קומפילציה.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -41,21 +24,11 @@ the query. Listing 12-15 shows this test, which won’t compile yet.
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-15/src/lib.rs:here}}
 ```
 
-<span class="caption">Listing 12-15: Creating a failing test for the `search`
-function we wish we had</span>
+<span class="caption">רשימה 12-15: יצירת מקרה מבחן שנכשל הבודק את הפונקציה `search`</span>
 
-This test searches for the string `"duct"`. The text we’re searching is three
-lines, only one of which contains `"duct"` (Note that the backslash after the
-opening double quote tells Rust not to put a newline character at the beginning
-of the contents of this string literal). We assert that the value returned from
-the `search` function contains only the line we expect.
+בדיקה זו מחפשת את המחרוזת `"duct"`. הטקסט בו אנו מחפשים מורכב משלוש שורות, ורק אחת מהן מכילה את הצירוף `"duct"` (שימו לב שהלוכסן האחורי שאחרי הגרשיים הפותחים מציין לראסט שלא לשים שורה חדשה בתחילת התוכן של מחרוזת מפורשת זו). אנו קובעים שהערך המוחזר מהפונקציה `search` מכיל רק את השורה לה אנו מצפים.
 
-We aren’t yet able to run this test and watch it fail because the test doesn’t
-even compile: the `search` function doesn’t exist yet! In accordance with TDD
-principles, we’ll add just enough code to get the test to compile and run by
-adding a definition of the `search` function that always returns an empty
-vector, as shown in Listing 12-16. Then the test should compile and fail
-because an empty vector doesn’t match a vector containing the line `"safe,
+עוד אין ביכולתנו להריץ מבחן זה ולראות שהוא נכשל מכיוון שהקוד לא עובר קומפילציה: הפונקציה `search` כלל אינה קיימת! בהתאם לעקרונות פמ"ב, נוסיף רק את כמות הקוד המינימלית הדרושה כדי לקמפל ולהריץ, וזאת על-ידי הוספת הגדרה של פונקצית ה-`search` שתמיד מחזירה וקטור ריק, כפי שרואים ברשימה 12-16. כך הבדיקה תעבור קומפילציה ותכשל היות והוקטור הריק אינו תואם וקטור שמכיל את השורה `"safe,
 fast, productive."`
 
 <span class="filename">Filename: src/lib.rs</span>
@@ -64,69 +37,45 @@ fast, productive."`
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-16/src/lib.rs:here}}
 ```
 
-<span class="caption">Listing 12-16: Defining just enough of the `search`
-function so our test will compile</span>
+<span class="caption">רשימה 12-16: הגדרה מינימלית של הפונקציה `search` רק בשביל לעבור קומפילציה</span>
 
-Notice that we need to define an explicit lifetime `'a` in the signature of
-`search` and use that lifetime with the `contents` argument and the return
-value. Recall in [Chapter 10][ch10-lifetimes]<!-- ignore --> that the lifetime
-parameters specify which argument lifetime is connected to the lifetime of the
-return value. In this case, we indicate that the returned vector should contain
-string slices that reference slices of the argument `contents` (rather than the
-argument `query`).
+שימו לב שיש להגדיר את משך-החיים המפורש `'a` בחותם של `search` ולהשתמש במשך-חיים זה עבור הארגומנט `contents` ועבור הערך המוחזר. זכרו [מפרק 10][ch10-lifetimes]<!-- ignore --> שפרמטרי משך-חיים מציינים כיצד משכי-החיים של הארגומנטים קשורים למשך-החיים של הערך המוחזר. במקרה זה אנו מציינים שהוקטור המוחזר צריך להכיל חיתוך מחרוזת שמפנה לחיתוכים של הארגומנט `contents` (ולא של הארגומנט `query`).
 
-In other words, we tell Rust that the data returned by the `search` function
-will live as long as the data passed into the `search` function in the
-`contents` argument. This is important! The data referenced *by* a slice needs
-to be valid for the reference to be valid; if the compiler assumes we’re making
-string slices of `query` rather than `contents`, it will do its safety checking
-incorrectly.
+במילים אחרות, אנו אומרים לראסט שהדאטה שמוחזר מהפונקציה `search` יחיה אותו זמן כמו הדאטה שמועבר לתוך הפונקציה `search` בארגומנט `contents`. זה חשוב! הדאטה שמופנה _על-ידי_ חיתוך חייב להיות תקף על מנת שההפניה תהיה תקפה; אם הקומפיילר יניח שאנו עובדים עם חיתוכי מחרוזות של `query` במקום `contents`, הוא יבצע את בדיקות הבטיחות שלו באופן שאינו תואם את צרכנו.
 
-If we forget the lifetime annotations and try to compile this function, we’ll
-get this error:
+במידה ונשכח לבאר את משך-החיים וננסה לקמפל את הפונקציה, נקבל את השגיאה הבאה:
 
 ```console
 {{#include ../listings/ch12-an-io-project/output-only-02-missing-lifetimes/output.txt}}
 ```
 
-Rust can’t possibly know which of the two arguments we need, so we need to tell
-it explicitly. Because `contents` is the argument that contains all of our text
-and we want to return the parts of that text that match, we know `contents` is
-the argument that should be connected to the return value using the lifetime
-syntax.
+ראסט לא יכולה לדעת איזה משני הארגומנטים אנו צריכים, ולכן יש לציין זאת מפורשות. בגלל ש-`contents` הוא הארגומנט שמכיל את כל הטקסט שלנו ואנחנו מעוניינים להחזיר את החלקים של הטקסט שתואמים את מחרוזת החיפוש, אנו יודעים ש-`contents` הוא הארגומנט שצריך להיות מקושר לערך המוחזר, תוך שימוש בתחביר משך-חיים.
 
-Other programming languages don’t require you to connect arguments to return
-values in the signature, but this practice will get easier over time. You might
-want to compare this example with the [“Validating References with
-Lifetimes”][validating-references-with-lifetimes]<!-- ignore --> section in
-Chapter 10.
+שפות תכנת אחרות לא דורשות לקשר ארגומנטים של פונקציות לערך המחוזר של הפונקציה, אבל ביצוע פעולה זו יהפוך לפשוט יותר עם הזמן. אולי תרצו בשלב זה להשוות דוגמא זו עם סעיף [“וידוא הפניות באמצעות משך-חיים”][validating-references-with-lifetimes]<!-- ignore --> בפרק 10.
 
-Now let’s run the test:
+כעת, הבה נריץ את מקרה המבחן:
 
 ```console
 {{#include ../listings/ch12-an-io-project/listing-12-16/output.txt}}
 ```
 
-Great, the test fails, exactly as we expected. Let’s get the test to pass!
+מצוין, הבדיקה נכשלת, בדיוק כפי שציפינו. משימתנו כעת היא לגרום לה לעבור בהצלחה!
 
-### Writing Code to Pass the Test
+### כתיבת קוד כדי לעבור בהצלחה את הבדיקה
 
-Currently, our test is failing because we always return an empty vector. To fix
-that and implement `search`, our program needs to follow these steps:
+בשלב זה, הבדיקה שלנו נכשלת בגלל שאנחנו תמיד מחזירים וקטור ריק. בכדי לתקן זאת ולממש את `search`, על התכנית שלנו לבצע את הפעולות הבאות:
 
-* Iterate through each line of the contents.
-* Check whether the line contains our query string.
-* If it does, add it to the list of values we’re returning.
-* If it doesn’t, do nothing.
-* Return the list of results that match.
+- מעבר על כל אחת משורות התוכן של הטקסט.
+- בדיקה האם השורה מכילה את מחרוזת החיפוש.
+- במידה וכן, הוספת השורה לרשימת הערכים שאנו מחזירים.
+- במידה ולא, לא לעשות דבר.
+- החזרת רשימת התואצות שתואמות את מחרוזת החיפוש.
 
-Let’s work through each step, starting with iterating through lines.
+הבה נבצע כל צעד, ונתחיל עם איטרציה על השורות.
 
-#### Iterating Through Lines with the `lines` Method
+#### איטרציה על השורות באמצעות המתודה `lines`
 
-Rust has a helpful method to handle line-by-line iteration of strings,
-conveniently named `lines`, that works as shown in Listing 12-17. Note this
-won’t compile yet.
+בראסט יש מתודה שימושית, שנקראת `lines`, לטיפול באיטרציות שורה-אחר-שורה של מחרוזות, והיא עובדת כפי שמוצג ברשימה 12-17. שימו לב שקוד זה לא עובר קומפילציה.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -134,20 +83,14 @@ won’t compile yet.
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-17/src/lib.rs:here}}
 ```
 
-<span class="caption">Listing 12-17: Iterating through each line in `contents`
-</span>
+<span class="caption">רשימה 12-17: איטרציה על כל השורות ב-`contents`</span>
 
-The `lines` method returns an iterator. We’ll talk about iterators in depth in
-[Chapter 13][ch13-iterators]<!-- ignore -->, but recall that you saw this way
-of using an iterator in [Listing 3-5][ch3-iter]<!-- ignore -->, where we used a
-`for` loop with an iterator to run some code on each item in a collection.
+המתודה `lines` מחזירה איטרטור. נדון באיטרטורים [בפרק 13][ch13-iterators]<!-- ignore -->, אולם זכרו שכבר ראיתם דרך זו לשימוש באיטרטורים [ברשימה 3-5][ch3-iter]<!-- ignore -->, שם השתמשנו בלולאת `for` עם איטרטור כדי להריץ קוד מסוים על כל אלמנט באוסף.
 
-#### Searching Each Line for the Query
+#### חיפוש מחרוזת החיפוש בכל שורה
 
-Next, we’ll check whether the current line contains our query string.
-Fortunately, strings have a helpful method named `contains` that does this for
-us! Add a call to the `contains` method in the `search` function, as shown in
-Listing 12-18. Note this still won’t compile yet.
+הצעד הבא הוא לבדוק האם השורה הנוכחית מכילה את מחרוזת החיפוש.
+למרבה המזל, למחרוזות יש את המתודה `contains` שעושה בדיוק את זה! על כן, נוסיף בתוך הפונקציה `search` קריאה למתודה `contains`, כמוצג ברשימה 12-18. שימוש לב שהקוד עדיין לא עובר קומפילציה.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -155,19 +98,13 @@ Listing 12-18. Note this still won’t compile yet.
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-18/src/lib.rs:here}}
 ```
 
-<span class="caption">Listing 12-18: Adding functionality to see whether the
-line contains the string in `query`</span>
+<span class="caption">רשימה 12-18: הוספת פנקציונאליות כדי לבדוק האם השורה מכילה את המחרוזת `query`</span>
 
-At the moment, we’re building up functionality. To get it to compile, we need
-to return a value from the body as we indicated we would in the function
-signature.
+ברגע זה, אנו משדרגים את הפונקציונאליות. כדי לאפשר לקוד לעבור קומפילציה, יש להחזיר ערך מגוף הפונקציה כפי שציינו בחותם הפונקציה שנעשה.
 
-#### Storing Matching Lines
+#### אכסון שורות תואמות
 
-To finish this function, we need a way to store the matching lines that we want
-to return. For that, we can make a mutable vector before the `for` loop and
-call the `push` method to store a `line` in the vector. After the `for` loop,
-we return the vector, as shown in Listing 12-19.
+כדי לסיים את כתיבת הפונקציה, עלינו למצוא דרך לאכסן את השורות התואמות שברצוננו להחזיר. לשם כך, נוכל ליצור וקטור בר-שינוי לפני לולאת ה-`for` ולקרוא למתודה `push` כדי לאכסן את `line` בוקטור. אחרי לולאת ה-`for` נחזיר את הוקטור, כפי שמוצג ברשימה 12-19.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -175,31 +112,21 @@ we return the vector, as shown in Listing 12-19.
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-19/src/lib.rs:here}}
 ```
 
-<span class="caption">Listing 12-19: Storing the lines that match so we can
-return them</span>
+<span class="caption">רשימה 12-19: אכסון השורות התואמות כדי שנוכל להחזירן</span>
 
-Now the `search` function should return only the lines that contain `query`,
-and our test should pass. Let’s run the test:
+כעת הפונקציה `search` צריכה להחזיר רק את השורות שמכילות את `query`, ומקרה המבחן שלנו צריכה לעבור בהצלחה. הבה נריץ אותה:
 
 ```console
 {{#include ../listings/ch12-an-io-project/listing-12-19/output.txt}}
 ```
 
-Our test passed, so we know it works!
+הבדיקה עברה בהצלחה, כך שאנחנו יכולים בלב שלם להכריז על הצלחה!
 
-At this point, we could consider opportunities for refactoring the
-implementation of the search function while keeping the tests passing to
-maintain the same functionality. The code in the search function isn’t too bad,
-but it doesn’t take advantage of some useful features of iterators. We’ll
-return to this example in [Chapter 13][ch13-iterators]<!-- ignore -->, where
-we’ll explore iterators in detail, and look at how to improve it.
+בנקודה זו, ניתן לשקול הזדמנויות לארגון מחדש של המימוש של פונקצית החיפוש בעוד אנו מוודאים שמקרי המבחן ממשיכים לעבור וכך לוודא שהפונקציונאליות נשמרת. הקוד בפונקצית החיפוש אינו רע, אבל הוא לא מנצל כמה תכונות שימושיות של איטרטורים. נחזור לדוגמא זו [בפרק 13][ch13-iterators]<!-- ignore -->, שם נלמד על איטרטורים ביתר פירוט, ונראה כיצד לשפר את הקוד הנוכחי.
 
-#### Using the `search` Function in the `run` Function
+#### שימוש בפונקציה `search` מתוך הפונקציה `run`
 
-Now that the `search` function is working and tested, we need to call `search`
-from our `run` function. We need to pass the `config.query` value and the
-`contents` that `run` reads from the file to the `search` function. Then `run`
-will print each line returned from `search`:
+עכשיו שהפונקציה `search` עובדת ועברה את מקרה המבחן שלנו, יש לקרוא ל-`search` מתוך הפונקציה `run`. צריך להעביר לפונקציה `search` את ערך ה-`config.query` ואת המשתנה `contents` ש-`run` קרא מהקובץ. הפונקציה `run` תדפיס כל שורה שמחוזרת מ-`search`:
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -207,38 +134,31 @@ will print each line returned from `search`:
 {{#rustdoc_include ../listings/ch12-an-io-project/no-listing-02-using-search-in-run/src/lib.rs:here}}
 ```
 
-We’re still using a `for` loop to return each line from `search` and print it.
+אנחנו עדיין משתמשים בלולאת `for` כדי להחזיר כל שורה מ-`search` ולהדפיס אותה.
 
-Now the entire program should work! Let’s try it out, first with a word that
-should return exactly one line from the Emily Dickinson poem, “frog”:
+כעת כל התכנית אמורה לעבוד! הבה ננסה, ראשית עם מילה שאמורה להחזיר בדיוק שורה אחת מהשיר אל אמילי דיקינסון, המילה “frog”:
 
 ```console
 {{#include ../listings/ch12-an-io-project/no-listing-02-using-search-in-run/output.txt}}
 ```
 
-Cool! Now let’s try a word that will match multiple lines, like “body”:
+אחלה! כעת ננסה עם מילה שאמורה להתאים לכמה שורות, כמו המילה “body”:
 
 ```console
 {{#include ../listings/ch12-an-io-project/output-only-03-multiple-matches/output.txt}}
 ```
 
-And finally, let’s make sure that we don’t get any lines when we search for a
-word that isn’t anywhere in the poem, such as “monomorphization”:
+ולבסוף, נוודא שעבור מילה שלא מופיע בשיר כלל אנחנו אכן לא מקבלים שום שורות מותאמות, כמו עבור המילה “monomorphization”:
 
 ```console
 {{#include ../listings/ch12-an-io-project/output-only-04-no-matches/output.txt}}
 ```
 
-Excellent! We’ve built our own mini version of a classic tool and learned a lot
-about how to structure applications. We’ve also learned a bit about file input
-and output, lifetimes, testing, and command line parsing.
+מצוין! בנינו גרסת זעיר-ענפין משלנו לכלי קלאסי ולמדנו רבות אודות עיצוב אפליקציות. כמו כן, למדנו מעט אודות קלט מקבצים, פלט, משכי-חיים, מקרי מבחן, ופארסינג משורת הפקודה.
 
-To round out this project, we’ll briefly demonstrate how to work with
-environment variables and how to print to standard error, both of which are
-useful when you’re writing command line programs.
+כדי לסיים את הפרוייקט, נדגים בקצרה כיצד לעבוד עם משתני סביבה וכיצד להדפיס לזרם השגיאות הסטנדרטי, שני אספקטים שימושיים כאשר כותבים תכניות שורת פקודה.
 
-[validating-references-with-lifetimes]:
-ch10-03-lifetime-syntax.html#validating-references-with-lifetimes
+[validating-references-with-lifetimes]: ch10-03-lifetime-syntax.html#validating-references-with-lifetimes
 [ch11-anatomy]: ch11-01-writing-tests.html#the-anatomy-of-a-test-function
 [ch10-lifetimes]: ch10-03-lifetime-syntax.html
 [ch3-iter]: ch03-05-control-flow.html#looping-through-a-collection-with-for

@@ -1,62 +1,28 @@
-## Controlling How Tests Are Run
+## שליטה על אופן הרצת פונקציות מבחן
 
-Just as `cargo run` compiles your code and then runs the resulting binary,
-`cargo test` compiles your code in test mode and runs the resulting test
-binary. The default behavior of the binary produced by `cargo test` is to run
-all the tests in parallel and capture output generated during test runs,
-preventing the output from being displayed and making it easier to read the
-output related to the test results. You can, however, specify command line
-options to change this default behavior.
+בדיוק כמו שהפקודה `cargo run` מקמפלת את הקוד שלכם ואז מריצה את הקובץ הבינרי שנוצר, כך הפקודה `cargo test` מקמפלת את הקוד לביצוע בדיקות ומריצה את קובץ הבדיקה הבינרי. ברירת המחדל עבור הקובץ הבינרי המופק על-ידי `cargo test` הוא להריץ את כל פונקציות המבחן במקביל ולאסוף את הפלט המופק במהלך הרצת הבדיקות, תוך מניעת מהצגת הפלט ובכך להקל על קריאת הפלט הקשור לתוצאות המבחן. ניתן, למרות זאת, לציין אפשרויות שורת פקודה שמשנות התנהגות ברירת-מחדל זו.
 
-Some command line options go to `cargo test`, and some go to the resulting test
-binary. To separate these two types of arguments, you list the arguments that
-go to `cargo test` followed by the separator `--` and then the ones that go to
-the test binary. Running `cargo test --help` displays the options you can use
-with `cargo test`, and running `cargo test -- --help` displays the options you
-can use after the separator.
+חלק מאפשרויות שורת הפקודה מועברות ל-`cargo test`, וחלקן מועברות לקובץ הבדיקה הבינרי. כדי להפריד בין שני סוגי ארגומנטים אלו, רושמים את הארגומנטים שמועברים ל-`cargo test`, אז את סימן ההפרדה `--`, ולאחריו את הארגומנטים שמועברים לקובץ הבינרי. הרצת הפקודה `cargo test --help` מציגה את האפשרויות שזמינות לשימוש עם `cargo test`, והרצה של `cargo test -- --help` מציגה את האפשרויות שניתן לציין לאחר סימן ההפרדה.
 
-### Running Tests in Parallel or Consecutively
+### הרצת בדיקות במקביל
 
-When you run multiple tests, by default they run in parallel using threads,
-meaning they finish running faster and you get feedback quicker. Because the
-tests are running at the same time, you must make sure your tests don’t depend
-on each other or on any shared state, including a shared environment, such as
-the current working directory or environment variables.
+כאשר מריצים בדיקות רבות, ברירת המחדל היא להריץ אותן במקביל תוך שימוש בפתילים, כך שהריצה לוקחת פחות זמן ומקבלים תוצאות מהר יותר. כיוון שהבדיקות רצות באותו הזמן, יש לוודא שהבדיקות לא מסתמכות זו על זו או על מצבים משותפים, כולל סביבה משותפת, כמו התיקיה הנוכחית או משתני סביבה.
 
-For example, say each of your tests runs some code that creates a file on disk
-named *test-output.txt* and writes some data to that file. Then each test reads
-the data in that file and asserts that the file contains a particular value,
-which is different in each test. Because the tests run at the same time, one
-test might overwrite the file in the time between another test writing and
-reading the file. The second test will then fail, not because the code is
-incorrect but because the tests have interfered with each other while running
-in parallel. One solution is to make sure each test writes to a different file;
-another solution is to run the tests one at a time.
+לדוגמא, נניח שכל אחת מהבדיקות מריצה קוד כלשהו שיוצר קובץ על הדיסק בשם _test-output.txt_ וכותב לתוכו דאטה מסוים. אחר כך, כל בדיקה קוראת את הדאטה בקובץ ומוודאת שהוא מכיל ערך ספציפי, ובכל בדיקה ערך זה שונה. היות והבדיקות רצות באותו זמן, אחת הבדיקות עלולה לשכתב את הקובץ בדיוק בזמן בין כתיבת הערך ווידוא הערך בבדיקה אחרת. כך הבדיקה השניה תכשל, לא משום שהקוד שגוי אלא בגלל שהמבחנים מפריעים זה לזה בזמן ההרצה המקבילית. פתרון אחד לבעיה זו הוא לוודא שכל בדיקה כותבת לקובץ שונה; פתרון שני הוא להריץ את הבדיקות אחת-אחת.
 
-If you don’t want to run the tests in parallel or if you want more fine-grained
-control over the number of threads used, you can send the `--test-threads` flag
-and the number of threads you want to use to the test binary. Take a look at
-the following example:
+אם אינכם רוצים להריץ את הבדיקות במקביל או אם אתם מעוניינים בשליטה עדינה על מספר הפתילים בשימוש, תוכלו להעביר לקובץ הבינרי של הבדיקות את הדגל `--test-threads` ואת מספר הפתילים בו אתם מעוניינים. הביטו בדוגמא הבאה:
 
 ```console
 $ cargo test -- --test-threads=1
 ```
 
-We set the number of test threads to `1`, telling the program not to use any
-parallelism. Running the tests using one thread will take longer than running
-them in parallel, but the tests won’t interfere with each other if they share
-state.
+אנו קובעים את מספר הפתילים ל-`1`, ובכך אומרים לתוכנית לא לבצע הרבה במקביל. הרצת הבדיקות עם פתיל אחד תארך יותר זמן מאשר בהרצה מקבילית, אבל הבדיקות לא יפריעו אחת לשניה במידה והן חולקות מצבים.
 
-### Showing Function Output
+### הצגת פלט הפונקציות
 
-By default, if a test passes, Rust’s test library captures anything printed to
-standard output. For example, if we call `println!` in a test and the test
-passes, we won’t see the `println!` output in the terminal; we’ll see only the
-line that indicates the test passed. If a test fails, we’ll see whatever was
-printed to standard output with the rest of the failure message.
+כברירת מחדל, אם בדיקה עוברת בהצלחה, ספרית הבדיקות של ראסו שומרת כל דבר שהודפס לפלט הסטנדרטי. למשל, אם אנו קוראים ל-`println!` מתוך פונקצית מבחן והמבחן עובר בהצלחה, לא רואים אם הפלט של `println!` בטרמינל; כל שנראה הוא שורה שמציינת שהמבחן צלח. במקרה של כישלון, נראה, יחד עם הודעת השגיאה, גם את כל מה שהודפס לפלט הסטנדרטי.
 
-As an example, Listing 11-10 has a silly function that prints the value of its
-parameter and returns 10, as well as a test that passes and a test that fails.
+כדוגמא, רשימה 11-10 כוללת פונקציה טפשית שמדפיסה את הערך של הפרמטר שלה ומחזירה את הערך 10, פונקצית מבחן שעובר בהצלחה, ואחד שכושל.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -64,43 +30,33 @@ parameter and returns 10, as well as a test that passes and a test that fails.
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/listing-11-10/src/lib.rs}}
 ```
 
-<span class="caption">Listing 11-10: Tests for a function that calls
-`println!`</span>
+<span class="caption">רשימה 11-10: מקרי מבחן עבור פונקציה שקוראת -`println!`</span>
 
-When we run these tests with `cargo test`, we’ll see the following output:
+כאשר מריצים מבחנים אלה עם `cargo test`, מקבלים את הפלט הבא:
 
 ```console
 {{#include ../listings/ch11-writing-automated-tests/listing-11-10/output.txt}}
 ```
 
-Note that nowhere in this output do we see `I got the value 4`, which is what
-is printed when the test that passes runs. That output has been captured. The
-output from the test that failed, `I got the value 8`, appears in the section
-of the test summary output, which also shows the cause of the test failure.
+שימו לב שבשום מקום בפלט זה לא מופיע `I got the value 4`, שהוא מה שמודפס כאשר המבחן שעובר בהצלחה מורץ. פלט זה נשמר על-ידי מריץ המבחנים. הפלט מהמבחן שנכשל, קריא `I got the value 8`, מופיע בחלק של סיכום הרצת המבחנים, שגם מראה את סיבת הכישלון למבחן שכשל.
 
-If we want to see printed values for passing tests as well, we can tell Rust
-to also show the output of successful tests with `--show-output`.
+אם נרצה לראות את הפלט גם של מבחנים שעוברים בהצלחה, ניתן לאמר לראסט להציג את הפלט גם של מבחנים כאלה תוך שימוש ב-`--show-output`.
 
 ```console
 $ cargo test -- --show-output
 ```
 
-When we run the tests in Listing 11-10 again with the `--show-output` flag, we
-see the following output:
+אם נריץ שוב את הבדיקות מרשימה 11-10, הפעם עם הדגל `--show-output`, נקבל את הפלט הבא:
 
 ```console
 {{#include ../listings/ch11-writing-automated-tests/output-only-01-show-output/output.txt}}
 ```
 
-### Running a Subset of Tests by Name
+### הרצת תת-קבוצה של מבחנים
 
-Sometimes, running a full test suite can take a long time. If you’re working on
-code in a particular area, you might want to run only the tests pertaining to
-that code. You can choose which tests to run by passing `cargo test` the name
-or names of the test(s) you want to run as an argument.
+לעיתים, הרצת כל הבדיקות כולן עלול לקחת זמן רב. אם אתם עובדים על קוד ספציפי, יתכן ותרצו להריץ רק את הבדיקות הקשורות לאיזור זה של הקוד. ניתן לבחור אלו בדיקות להריץ על-ידי העברת שמות הבדיקות ל-`cargo test` שאותן אתם מעוניינים להריץ.
 
-To demonstrate how to run a subset of tests, we’ll first create three tests for
-our `add_two` function, as shown in Listing 11-11, and choose which ones to run.
+על-מנת להדגים הרצה של תת-קבוצה של בדיקות, ראשית ניצור שלושה מבחנים עבור הפונקציה `add_two`, כמוצג ברשימה 11-11, ונבחר אלו מבינהן להריץ.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -108,53 +64,39 @@ our `add_two` function, as shown in Listing 11-11, and choose which ones to run.
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/listing-11-11/src/lib.rs}}
 ```
 
-<span class="caption">Listing 11-11: Three tests with three different
-names</span>
+<span class="caption">רשימה 11-11: שלושה מבחנים בעלי שמות שונים</span>
 
-If we run the tests without passing any arguments, as we saw earlier, all the
-tests will run in parallel:
+אם נריץ את המבחנים ללא העברת ארגומנטים, כפי שעשינו עד כה, כל הבדיקות יתבצעו במקביל:
 
 ```console
 {{#include ../listings/ch11-writing-automated-tests/listing-11-11/output.txt}}
 ```
 
-#### Running Single Tests
+#### הרצת מבחן בודד
 
-We can pass the name of any test function to `cargo test` to run only that test:
+ניתן להעביר ל-`cargo test` את השם של פונקצית הבדיקה כדי להריץ רק אותה:
 
 ```console
 {{#include ../listings/ch11-writing-automated-tests/output-only-02-single-test/output.txt}}
 ```
 
-Only the test with the name `one_hundred` ran; the other two tests didn’t match
-that name. The test output lets us know we had more tests that didn’t run by
-displaying `2 filtered out` at the end.
+רק הבדיקה בשם `one_hundred` הורצה; שתי הבדיקות האחרונות לא הותאמו לשם זה. פלט המבחן מיידע אותנו שישנן עוד בדיקות שלא הורצו על-ידי הצגת `2 filtered out` בסוף הפלט.
 
-We can’t specify the names of multiple tests in this way; only the first value
-given to `cargo test` will be used. But there is a way to run multiple tests.
+לא ניתן להעביר מספר בדיקות להרצה בצורה זו; רק הערך הראשון המועבר ל-`cargo test` ישמש למטרה זו. אבל ישנה דרך להרצת מספר בדיקות.
 
-#### Filtering to Run Multiple Tests
+#### הרצת מספר בדיקות על-ידי סינון
 
-We can specify part of a test name, and any test whose name matches that value
-will be run. For example, because two of our tests’ names contain `add`, we can
-run those two by running `cargo test add`:
+ניתן לציין חלק משם של מבחן, ואז יורץ כל מבחן ששמו מותאם לערך זה. למשל, כיוון ששמות שנים מהמבחנים שלנו כוללים את המחרוזת `add`, נוכל להריץ את רק אותם באמצעות הפקודה `cargo test add`:
 
 ```console
 {{#include ../listings/ch11-writing-automated-tests/output-only-03-multiple-tests/output.txt}}
 ```
 
-This command ran all tests with `add` in the name and filtered out the test
-named `one_hundred`. Also note that the module in which a test appears becomes
-part of the test’s name, so we can run all the tests in a module by filtering
-on the module’s name.
+פקודה זו הריצה את כל הבחינות ששמן מכיל `add` וסיננה את המבחן בשם `one_hundred`. בנוסף, שימו לב שהמודול בו המבחנים כתובים הינו חלק משם המבחנים, וכך ניתן בקלות להריץ את כל המבחנים ממודול מסוים על-ידי סינון לפי שם המודול.
 
-### Ignoring Some Tests Unless Specifically Requested
+### התעלמות מבדיקות מסוימות אלה אם כן דורשים אחרת
 
-Sometimes a few specific tests can be very time-consuming to execute, so you
-might want to exclude them during most runs of `cargo test`. Rather than
-listing as arguments all tests you do want to run, you can instead annotate the
-time-consuming tests using the `ignore` attribute to exclude them, as shown
-here:
+לעיתים הרצת בדיקות מסוימות יכולה לגזול זמן חישוב רב, ולכן יתכן ותרצו להתעלם מהן עבור רוב ההרצות של `cargo test`. במקום לרשום כארגומנטים את כל הבדיקות שאתם כן רוצים להריץ, ניתן במקום זאת לבאר את הבדיקות האינטנסיביות חישובית בתכונה `ignore` כל מנת למנוע את הרצן, כפי שמוצג כאן:
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -162,22 +104,16 @@ here:
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/no-listing-11-ignore-a-test/src/lib.rs}}
 ```
 
-After `#[test]` we add the `#[ignore]` line to the test we want to exclude. Now
-when we run our tests, `it_works` runs, but `expensive_test` doesn’t:
+לאחר ה-`#[test]` אנו מוסיפים את השורה `#[ignore]` למבחן שאותו אנו רוצים להימנע מלהריץ. כעת, כאשר נריץ את הבדיקות, `it_works` תבוצע אולם `expensive_test` לא תבוצע:
 
 ```console
 {{#include ../listings/ch11-writing-automated-tests/no-listing-11-ignore-a-test/output.txt}}
 ```
 
-The `expensive_test` function is listed as `ignored`. If we want to run only
-the ignored tests, we can use `cargo test -- --ignored`:
+הפונקציה `expensive_test` מופיע כ-`ignored`. אם נרצה להריץ רק את הבדיקות מהם בדרך-כלל מתעלמים, נוכל לעשות זאת על-ידי הפקודה `cargo test -- --ignored`:
 
 ```console
 {{#include ../listings/ch11-writing-automated-tests/output-only-04-running-ignored/output.txt}}
 ```
 
-By controlling which tests run, you can make sure your `cargo test` results
-will be fast. When you’re at a point where it makes sense to check the results
-of the `ignored` tests and you have time to wait for the results, you can run
-`cargo test -- --ignored` instead. If you want to run all tests whether they’re
-ignored or not, you can run `cargo test -- --include-ignored`.
+תוך כדי שליטה על אלו בדיקות רצות ומתי, תוכלו לוודא שהתוצאות של `cargo test` יתקבלו במהירות. כאשר אתם במצב בו הגיוני להריץ את הבדיקות במהן בדרך-כלל עדיף להימנה, ויש לכם זמן להמתין לתוצאות, תוכלו להריץ את הפקודה `cargo test -- --ignored`. במידה ותרצו להריץ את כל הבדיקות כולן, בין אם הן מסומנות להתעלמות ובין אם לאו, תוכלו להריץ את הפקודה `cargo test -- --include-ignored`.

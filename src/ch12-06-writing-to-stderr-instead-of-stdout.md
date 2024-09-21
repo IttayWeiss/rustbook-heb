@@ -1,58 +1,33 @@
-## Writing Error Messages to Standard Error Instead of Standard Output
+## כתיבת הודעות שגיאה לזרם השגיאות הסטנדרטי במקום לזרם הפלט הסטנדרטי
 
-At the moment, we’re writing all of our output to the terminal using the
-`println!` macro. In most terminals, there are two kinds of output: *standard
-output* (`stdout`) for general information and *standard error* (`stderr`) for
-error messages. This distinction enables users to choose to direct the
-successful output of a program to a file but still print error messages to the
-screen.
+בשלב זה, אנחנו כותבים את כל הפלט לטרמינל תוך שימוש במקרו `println!`. ברוב הטרמינלים יש שני סוגים של פלט: _זרם הפלט הסטנדרטי_ (`stdout`) עבור מידע כללי _וזרם ההשגיאות הסטנדרטי_ (`stderr`) עבור הודעות שגיאה. הבחנה זו מאפשרת למשתמשים לבחור להכווין את פלט התכנית הקשור להצלחות לשמירה בקובץ, ועדיין להדפיס את הודעות השגיאה למסך.
 
-The `println!` macro is only capable of printing to standard output, so we
-have to use something else to print to standard error.
+המקרו `println!` תמיד מדפיס לזרם הפלט הסטנדרטי, ולכן, כדי להדפיס לזרם השגיאות הסטנדרטי, עלינו להשתמש בכלי אחר.
 
-### Checking Where Errors Are Written
+### בדיקת מיקום כתיבת הודעות השגיאה
 
-First, let’s observe how the content printed by `minigrep` is currently being
-written to standard output, including any error messages we want to write to
-standard error instead. We’ll do that by redirecting the standard output stream
-to a file while intentionally causing an error. We won’t redirect the standard
-error stream, so any content sent to standard error will continue to display on
-the screen.
+ראשית, הבה נראה כיצד התוכן המודפס על-ידי `minigrep` במצבו הנוכחי מודפס לזרם הפלט הסטנדרטי, כולל הודעות שגיאה שנרצה לכתוב במקום זאת לזרם השגיאות הסטנדרטי. נעשה זאת על-ידי הכוונת זרם הפלט הסטנדרטי לקובץ וניצור שגיאה בכוונה. אנחנו לא מכווינים את זרם השגיאות הסטנדרטי, ולכן כל תוכן שיישלך לזרם השגיאות הסטנדרטי ימשיך להופיע על המסך.
 
-Command line programs are expected to send error messages to the standard error
-stream so we can still see error messages on the screen even if we redirect the
-standard output stream to a file. Our program is not currently well-behaved:
-we’re about to see that it saves the error message output to a file instead!
+מצופה מתכניות שורת פקודה לשלוח הודעות שגיאה לזרם השגיאות הסטנדרטי כדי שאפשר יהיה לראות הודעות שגיאה על המסך אפילו אם מכווינים את זרם הפלט הסטנדרטי לקובץ. התכנית שלנו, כרגע, לא מתנהגת בהתאם: אנו עומדים לראות שהיא שומרת את הודעות השגיאה לקובץ!
 
-To demonstrate this behavior, we’ll run the program with `>` and the file path,
-*output.txt*, that we want to redirect the standard output stream to. We won’t
-pass any arguments, which should cause an error:
+כדי להדגים התנהגות זו, נריץ את התכנית עם הסימן `>` ומסלול הקובץ _output.txt_, אליו אנו מפנים את זרם הפלט הסטנדרטי. לא נעביר ארגומנטים, ובכל ניצור שגיאה:
 
 ```console
 $ cargo run > output.txt
 ```
 
-The `>` syntax tells the shell to write the contents of standard output to
-*output.txt* instead of the screen. We didn’t see the error message we were
-expecting printed to the screen, so that means it must have ended up in the
-file. This is what *output.txt* contains:
+התחביר `>` מנחה את המעטפת לכתוב את תוכן זרם הפלט הסטנדרטי לקובץ _output.txt_ במקום למסך. על מסך המחשב לא ראינו את הודעת השגיאה לה ציפינו, והמשמעות היא שהיא מצאה את דרכה אל הקובץ. הינה התוכן של _output.txt_:
 
 ```text
 Problem parsing arguments: not enough arguments
 ```
 
-Yup, our error message is being printed to standard output. It’s much more
-useful for error messages like this to be printed to standard error so only
-data from a successful run ends up in the file. We’ll change that.
+אכן, הודעת השגיאה מודפבת לזרם הפלט הסטנדרטי. הרבה יותר מועיל אם הודעות שגיאה כאלה יודפסו לזרם השגיאות הסטנדרטי כדי שרק דאטה מפעולות מוצלחות של התכנית ימצאו את דרכן לקובץ. וזאת נעשה.
 
-### Printing Errors to Standard Error
+### הדפסת שגיאות לזרם השגיאות הסטנדרטי
 
-We’ll use the code in Listing 12-24 to change how error messages are printed.
-Because of the refactoring we did earlier in this chapter, all the code that
-prints error messages is in one function, `main`. The standard library provides
-the `eprintln!` macro that prints to the standard error stream, so let’s change
-the two places we were calling `println!` to print errors to use `eprintln!`
-instead.
+נשתמש בקוד שברשימה 12-24 כדי לשנות את הדרך בה הודעות שגיאה מודפסות.
+בעקבות הארגון מחדש שביצענו בשלב קודם בפרק, כל הקוד האחראי על הדפסת הודעות שגיאה נמצא בפונקציה אחת ויחידה, והיא הפונקציה `main`. הספריה הסטנדרטית מספקת את המקרו `eprintln!` שמדפיס לזרם השגיאות הסטנדרטי, ועל כן, נשתנש בשני המקומות הקוראים ל-`println!` ב-`eprintln!`.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -60,29 +35,24 @@ instead.
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-24/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 12-24: Writing error messages to standard error
-instead of standard output using `eprintln!`</span>
+<span class="caption">רשימה 12-24: כתיבת הודעות שגיאה לזרם השגיאות הסטנדרטי תוך שימוש במקרו `eprintln!`</span>
 
-Let’s now run the program again in the same way, without any arguments and
-redirecting standard output with `>`:
+הבה נריץ שוב את התכנית באותה הצורה, ללא ארגומטים ועם הפנית זרם הפלט הסטנדרטי לקובץ:
 
 ```console
 $ cargo run > output.txt
 Problem parsing arguments: not enough arguments
 ```
 
-Now we see the error onscreen and *output.txt* contains nothing, which is the
-behavior we expect of command line programs.
+כעת אנו רואים את הודעת השגיאה על המסך והקובץ _output.txt_ אינו מכיל דבר, וזו ההתנהגות המצופה מתכניות שורת פקודה.
 
-Let’s run the program again with arguments that don’t cause an error but still
-redirect standard output to a file, like so:
+בואו נריץ את התכנית פעם נוספת, אך הפעם עם ארגומנטים שלא יוצרים שגיאה, ועדיין עם הפנית זרם הפלט הסטנדרטי לקובץ, בצורה זאת:
 
 ```console
 $ cargo run -- to poem.txt > output.txt
 ```
 
-We won’t see any output to the terminal, and *output.txt* will contain our
-results:
+הפעם לא נראה שום פלט על המסך, והקובץ _output.txt_ יכיל את התוצאות:
 
 <span class="filename">Filename: output.txt</span>
 
@@ -91,18 +61,10 @@ Are you nobody, too?
 How dreary to be somebody!
 ```
 
-This demonstrates that we’re now using standard output for successful output
-and standard error for error output as appropriate.
+זה מדגים שעכשיו אנחנו משתמשים בזרם הפלט הסטנדרטי עבור פלט שנובע מהצלחות ובזם השגיאות הסטנדרטי עבור פלט שנובע משגיאות, וזאת בדיוק ההתנהגות הרצויה.
 
-## Summary
+## סיכום
 
-This chapter recapped some of the major concepts you’ve learned so far and
-covered how to perform common I/O operations in Rust. By using command line
-arguments, files, environment variables, and the `eprintln!` macro for printing
-errors, you’re now prepared to write command line applications. Combined with
-the concepts in previous chapters, your code will be well organized, store data
-effectively in the appropriate data structures, handle errors nicely, and be
-well tested.
+פרק זה נגע בכמה מושגים מרכזיים שלמדתם עד כה והראה כיצד לבצע פעולות I/O שכיחות בראסט. על-ידי שימוש בארגומנטי שורת פקודה, קבצים, משתני סביבה, והמקרו `eprintln!` עבור הדפסת שגיאות, כעת אתם מוכנים לפתח אפליקציות שורת פקודה. בשילוב עם המושגים מפרקים קודמים, הקוד שלכם יהיה מאורגן היטב, יאכסן דאטה בצורה יעילה במבני נתונים מתאימים, יטפל בשגיאות בצורה נאותה, ויפותח תוך אבטחת נכונות באמצעות בדיקות.
 
-Next, we’ll explore some Rust features that were influenced by functional
-languages: closures and iterators.
+הנושא הבא עוסק בכמה יכולות של ראסט שהושפעו על-ידי שפות פונקציונאליות: סגורים ואיטרטורים.

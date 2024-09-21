@@ -1,39 +1,19 @@
-## Test Organization
+## ארגון מבחנים
 
-As mentioned at the start of the chapter, testing is a complex discipline, and
-different people use different terminology and organization. The Rust community
-thinks about tests in terms of two main categories: unit tests and integration
-tests. *Unit tests* are small and more focused, testing one module in isolation
-at a time, and can test private interfaces. *Integration tests* are entirely
-external to your library and use your code in the same way any other external
-code would, using only the public interface and potentially exercising multiple
-modules per test.
+כפי שכבר אמרנו בתחילת הפרק, בדיקת קוד היא נושא סבוך, ואנשים שונים נוקטים בטרימינולוגיה ושיטות ארגון שונות. קהילת ראסט חושבת על בדיקות במונחים של שתי קטגוריות מרכזיות: בדיקות יחידה ובדיקות אינטגרציה. _בדיקות יחידה_ הן קצרות וממוקדות, הן בודקות מודול בודד, ויכולות לבדוק ממשקים פרטיים. _בדיקות אינטגרציה_ הן חיצוניות לגמרי לספריה שהן בודקות והן משתמשות בקוד שבו באותה הדרך בה כל קוד חיצוני משתמש בו, תוך שימוש אך ורק בממשק הפומבי, ועשויות לעשות שימוש בכמה מודולים בבדיקה אחת.
 
-Writing both kinds of tests is important to ensure that the pieces of your
-library are doing what you expect them to, separately and together.
+כתיבת בדיקות משני סוגים אלה חשובה על מנת להבטיח שפיסות הספריה שלכם עושות מה שאתם מצפים מהם לעשות, כל פיסה לחוד וכל הפיסות יחד.
 
-### Unit Tests
+### בדיקות יחידה
 
-The purpose of unit tests is to test each unit of code in isolation from the
-rest of the code to quickly pinpoint where code is and isn’t working as
-expected. You’ll put unit tests in the *src* directory in each file with the
-code that they’re testing. The convention is to create a module named `tests`
-in each file to contain the test functions and to annotate the module with
-`cfg(test)`.
+המטרה של בדיקות יחידה היא לבדוק כל יחידת קוד בנפרד משאר הקוד על מנת לזהות במהירות מצבים בהם הקוד אינו עובד כצפוי. ממקמים בדיקות יחידה בספרית ה-_src_ בכל קובץ יחד עם הקוד שהן בודקות. המוסכמה היא ליצור בכל קובץ מודול בשם `tests` שיכיל את פונקציות המבחן ולבאר את המודול עם `cfg(test)`.
 
-#### The Tests Module and `#[cfg(test)]`
+#### מודול הבדיקות והביאור `#[cfg(test)]`
 
-The `#[cfg(test)]` annotation on the tests module tells Rust to compile and run
-the test code only when you run `cargo test`, not when you run `cargo build`.
-This saves compile time when you only want to build the library and saves space
-in the resulting compiled artifact because the tests are not included. You’ll
-see that because integration tests go in a different directory, they don’t need
-the `#[cfg(test)]` annotation. However, because unit tests go in the same files
-as the code, you’ll use `#[cfg(test)]` to specify that they shouldn’t be
-included in the compiled result.
+הביאור `#[cfg(test)]` על מודול הבדיקות אומר לראסט לקמפל ולהריץ את הקוד רק כאשר מריצים `cargo test`, ולא כאשר מריצים `cargo build`.
+בכך חוסכים זמן קומפילציה כאשר מעוניינים רק לבנות את הספריה ומקטינים את גודל תוצאת הקימפול כי הבדיקות אינן כלולות. כפי שתראו, כיוון שבדיקות אינטגרציה ממוקמות בספריה אחרת, אין צורך בביאור `#[cfg(test)]` במקרה זה. אולם, כיוון שבדיקות יחידה נמצאות באותם הקבצים עם הקוד, יש צורך להשתמש ב-`#[cfg(test)]` כדי לציין שאין להכליל אותן בתהליך הקימפול.
 
-Recall that when we generated the new `adder` project in the first section of
-this chapter, Cargo generated this code for us:
+זכרו שכאשר יצרנו את הפרויקט `adder` בסעיף הראשון בפרק זה, קארגו יצר עבורנו את הקוד:
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -41,22 +21,12 @@ this chapter, Cargo generated this code for us:
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/listing-11-01/src/lib.rs}}
 ```
 
-This code is the automatically generated test module. The attribute `cfg`
-stands for *configuration* and tells Rust that the following item should only
-be included given a certain configuration option. In this case, the
-configuration option is `test`, which is provided by Rust for compiling and
-running tests. By using the `cfg` attribute, Cargo compiles our test code only
-if we actively run the tests with `cargo test`. This includes any helper
-functions that might be within this module, in addition to the functions
-annotated with `#[test]`.
+קוד זה הוא מודול בדיקה שנוצר אוטומטית. התכונה `cfg` מייצגת _configuration_ ואומרת לראסט שיש להכליל את העצם הבא רק עם אופצית קונפיגורציה מסוימת. במקרה זה, אופצית הקונפיגורציה היא `test`, שמסופקת על-ידי ראסט עבור קימפול והרצת בדיקות. על-ידי שימוש בתכונה `cfg`, קארגו מקמפל את קוד הבדיקה רק אם אנחנו מריצים את הבדיקות עם `cargo test`. זה כולל, בנוסף לפונקציות המבוארות עם `#[test]`, גם כל פונקצית עזר שעשויה להימצא במודול.
 
-#### Testing Private Functions
+#### בדיקת פונקציות פרטיות
 
-There’s debate within the testing community about whether or not private
-functions should be tested directly, and other languages make it difficult or
-impossible to test private functions. Regardless of which testing ideology you
-adhere to, Rust’s privacy rules do allow you to test private functions.
-Consider the code in Listing 11-12 with the private function `internal_adder`.
+יש חוסר הסכמה בקרה קהילת בדיקת קוד אודות האם יש לבדוק פונקציות פרטיות באופן ישיר, ושפות תכנות אחרות הופכות את זה לקשה עד בלתי אפשרי לבדוק פונקציות פרטיות. ללא תלות באידאולוגית הבדיקה בה אתם דבקים, חוקי הפרטיות של ראסט כן מאשפרים בדיקת פונקציות פרטיות.
+התבוננו בקוד ברשימה 11-12 המכיל את הפונקציה הפרטית `internal_adder`.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -64,37 +34,19 @@ Consider the code in Listing 11-12 with the private function `internal_adder`.
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/listing-11-12/src/lib.rs}}
 ```
 
-<span class="caption">Listing 11-12: Testing a private function</span>
+<span class="caption">רשימה 11-12: בדיקת פונקציה פרטית</span>
 
-Note that the `internal_adder` function is not marked as `pub`. Tests are just
-Rust code, and the `tests` module is just another module. As we discussed in
-the [“Paths for Referring to an Item in the Module Tree”][paths]<!-- ignore -->
-section, items in child modules can use the items in their ancestor modules. In
-this test, we bring all of the `test` module’s parent’s items into scope with
-`use super::*`, and then the test can call `internal_adder`. If you don’t think
-private functions should be tested, there’s nothing in Rust that will compel
-you to do so.
+שימו לב שהפונקציה `internal_adder` לא מסומנת כ-`pub`. בדיקות הן פשוט קוד בראסט, והמודול `tests` הוא פשוט עוד מודול. כפי שהסברנו בסעיף [“מסלולים להפניות לעצמים בעץ המודולים”][paths]<!-- ignore -->, עצמים במודולים יכולים להשתמש בעצמים ממודולי האב שלהם. בבדיקה זו אנו מכניסים את כל העצמים ממודלי האב של `test` למתחם באמצעות `use super::*`, ואז הבדיקה יכולה לקרוא ל-`internal_adder`. אם אינכם סבורים שיש לבדוק פונקציות פרטיות ישירות, אין שום דבר בראסט שיכריח אתכם לעשות זאת.
 
-### Integration Tests
+### מבחני אינטגרציה
 
-In Rust, integration tests are entirely external to your library. They use your
-library in the same way any other code would, which means they can only call
-functions that are part of your library’s public API. Their purpose is to test
-whether many parts of your library work together correctly. Units of code that
-work correctly on their own could have problems when integrated, so test
-coverage of the integrated code is important as well. To create integration
-tests, you first need a *tests* directory.
+בראסט, מבחני אינטגרציה הם חיצוניים לחלוטין לספריה שלכם. מבחנים אלו משתמשים בספריה שלכם בדיוק באותו אופן שכל קוד אחר יעשה זאת, זאת אומרת שהם יכולים לקרוא לפונקציות שמהוות חלק מהממשק הפומבי של הספריה. מטרתם היא לבדוק האם חלקים שונים של הספריה שלכם עובדים יחדיו נכונה. יחידות קוד שעובדות כשורה באופן עצמאי עלולות להיתקל בבעיות כאשר הן מופעלות כחלק ממכלול יותר רחב של קוד, ולכן בדיקות אינטגרציה חשובות בפני עצמן. על מנת ליצור מבחני אינטגרציה, יש ליצור קודם כל תיקיית _tests_.
 
-#### The *tests* Directory
+#### התיקייה _tests_
 
-We create a *tests* directory at the top level of our project directory, next
-to *src*. Cargo knows to look for integration test files in this directory. We
-can then make as many test files as we want, and Cargo will compile each of the
-files as an individual crate.
+אנו יוצרים את התיקייה _tests_ ברמה העליונה של תיקיית הפרויקט שלנו, ליד התיקייה _src_. קארגו יודע לחפש קבצי מבחני אינטגרציה בתיקייה זו. ואז ניתן ליצור כמה כבצי מבחן שנרצה, וקארגו יקמפל כל אחד מהקבצים כמכולה נפרדת.
 
-Let’s create an integration test. With the code in Listing 11-12 still in the
-*src/lib.rs* file, make a *tests* directory, and create a new file named
-*tests/integration_test.rs*. Your directory structure should look like this:
+הבה ניצור מבחן אינטגרציה. יחד עם הקוד מרשימה 11-12, עדיין בקובץ _src/lib.rs_, צרו תיקיית _tests_, וצרו קובץ חדש בשם _tests/integration_test.rs_. מבנה התיקייה שלכם צריך להראות כך:
 
 ```text
 adder
@@ -106,7 +58,7 @@ adder
     └── integration_test.rs
 ```
 
-Enter the code in Listing 11-13 into the *tests/integration_test.rs* file:
+הקלידו את הקוד מרשימה 11-13 לתוך הקובץ _tests/integration_test.rs_:
 
 <span class="filename">Filename: tests/integration_test.rs</span>
 
@@ -114,68 +66,38 @@ Enter the code in Listing 11-13 into the *tests/integration_test.rs* file:
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/listing-11-13/tests/integration_test.rs}}
 ```
 
-<span class="caption">Listing 11-13: An integration test of a function in the
-`adder` crate</span>
+<span class="caption">רשימה 11-3: מבחן אינטגרציה עבור פונקציה במכולה `adder`</span>
 
-Each file in the `tests` directory is a separate crate, so we need to bring our
-library into each test crate’s scope. For that reason we add `use adder` at the
-top of the code, which we didn’t need in the unit tests.
+כל קובץ בתיקייה `tests` הוא מכולה נפרדת, ולכן יש להכניס את הספריה שלנו למתחם של כל קובץ מבחן. מסיבה זו אנו מוסיפים את הפקודה `use adder` בראש הקוד, דבר שלא נדרשנו לעשות עם בדיקות יחידה.
 
-We don’t need to annotate any code in *tests/integration_test.rs* with
-`#[cfg(test)]`. Cargo treats the `tests` directory specially and compiles files
-in this directory only when we run `cargo test`. Run `cargo test` now:
+אין צורך לבאר עם `#[cfg(test)]` שום פיסת קוד בקובץ _tests/integration_test.rs_. קארגו מתייחס לתיקייה `tests` באופן מיוחד ומקמפל קבצים בתיקייה זו רק כאשר מריצים `cargo test`. כעת, הריצו את הפקודה `cargo test`:
 
 ```console
 {{#include ../listings/ch11-writing-automated-tests/listing-11-13/output.txt}}
 ```
 
-The three sections of output include the unit tests, the integration test, and
-the doc tests. Note that if any test in a section fails, the following sections
-will not be run. For example, if a unit test fails, there won’t be any output
-for integration and doc tests because those tests will only be run if all unit
-tests are passing.
+שלושת סעיפי הפלט כוללים מבחני יחידה, מבחני אינטגרציה, ומבחני תיעוד. שימו לב שבמידה ומבחן בסעיף כלשהו כושל, הסעיפים הבאים לא יורצו. למשל, אם מבחן יחידה כושל, אז לא יהיה פלא בסעיף של מבחני אינטגרציה או מבחני תיעוד כיוון שמבחנים אלה מורצים רק במידה וכל מבחני היחידה עברו בהצלחה.
 
-The first section for the unit tests is the same as we’ve been seeing: one line
-for each unit test (one named `internal` that we added in Listing 11-12) and
-then a summary line for the unit tests.
+הסעיף הראשון עבור מבחני יחידה זהה למה שכבר ראינו: שורה אחת עבור כל מבחן יחידה (אחד מהם בשם `internal` אותו הוספנו ברשימה 11-12) ואז שורת סיכום עבור מבחני היחידה.
 
-The integration tests section starts with the line `Running
-tests/integration_test.rs`. Next, there is a line for each test function in
-that integration test and a summary line for the results of the integration
-test just before the `Doc-tests adder` section starts.
+סעיף מבחני האינטגרציה מתחיל עם השורה `Running
+tests/integration_test.rs`. אחר כך ישנה שורה עבור כל אחת מפונקציות הבדיקה במבחן האינטגרציה ושורת סיכום עבור תוצאות מבחן האינטגרציה, בדיוק לפני שמתחיל הסעיף `Doc-tests adder`.
 
-Each integration test file has its own section, so if we add more files in the
-*tests* directory, there will be more integration test sections.
+לכל קובץ של מבחן אינטגרציה יש את הסעיף שלו, כך שאם מוסיפים עוד קבצים בתיקייה _tests_, יתווספו עוד סעיפים במבחן האינטגרציה.
 
-We can still run a particular integration test function by specifying the test
-function’s name as an argument to `cargo test`. To run all the tests in a
-particular integration test file, use the `--test` argument of `cargo test`
-followed by the name of the file:
+עדיין אפשר להריץ פונקצית מבחן אינטגרציה ספיציפית על-ידי ציון שם הפונקציה כארגומנט ל-`cargo test`. על מנת להריץ את כל הבדיקות במבחן אינטגרציה מסוים, ניתן להעביר ל-`cargo test` את הארגומנט `--test` ולאחריו את שם הקובץ:
 
 ```console
 {{#include ../listings/ch11-writing-automated-tests/output-only-05-single-integration/output.txt}}
 ```
 
-This command runs only the tests in the *tests/integration_test.rs* file.
+פקודה זו תריץ רק את הבדיקות שבקובץ _tests/integration_test.rs_.
 
-#### Submodules in Integration Tests
+#### תת-מודולים במבחני אינטגרציה
 
-As you add more integration tests, you might want to make more files in the
-*tests* directory to help organize them; for example, you can group the test
-functions by the functionality they’re testing. As mentioned earlier, each file
-in the *tests* directory is compiled as its own separate crate, which is useful
-for creating separate scopes to more closely imitate the way end users will be
-using your crate. However, this means files in the *tests* directory don’t
-share the same behavior as files in *src* do, as you learned in Chapter 7
-regarding how to separate code into modules and files.
+ככל שתוסיפו מבחני אינטגרציה, סביר שתרצו להוסיף עוד קבצים בתיקייה _tests_ כדי לעזור לארגן את המבחנים; למשל, תוכלו לקבץ את פונקציות המבחן לפני הפונקציונאליות שהן בודקות. כפי שהוזכר לעיל, כל קובץ בתיקייה _tests_ מקומפל בפני עצמו במכולה משלו, דבר שמייצר מתחמים נפרדים כדי לדמות יותר במדויק את הדרך בה משתמשי קצה ישתמשו בספריה שלכם. אבל, זה גם אומר שקבצים בתיקייה _tests_ לא חולקים את אותה ההתנהגות כמו קבצים ב-_src_, כפי שלמדתם בפרק 7 אודות הפרדת קוד למודולים וקבצים.
 
-The different behavior of *tests* directory files is most noticeable when you
-have a set of helper functions to use in multiple integration test files and
-you try to follow the steps in the [“Separating Modules into Different
-Files”][separating-modules-into-files]<!-- ignore --> section of Chapter 7 to
-extract them into a common module. For example, if we create *tests/common.rs*
-and place a function named `setup` in it, we can add some code to `setup` that
-we want to call from multiple test functions in multiple test files:
+ההתנהגות השונה של קבצים בתיקייה _tests_ נהירה במיוחד כאשר יש לכם אוסף של פונקציות עזר לשימוש בכמה קבצי מבחני אינטגרציה ואתם מנסים לעקוב אחד הצעדים מסעיף [“הפרדת מודולים לקבצים נפרדים”][separating-modules-into-files]<!-- ignore --> בפרק 7 על מנת למצות אותם למודול משותף. לדוגמא, אם ניצור את הקובץ _tests/common.rs_ ונמקם בו פונקציה בשם `setup`, נוכל להוסיף קוד כלשהו ל-`setup` שנוכל לקרוא לו מכמה פונקציות מבחן הממוקמות בקבצים שונים:
 
 <span class="filename">Filename: tests/common.rs</span>
 
@@ -183,21 +105,15 @@ we want to call from multiple test functions in multiple test files:
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/no-listing-12-shared-test-code-problem/tests/common.rs}}
 ```
 
-When we run the tests again, we’ll see a new section in the test output for the
-*common.rs* file, even though this file doesn’t contain any test functions nor
-did we call the `setup` function from anywhere:
+כאשר נריץ את המבחנים שוב, נראה סעיף חדש בפלט ההרצה עבור הקובץ _common.rs_, למרות שקובץ זה אינו מכיל אף פונקצית בדיקה וגם לא קראנו לפונקציה `setup` בשום צורה:
 
 ```console
 {{#include ../listings/ch11-writing-automated-tests/no-listing-12-shared-test-code-problem/output.txt}}
 ```
 
-Having `common` appear in the test results with `running 0 tests` displayed for
-it is not what we wanted. We just wanted to share some code with the other
-integration test files.
+העובדה ש-`common` מופיע כחלק מתוצאות הבחינות עם המידע `running 0 tests` אינה ההתנהגות אותה רצינו. כל שרצינו היה לחלוק קוד בין קבצי מבחני אינטגרציה.
 
-To avoid having `common` appear in the test output, instead of creating
-*tests/common.rs*, we’ll create *tests/common/mod.rs*. The project directory
-now looks like this:
+כדי להימנע מכך ש-`common` יופיע בפלט הבדיקות, במקום הקובץ _tests/common.rs_ ניצור את הקובץ _tests/common/mod.rs_. כעת תיקיית הפרויקט נראית כך:
 
 ```text
 ├── Cargo.lock
@@ -210,18 +126,9 @@ now looks like this:
     └── integration_test.rs
 ```
 
-This is the older naming convention that Rust also understands that we
-mentioned in the [“Alternate File Paths”][alt-paths]<!-- ignore --> section of
-Chapter 7. Naming the file this way tells Rust not to treat the `common` module
-as an integration test file. When we move the `setup` function code into
-*tests/common/mod.rs* and delete the *tests/common.rs* file, the section in the
-test output will no longer appear. Files in subdirectories of the *tests*
-directory don’t get compiled as separate crates or have sections in the test
-output.
+כאן נעשה שימוש במוסכמת מתן השמות הישנה שגם אותה ראסט מבינה, כפי שהזכרנו בסעיף [“מסלולי קבצים אלטרנטיבים”][alt-paths]<!-- ignore --> בפרק 7. מתן שם קובץ זה אומר לראסט לא להתייחס למודול `common` כמבחן אינטגרציה. כאשר מעבירים את הקוד של הפונקציה `setup` לקובץ _tests/common/mod.rs_ ומוחקים את הקובץ _tests/common.rs_, הסעיף בפלט הרצת הבחינות מפסיק להופיע. קבצים בתתי-תיקיות של התיקייה _tests_ לא עוברים קומפילציה כמכולות נפרדות ולא מופיעים בפלט הרצת הבחינות.
 
-After we’ve created *tests/common/mod.rs*, we can use it from any of the
-integration test files as a module. Here’s an example of calling the `setup`
-function from the `it_adds_two` test in *tests/integration_test.rs*:
+לאחר יצירת הקובץ _tests/common/mod.rs_, ניתן להשתמש בו כמודול מכל קובץ של מבחן אינטגרציה. הינה דוגמא לקריאה לפונקציה `setup` מתוך פונקציה המבחן `it_adds_two` שבקובץ _tests/integration_test.rs_:
 
 <span class="filename">Filename: tests/integration_test.rs</span>
 
@@ -229,41 +136,21 @@ function from the `it_adds_two` test in *tests/integration_test.rs*:
 {{#rustdoc_include ../listings/ch11-writing-automated-tests/no-listing-13-fix-shared-test-code-problem/tests/integration_test.rs}}
 ```
 
-Note that the `mod common;` declaration is the same as the module declaration
-we demonstrated in Listing 7-21. Then in the test function, we can call the
-`common::setup()` function.
+שימו לב ההכרזה `mod common;` היא כמו הכרזת המודול שהצגנו ברשימה 7-21. אז ניתן לקרוא לפונקציה `common::setup()` מתוך פונקצית המבחן.
 
-#### Integration Tests for Binary Crates
+#### מבחני אינטגרציה למכולות בינאריות
 
-If our project is a binary crate that only contains a *src/main.rs* file and
-doesn’t have a *src/lib.rs* file, we can’t create integration tests in the
-*tests* directory and bring functions defined in the *src/main.rs* file into
-scope with a `use` statement. Only library crates expose functions that other
-crates can use; binary crates are meant to be run on their own.
+במידה והפרויקט שלנו הוא מכולה בינארית שמכילה קובץ _src/main.rs_ ללא קובץ _src/lib.rs_, לא ניתן לכתוב מבחני אינטגרציה בתיקיה _tests_ ולהכניס למתחם באמצעות פקודת `use` פונקציות המוגדרות בקובץ _src/main.rs_. רק מכולות ספריה יכולות לחשוף פונקציות לשימוש מכולות אחרות; מכולות בינאריות אמורות לרוץ בפני עצמן.
 
-This is one of the reasons Rust projects that provide a binary have a
-straightforward *src/main.rs* file that calls logic that lives in the
-*src/lib.rs* file. Using that structure, integration tests *can* test the
-library crate with `use` to make the important functionality available.
-If the important functionality works, the small amount of code in the
-*src/main.rs* file will work as well, and that small amount of code doesn’t
-need to be tested.
+זו אחת הסיבה לכך שלפרוייקטי ראסט שמייצרים קובץ בינארי יש קובץ _src/main.rs_ פשוט מאוד שקורא לקוד שחי בקובץ _src/lib.rs_. תוך שימוש במבנה כזה, _כן_ ניתן לכתוב פונקציות אינטגרציה שבודקות את ספריהת המכולה ולהשתמש בפקודת `use` על מנת להנגיש פונקציונאליות חשובה.
+אם הפונקציונאליות החשובה עובדת כהלכה, הקוד המינימלי שבקובץ _src/main.rs_ עובד גם כן, ופיסת קוד קצרה זו לא דורשת בדיקות.
 
-## Summary
+## סיכום
 
-Rust’s testing features provide a way to specify how code should function to
-ensure it continues to work as you expect, even as you make changes. Unit tests
-exercise different parts of a library separately and can test private
-implementation details. Integration tests check that many parts of the library
-work together correctly, and they use the library’s public API to test the code
-in the same way external code will use it. Even though Rust’s type system and
-ownership rules help prevent some kinds of bugs, tests are still important to
-reduce logic bugs having to do with how your code is expected to behave.
+יכולות הבדיקה של ראסט מספקות דרך לציין כיצד קוד אמור להתנהג כדי לוודא שהוא ממשיך לעבוד כצפוי, אפילו תחת שינויים. בדיקות יחידה משתמשות בנפרד בחלקים שונים של הספריה ויכולות לבדוק פרטי מימושים פרטיים. בדיקות אינטגרציה בודקות שחלקים שונים של הספריה עובדים יחדיו בצורה נכונה, והן משתמשות בממשק הפומבי של הספריה על מנת לבדוק את הקוד תוך שימוש בו באותו אופן בו קוד חיצוני יעשה בו שימוש. למרות שמערכת הטיפוסים של ראסט וכללי הבעלות עוזרים למנוע סוגים מסויימים של באגים, פונקציות מבחן עדיין משחקות תפקיד חשוב בהפחתת שגיאות לוגיות שנובעות מכך שהקוד שלנו לא מתנהג כפי שאנו מצפים.
 
-Let’s combine the knowledge you learned in this chapter and in previous
-chapters to work on a project!
+הבה נשלב את הידע שצברתם בפרק זה ובפרקים הקודמים ונעבור לעבוד על פרוייקט!
 
 [paths]: ch07-03-paths-for-referring-to-an-item-in-the-module-tree.html
-[separating-modules-into-files]:
-ch07-05-separating-modules-into-different-files.html
+[separating-modules-into-files]: ch07-05-separating-modules-into-different-files.html
 [alt-paths]: ch07-05-separating-modules-into-different-files.html#alternate-file-paths

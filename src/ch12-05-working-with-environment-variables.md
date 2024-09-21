@@ -1,20 +1,10 @@
-## Working with Environment Variables
+## שימוש במשתני סביבה
 
-We’ll improve `minigrep` by adding an extra feature: an option for
-case-insensitive searching that the user can turn on via an environment
-variable. We could make this feature a command line option and require that
-users enter it each time they want it to apply, but by instead making it an
-environment variable, we allow our users to set the environment variable once
-and have all their searches be case insensitive in that terminal session.
+נשפר את `minigrep` על-ידי הוספת תכונה נוספת: אופציה לחיפוש קייס סנסיטיב (case sensitive) בה המשתמש יכול לשלוט על-ידי משתנה סביבה. ניתן ליישם יכולת זו כאופציה של כלי שורת הפקודה ולדרוש שמשתמשים ינפיקו אותה בכל פעם שעם עושים בה שימוש, אבל על-ידי זה שבמקום זאת ניישם זאת באמצעות משתנה סביבה נאפשר למשתמשים שלנו לקבוע את משתנה הסביבה פעם אחת ואז כל החיפושים שלהם יהיו קייס סנסיטיב.
 
-### Writing a Failing Test for the Case-Insensitive `search` Function
+### כתיבת מקרה מבחן נכשל למקרה של קייס אינסנסיטיב לפונקציה `search`
 
-We first add a new `search_case_insensitive` function that will be called when
-the environment variable has a value. We’ll continue to follow the TDD process,
-so the first step is again to write a failing test. We’ll add a new test for
-the new `search_case_insensitive` function and rename our old test from
-`one_result` to `case_sensitive` to clarify the differences between the two
-tests, as shown in Listing 12-20.
+תחילה נוסיף פונקציה חדשה, `search_case_insensitive`, שלה נקרא כאשר למשתנה הסביבה יהיה ערך. נמשיך לנקוט בגישת הפמ"ב, כך שהשלב הראשון הוא, שוב, כתיבת מקרה מבחן שנכשל. נוסיף בדיקה נוספת עבור הפונקציה `search_case_insensitive` ונשנה את שם מקרה המבחן הקודם מ-`one_result` ל-`case_sensitive` בכדי להבהיר את ההבדל בין שני מקרי המבחן, כפי שמוצג ברשימה 12-20.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -22,31 +12,15 @@ tests, as shown in Listing 12-20.
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-20/src/lib.rs:here}}
 ```
 
-<span class="caption">Listing 12-20: Adding a new failing test for the
-case-insensitive function we’re about to add</span>
+<span class="caption">רשימה 12-20: הוספת מקרה מבחן כושל נוסף עבור הפונקציה למקרה חיפוש קייס אינסטסיטיב שאנו מתעתדים לכתוב</span>
 
-Note that we’ve edited the old test’s `contents` too. We’ve added a new line
-with the text `"Duct tape."` using a capital D that shouldn’t match the query
-`"duct"` when we’re searching in a case-sensitive manner. Changing the old test
-in this way helps ensure that we don’t accidentally break the case-sensitive
-search functionality that we’ve already implemented. This test should pass now
-and should continue to pass as we work on the case-insensitive search.
+שימו לב שערכנו גם את ה-`contents` שבמקרה המבחן הישן. הוספנו שורה חדשה עם הטקסט `"Duct tape."` תוך שימוש באות `D` ולכן לא תותאם למחרוזת החיפוש `"duct"` במקרה של חיפוש קייס-סנסיטיב. שינוי מקרה המבחן הישן בצורה זו מסייע להבטיח שלא נשבור בשוגג את פונקציונאליות החיפוש במקרה של קייס-סנסיטיב שכבר מימשנו. מקרה מבחן זה אמור לעבור בהצלחה כעת ואמור להמשיך לעשות זאת בעודנו עובדים על מימוש המקרה של קייס-אינסנסיטיב.
 
-The new test for the case-*insensitive* search uses `"rUsT"` as its query. In
-the `search_case_insensitive` function we’re about to add, the query `"rUsT"`
-should match the line containing `"Rust:"` with a capital R and match the line
-`"Trust me."` even though both have different casing from the query. This is
-our failing test, and it will fail to compile because we haven’t yet defined
-the `search_case_insensitive` function. Feel free to add a skeleton
-implementation that always returns an empty vector, similar to the way we did
-for the `search` function in Listing 12-16 to see the test compile and fail.
+מקרה המבחן החדש למקרה של חיפוש קייס-_אינסנסיטיב_ משתמש ב-`"rUsT"` כמחרוזת החיפוש. בפונקציה `search_case_insensitive` שאנו עומדים להוסיף, מחרוזת החיפוש `"rUsT"` אמורה להתאים לשורה המכילה `"Rust:"` עם האות `R` וכן את השורה `"Trust me."` למרות שאף אחת מהן אינה זהה למחרוזת החיפוש. זהו מקרה המבחן הנכשל שלנו, והוא לא יעבור קומפילציה בגלל שעוד לא הגדרנו את הפונקציה `search_case_insensitive`. הרגישו חופשיים להוסיף שלד של המימוש שתמיד מחזיר וקטור ריק, בדומה למה שעשינו עבור הפונקציה `search` ברשימה 12-16 כדי לראות שהקוד עובר קומפילציה ושהבדיקה אכן נכשלת.
 
-### Implementing the `search_case_insensitive` Function
+### מימוש הפונקציה `search_case_insensitive`
 
-The `search_case_insensitive` function, shown in Listing 12-21, will be almost
-the same as the `search` function. The only difference is that we’ll lowercase
-the `query` and each `line` so whatever the case of the input arguments,
-they’ll be the same case when we check whether the line contains the query.
+הפונקציה `search_case_insensitive`, המוצגת ברשימה 12-21, תהיה כמעט זהה לפונקציה `search`. ההבדל היחיד הוא שנעביר לגרסת אותיות קטנות את כל האותיות ב-`query` ובכל `line` כך שללא תלות בהאם האותיות של הפלט גדולות או קטנות, בזמן ההשוואה זה לא ישנה.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -54,41 +28,23 @@ they’ll be the same case when we check whether the line contains the query.
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-21/src/lib.rs:here}}
 ```
 
-<span class="caption">Listing 12-21: Defining the `search_case_insensitive`
-function to lowercase the query and the line before comparing them</span>
+<span class="caption">רשימה 12-21: הגדרת הפונקציה `search_case_insensitive` תוך העברת האותיות לגרסת אותיות קטנות במחרוזת החיפוש ובכל שורה לפני ביצוע ההשוואה</span>
 
-First, we lowercase the `query` string and store it in a shadowed variable with
-the same name. Calling `to_lowercase` on the query is necessary so no
-matter whether the user’s query is `"rust"`, `"RUST"`, `"Rust"`, or `"rUsT"`,
-we’ll treat the query as if it were `"rust"` and be insensitive to the case.
-While `to_lowercase` will handle basic Unicode, it won’t be 100% accurate. If
-we were writing a real application, we’d want to do a bit more work here, but
-this section is about environment variables, not Unicode, so we’ll leave it at
-that here.
+ראשית, אנו הופכים את כל האותיות במחרוזת `query` לאותיות קטנות ומאכסנים את התוצאה במשתנה מוצלל בעל אותו השם. קריאה ל-`to_lowercase` על מחרוזת החיפוש היא הכרחית כדי להבטיח שלא משנה אם המשתמש הקליד `"rust"`, `"RUST"`, `"Rust"`, או `"rUsT"`, נתייחס למחרוזת החיפוש כאילו היא היתה `"rust"` ובכך נממש התנהגות קייס-אינסנסיטיב.
+בעוד `to_lowercase` מטפלת היטב ביוניקוד בסיסי, היא לא מדוייקת במאה אחוז. לו כתבנו אפליקציה אמיתית, היינו רוצים להכניס כאן יותר עבודה, אבל סעיף זה דן במשתני סביבה, לא ביוניקוד, ולכן זהו עיקר הדיון.
 
-Note that `query` is now a `String` rather than a string slice, because calling
-`to_lowercase` creates new data rather than referencing existing data. Say the
-query is `"rUsT"`, as an example: that string slice doesn’t contain a lowercase
-`u` or `t` for us to use, so we have to allocate a new `String` containing
-`"rust"`. When we pass `query` as an argument to the `contains` method now, we
-need to add an ampersand because the signature of `contains` is defined to take
-a string slice.
+שימו לב שכעת `query` הוא מחרוזת ולא חיתוך מחרוזת, בגלל שקריאה ל-`to_lowercase` יוצרת דאטה חדש ולא הפניה לדאטה קיים. נניח, כדוגמא, שמחרוזת החיפוש היא `"rUsT"`: חיתוך מחרוזת זה לא כולל את האותיות `u` או `t`, ולכן חייבים להקצות מופע חדש של `String` שמכיל את הערך `"rust"`. כאשר אנו מעבירים כעת את `query` כארגומנט למתודה `contains`, יש להוסיף את סימן האמפרסנד כי בחותם של `contains` מצויין שהמתודה מקבלת חיתוך מחרוזת.
 
-Next, we add a call to `to_lowercase` on each `line` to lowercase all
-characters. Now that we’ve converted `line` and `query` to lowercase, we’ll
-find matches no matter what the case of the query is.
+עכשיו, נוסיף קריאה ל-`to_lowercase` על כל `line` כדי להעביר את כל התווים לאותיות קטנות. עכשיו משהמרנו את `line` ואת `query` לאותיות קטנות, נמצא התאמות ללא תלות בהאם המחרוזת והטקס המקוריים היו אם אותיות גדולות, קטנות, או כל שילוב שהוא.
 
-Let’s see if this implementation passes the tests:
+הבה נראה אם מימוש זה עובר את המבחנים בהצלחה:
 
 ```console
 {{#include ../listings/ch12-an-io-project/listing-12-21/output.txt}}
 ```
 
-Great! They passed. Now, let’s call the new `search_case_insensitive` function
-from the `run` function. First, we’ll add a configuration option to the
-`Config` struct to switch between case-sensitive and case-insensitive search.
-Adding this field will cause compiler errors because we aren’t initializing
-this field anywhere yet:
+מצוין! הבדיקות עברו בהצלחה. עכשיו, הבה נקרא לפונקציה החדשה `search_case_insensitive` מתוך הפונקציה `run`. קודם כל, נוסיף אופצית קונפיגורציה למבנה `Config` בכדי להחליף בין חיפושים במצב קייס-סנסיטיב לקייס-אינסנסיטיב.
+הוספת שדה זה תגרום לבעיות קומפילציה כיוון שאנו עדיין לא מאתחלים את השדה בשום מקום:
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -96,10 +52,7 @@ this field anywhere yet:
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-22/src/lib.rs:here}}
 ```
 
-We added the `ignore_case` field that holds a Boolean. Next, we need the `run`
-function to check the `ignore_case` field’s value and use that to decide
-whether to call the `search` function or the `search_case_insensitive`
-function, as shown in Listing 12-22. This still won’t compile yet.
+הוספנו את השדה `ignore_case` שמאכסן ערך בוליאני. כעת, אנחנו צריכים שהפונקציה `run` תבדוק את הערך שבשדה `ignore_case` ותשתמש בו כדי להחליט האם לקרוא לפונקציה `search` או לפונקציה `search_case_insensitive`, כפי שמוצג ברשימה 12-22. הקוד עדיין לא עובר קומפילציה.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -107,15 +60,9 @@ function, as shown in Listing 12-22. This still won’t compile yet.
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-22/src/lib.rs:there}}
 ```
 
-<span class="caption">Listing 12-22: Calling either `search` or
-`search_case_insensitive` based on the value in `config.ignore_case`</span>
+<span class="caption">רשימה 12-22: קריאה ל-`search` או ל-`search_case_insensitive` בהמתאם לערך שב-`config.ignore_case`</span>
 
-Finally, we need to check for the environment variable. The functions for
-working with environment variables are in the `env` module in the standard
-library, so we bring that module into scope at the top of *src/lib.rs*. Then
-we’ll use the `var` function from the `env` module to check to see if any value
-has been set for an environment variable named `IGNORE_CASE`, as shown in
-Listing 12-23.
+לבסוף, יש להשתמש במשתנה הסביבה. הפונקציות לטיפול במשתני סביבה נמצאות במודול `env` בספריה הסטנדרטית, ולכן אנו מכניסים את המודול למתחם בראש הקובץ _src/lib.rs_. ואז נשתמש בפונקציה `var` מהמודול `env` כדי לבדוק אם יש ערך במשתנה סביבה בשם `IGNORE_CASE`, כפי שרואים ברשימה 12-23.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -123,58 +70,40 @@ Listing 12-23.
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-23/src/lib.rs:here}}
 ```
 
-<span class="caption">Listing 12-23: Checking for any value in an environment
-variable named `IGNORE_CASE`</span>
+<span class="caption">רשימה 12-23: בדיקה אם יש ערך במשתנה סביבה בשם `IGNORE_CASE`</span>
 
-Here, we create a new variable `ignore_case`. To set its value, we call the
-`env::var` function and pass it the name of the `IGNORE_CASE` environment
-variable. The `env::var` function returns a `Result` that will be the
-successful `Ok` variant that contains the value of the environment variable if
-the environment variable is set to any value. It will return the `Err` variant
-if the environment variable is not set.
+כאן, אנו יוצרים משתנה חדש בשם `ignore_case`. כדי לאכסן בו ערך, אנו קוראים לפונקציה `env::var` ומעבירים אליה את `IGNORE_CASE`, שהוא השם של משתנה הסביבה הרלוונטי. הפונקציה `env::var` מחזירה ערך מטיפוס `Result` שיהיה וריאנט ההצלחה `Ok` שמכיל את הערך במשתנה הסביבה במידה ולמשתנה זה הושם ערך. אם אין ערך במשתנה הסביבה הזה, אז יוחזר וריאנט השגיאה `Err`.
 
-We’re using the `is_ok` method on the `Result` to check whether the environment
-variable is set, which means the program should do a case-insensitive search.
-If the `IGNORE_CASE` environment variable isn’t set to anything, `is_ok` will
-return false and the program will perform a case-sensitive search. We don’t
-care about the *value* of the environment variable, just whether it’s set or
-unset, so we’re checking `is_ok` rather than using `unwrap`, `expect`, or any
-of the other methods we’ve seen on `Result`.
+אנו משתמשים במתודה `is_ok` של על ערך ה-`Result` כדי לבדוק אם משתנה הסביבה קיים, ובמקרה זה על התכנית לבצע חיפוש קייס-אינסנסיטיב.
+אם משתנה הסביבה `IGNORE_CASE` לא קיים, המתודה `is_ok` תחזיר את הערך ` false` והתכנית תבצע חיפוש קייס-סנסיטיב. הערך עצמו של משתנה הסביבה לא מעניין אותנו, אלה רק אם הושם בו ערך אם לאו, ולכן אנו משתמשים ב- `is_ok` ולא ב-`unwrap`, `expect`, או כל מתודה אחרת עבור `Result` שאולי כבר ראיתם.
 
-We pass the value in the `ignore_case` variable to the `Config` instance so the
-`run` function can read that value and decide whether to call
-`search_case_insensitive` or `search`, as we implemented in Listing 12-22.
+אנו מעבירים את הערך שבמשתנה `ignore_case` לתוך מופע ה-`Config` כך שהפונקציה `run` תוכל לקרוא ערך זה ולהחליט האם לקרוא ל-`search_case_insensitive` או ל-`search`, כפי שממומש ברשימה 12-22.
 
-Let’s give it a try! First, we’ll run our program without the environment
-variable set and with the query `to`, which should match any line that contains
-the word “to” in all lowercase:
+הבה ננסה זאת כעת! ראשית, נריץ את התכנית ללא השמת ערך במשתנה הסביבה ועם מחרוזת החיפוש `to`, שאמורה להתאים כל שורה שכוללת את המילה “to”, באותיות קטנות:
 
 ```console
 {{#include ../listings/ch12-an-io-project/listing-12-23/output.txt}}
 ```
 
-Looks like that still works! Now, let’s run the program with `IGNORE_CASE`
-set to `1` but with the same query `to`.
+נראה שזה עדיין עובד כהלכה! עכשיו, הבה נריץ את התכנית עם הערך `1` מושם למשתנה הסביבה `IGNORE_CASE`, ועדיין עם אותו ערך למחרוזת החיפוש, קריא `to`.
 
 ```console
 $ IGNORE_CASE=1 cargo run -- to poem.txt
 ```
 
-If you’re using PowerShell, you will need to set the environment variable and
-run the program as separate commands:
+אם אתם משתמשים ב-PowerShell, תצטרכו לבצע את ההשמה ואת הרצת התכנית כשתי פקודות נפרדות:
 
 ```console
 PS> $Env:IGNORE_CASE=1; cargo run -- to poem.txt
 ```
 
-This will make `IGNORE_CASE` persist for the remainder of your shell
-session. It can be unset with the `Remove-Item` cmdlet:
+זה יגרום למשתנה `IGNORE_CASE` להישאר מוגדר עד תום ה-shell session שלכם. ניתן להסיר את הערך באמצעות פקודת `Remove-Item`:
 
 ```console
 PS> Remove-Item Env:IGNORE_CASE
 ```
 
-We should get lines that contain “to” that might have uppercase letters:
+אנו מצפים לקבל שורות שכוללות את המחרוזת “to” בכל צירוף שהוא של אותיות קטנות וגדולות:
 
 <!-- manual-regeneration
 cd listings/ch12-an-io-project/listing-12-23
@@ -189,18 +118,8 @@ To tell your name the livelong day
 To an admiring bog!
 ```
 
-Excellent, we also got lines containing “To”! Our `minigrep` program can now do
-case-insensitive searching controlled by an environment variable. Now you know
-how to manage options set using either command line arguments or environment
-variables.
+מצוין, אכן קיבלנו גם שורות שכוללות את המחרוזת “To”! תכנית ה-`minigrep` יכולה עכשיו לבצע חיפוש קייס-אינסנסיטיב בצורה הנשלטת על-ידי משתנה סביבה. כעת אתם יודעים כיצד לנהל אופציות שנקבעות על-ידי ארגומנטים של שורת הפקודה או על-ידי משתני סביבה.
 
-Some programs allow arguments *and* environment variables for the same
-configuration. In those cases, the programs decide that one or the other takes
-precedence. For another exercise on your own, try controlling case sensitivity
-through either a command line argument or an environment variable. Decide
-whether the command line argument or the environment variable should take
-precedence if the program is run with one set to case sensitive and one set to
-ignore case.
+ישנן תכניות שמאפשרות ארגומנטים _וגם_ משתני סביבה לאותה הקונפיגורציה. בנסיבות כאלה, על התכנית להחליט איזו אופציה מקבלת קדימות. לתרגיל נוסף שתוכלו לעשות בעצמכם, נסו לשלוט בסוג החיפוש לפי או ארגומנט שורת פקודה, או משתנה סביבה. החליטו האם ארגומנט שורת הפקודה או משתנה הסביבה יקבל קדימות במידה והתכנית תורץ כאשר האחד מציין חיפוש קייס-סנסיטיב בעוד השני מציין את ההפך.
 
-The `std::env` module contains many more useful features for dealing with
-environment variables: check out its documentation to see what is available.
+המודול `std::env` מכיל יכולות שימושיות רבות נוספות לטיפול במשתני סביבה: בדקו את הדוקומנטציה כדי לגלות מה עוד זמין עבורכם.

@@ -1,74 +1,38 @@
-## Refactoring to Improve Modularity and Error Handling
+## ארגון מחדש כדי לשפר מודולריות וטיפול בשגיאות
 
-To improve our program, we’ll fix four problems that have to do with the
-program’s structure and how it’s handling potential errors. First, our `main`
-function now performs two tasks: it parses arguments and reads files. As our
-program grows, the number of separate tasks the `main` function handles will
-increase. As a function gains responsibilities, it becomes more difficult to
-reason about, harder to test, and harder to change without breaking one of its
-parts. It’s best to separate functionality so each function is responsible for
-one task.
+על מנת לשפר את התכנית שלנו, נתקן ארבע בעיות שנוגעות למבנה התכנית ולדרך בה היא מטפלת בשגיאות פוטנציאליות. ראשית, פונקצית ה-`main` שלנו בשלב זה מבצעת שתי פעולות: היא עושה פארסינג לארגומנטים וקוראת קבצים. ככל שהתכנית תגדל, מספר הפעולות הנפרדות שפונקצית ה-`main` תעשה יגדל גם הוא. ככל שפונקציה מקבלת על עצמה יותר ויותר אחראויות, כך נהיה קשה יותר ויותר להבין את הפונקציה, לבדוק אותה, ולשנות אותה מבלי לקלקל אך אחד מחלקיה. לכן מומלץ להפריד את הפונקציונאליות כך שכל פונקציה אחראית למשימה אחת בלבד.
 
-This issue also ties into the second problem: although `query` and `file_path`
-are configuration variables to our program, variables like `contents` are used
-to perform the program’s logic. The longer `main` becomes, the more variables
-we’ll need to bring into scope; the more variables we have in scope, the harder
-it will be to keep track of the purpose of each. It’s best to group the
-configuration variables into one structure to make their purpose clear.
+סוגיה זו קשורה גם לבעיה השניה: למרות ש-`query` ו-`file_path` הם משתני קונפיגורציה עבור התכנית שלנו, אנו משתמשים במשתנים כמו `contents` כדי לבצע את הלוגיקה של התכנית. ככל ש-`main` תגדל, נצטרך להכניס למתחם יותר ויותר משתנים; ככל שיש יותר משתנים במתחם, כך קשה יותר לעקוב אחר המטרה של כל אחד מהם. עדיף לקבץ יחדיו את כל משתני הקונפיגורציה למבנה אחד, וכך להבהיר את משמעותם.
 
-The third problem is that we’ve used `expect` to print an error message when
-reading the file fails, but the error message just prints `Should have been
-able to read the file`. Reading a file can fail in a number of ways: for
-example, the file could be missing, or we might not have permission to open it.
-Right now, regardless of the situation, we’d print the same error message for
-everything, which wouldn’t give the user any information!
+הבעיה השלישית היא שהשתמשנו ב-`expect` כדי להדפיס הודעת שגיאה כאשר קוראים קבצים, אבל הודעת השגיאה רק מדפיסה `Should have been
+able to read the file`. קריאת קובץ יכולה להיכשל בכמה דרכים: למשל, אם הקובץ לא קיים, או אם אין לנו את ההתרים הדרושים כדי לפתוח אותו.
+בשלב זה, ללא תלות בנסיבות, תמיד נדפיס את אותה הודעת שגיאה, וזה לא יספק למשתמש מידע מועיל!
 
-Fourth, we use `expect` repeatedly to handle different errors, and if the user
-runs our program without specifying enough arguments, they’ll get an `index out
-of bounds` error from Rust that doesn’t clearly explain the problem. It would
-be best if all the error-handling code were in one place so future maintainers
-had only one place to consult the code if the error-handling logic needed to
-change. Having all the error-handling code in one place will also ensure that
-we’re printing messages that will be meaningful to our end users.
+הרביעית והאחרונה בבעיותנו היא השימוש התחוף ב-`expect` כדי לפטל בשגיאות שונות, ואם המשתמש יריץ את התכנית שלנו ללא ארגונמנטים, תתקבל שגיאת `index out
+of bounds`, ללא הסבר נאות על מהות הבעיה. עדיף שכל הקוד האחראי על טיפול בשגיאות ימוקם במקום יעודי כך שלמתחזקים עתידיים של הקוד שלנו יהיה קל יותר לנווט את עצמם למקום הנכון במידה וצריך לשנות דבר מה באופן טיפול השגיאות. מיקום כל הקוד המטפל בשגיאות במקום אחד גם יסייע בכתיבת הודעות שגיאה משמעותיות יותר עבור המשתמשים.
 
-Let’s address these four problems by refactoring our project.
+הבה נטפל בארבע בעיות אלה בעודנו מארגנים מחדש את הקוד.
 
-### Separation of Concerns for Binary Projects
+### הפרדת עניינים בפרוייקטים בינארים
 
-The organizational problem of allocating responsibility for multiple tasks to
-the `main` function is common to many binary projects. As a result, the Rust
-community has developed guidelines for splitting the separate concerns of a
-binary program when `main` starts getting large. This process has the following
-steps:
+הקצאת אחריות עבור כמה משימות לפונקצית ה-`main` היא בעיה ארגונית של נפוצה בפרוייקטים בינארים. כתוצאה מכך, קהילת ראסט פתחה קווים מנחים לפיצול העניינים השונים של תכנית בינארית לכשפונקצית ה-`main` מתחילה לגדול. הינה הצעדים בהם יש לנקוט:
 
-* Split your program into a *main.rs* and a *lib.rs* and move your program’s
-  logic to *lib.rs*.
-* As long as your command line parsing logic is small, it can remain in
-  *main.rs*.
-* When the command line parsing logic starts getting complicated, extract it
-  from *main.rs* and move it to *lib.rs*.
+- פיצול התכנית ל-_main.rs_ ול-_lib.rs_ והעברת הלוגיקה של התכנית -_lib.rs_.
+- כל עוד הלוגיקה של הפארסינג פשוטה, ניתן להשאיר אותה ב-_main.rs_.
+- כאשר הלוגיקה של הפארסינג נהיית מסובכת, יש להעביר אותה מ-_main.rs_ ל-_lib.rs_.
 
-The responsibilities that remain in the `main` function after this process
-should be limited to the following:
+האחראויות שנשארות בפונקציה `main` לאחר תהליך זה צריכות להיות מוגבלות לרשימה הבאה:
 
-* Calling the command line parsing logic with the argument values
-* Setting up any other configuration
-* Calling a `run` function in *lib.rs*
-* Handling the error if `run` returns an error
+- קריאה ללוגיקה של הפארסינג משורת הפקודה עם ערכי הארגומנטים
+- הגדרת שאר הקונפיגורציה
+- קריאה לפונקצית ה-`run` מ-_lib.rs_
+- טיפול בשגיאה במידה ו-`run` מחזירה שגיאה
 
-This pattern is about separating concerns: *main.rs* handles running the
-program, and *lib.rs* handles all the logic of the task at hand. Because you
-can’t test the `main` function directly, this structure lets you test all of
-your program’s logic by moving it into functions in *lib.rs*. The code that
-remains in *main.rs* will be small enough to verify its correctness by reading
-it. Let’s rework our program by following this process.
+מהות תבנית זו היא הפרדת עניינים: _main.rs_ מטפלת בהרצת התכנית, בעוד _lib.rs_ מטפלת בכל ענייני הלוגיקה התפעולית. כיוון שלא ניתן לבדוק את פונקציית ה-`main` ישירות, ארגון זה של הקוד מאפשר לבדוק את הלוגיקה של התכנית על-ידי מיקום לוגיקה זו בפונקציות ב-_lib.rs_. הקוד שנשאר ב-_main.rs_ יהיה קצר מספיק כדי לוודא את תקינותו רק על-ידי קריאה. הבה נכתוב מחדש את התכנית שלנו תוך מעקב אחר התהליך לעיל.
 
-#### Extracting the Argument Parser
+#### מיצוי הפארסינג של הארגומנטים
 
-We’ll extract the functionality for parsing arguments into a function that
-`main` will call to prepare for moving the command line parsing logic to
-*src/lib.rs*. Listing 12-5 shows the new start of `main` that calls a new
-function `parse_config`, which we’ll define in *src/main.rs* for the moment.
+אנו נמצה את הפונקציונאליות של הפארסינג של הארגומנטים לפונקציה שתיקרא על-ידי `main` כהכנה להעברת הלוגיקה של הפארסניג של שורת הפקודה ל-_src/lib.rs_. רשימה 12-5 מראה את ההתחלה החדשה של `main` שקוראת לפונקציה חדשה בשם `parse_config`, שאותה נגדיר, לעת עתה, ב-_src/main.rs_.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -76,41 +40,20 @@ function `parse_config`, which we’ll define in *src/main.rs* for the moment.
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-05/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 12-5: Extracting a `parse_config` function from
-`main`</span>
+רשימה 12-5: מיצוי הפונקציה `parse_config` מ-`main`</span>
 
-We’re still collecting the command line arguments into a vector, but instead of
-assigning the argument value at index 1 to the variable `query` and the
-argument value at index 2 to the variable `file_path` within the `main`
-function, we pass the whole vector to the `parse_config` function. The
-`parse_config` function then holds the logic that determines which argument
-goes in which variable and passes the values back to `main`. We still create
-the `query` and `file_path` variables in `main`, but `main` no longer has the
-responsibility of determining how the command line arguments and variables
-correspond.
+אנחנו עדיין מקבצים יחדיו את הארגומנטים של שורת הפקודה לווקטור, אבל במקום להשים את הארגומנט באינדקס 1 למשתנה `query` ואת הארגומנט באינדקס 2 למשתנה `file_path` בתוך הפונקציה `main`, אנו מעבירים את הווקטור כולו לפונקציה `parse_config`. הפונקציה `parse_config` מבצעת את הלוגיקה שקובעת אלו ארגומנטים מותאמים לאלו משתנים, ומעבירה את הערכים בחזרה ל-`main`. אנחנו עדיין יוצרים את המשתנים `query` ו-`file_path` ב-`main`, אבל `main` כבר לא אחראית להחלטה כיצד לקשר בין הארגומנטים משורת הפקודה למתשתנים בתוכנית.
 
-This rework may seem like overkill for our small program, but we’re refactoring
-in small, incremental steps. After making this change, run the program again to
-verify that the argument parsing still works. It’s good to check your progress
-often, to help identify the cause of problems when they occur.
+על העבודה הזו עשויה להראות מוגזמת לתכנית קצרה כמו שלנו, אולם אנו מבצעים את הארגון מחדש בצעדים אינקרמנטלים וקטנים. לאחר שינוי זה, הריצו את התכנית שוב כדי לוודא שהפארסינג מתבצע באופן נאות. מומלץ מאוד לבדוק את ההתקדמות באופן תכוף, בכל צעד וצעד, כל מנת לזהות בנקל את המקור של כל בעיה שעלולה לצוץ בדרך.
 
-#### Grouping Configuration Values
+#### קיבוץ ערכי קונפיגורציה
 
-We can take another small step to improve the `parse_config` function further.
-At the moment, we’re returning a tuple, but then we immediately break that
-tuple into individual parts again. This is a sign that perhaps we don’t have
-the right abstraction yet.
+אנחנו יכולים לבצע צעד נוסף כדי להמשיך ולשפר את הפונקציה `parse_config`.
+בשלב זה, אנחנו מחזירים מרצף, אבל אז מייד מפרקים אותו למרכיביו. זהו סימן לכך שיתכן שעוד אין בידנו את האבסטרקציה הנכונה.
 
-Another indicator that shows there’s room for improvement is the `config` part
-of `parse_config`, which implies that the two values we return are related and
-are both part of one configuration value. We’re not currently conveying this
-meaning in the structure of the data other than by grouping the two values into
-a tuple; we’ll instead put the two values into one struct and give each of the
-struct fields a meaningful name. Doing so will make it easier for future
-maintainers of this code to understand how the different values relate to each
-other and what their purpose is.
+אינדיקטור נוסף לכך שיש מקום נוסף לשיפור הוא חלק ה-`config` של ה-`parse_config`, אשר מראה ששני הערכים שאנו מחזירים קשורים זה לזה ושניהם חלק מאותו ערך קונפיגורציה. במצב הנוכחי אנחנו לא מבטאים משמעות זו במבנה של הדאטה, חוץ מכך שהערכים נמצאים באותו מרצף; במקום זאת, נמקם את שני הערכים במבנה וניתן שם משמעותי לכל אחד משדות המבנה. בכך יהיה קל יותר למתחזקים עתידיים של הקוד להבין כיצד הערכים השונים קשורים זה לזה ומהי מטרתם.
 
-Listing 12-6 shows the improvements to the `parse_config` function.
+רשימה 12-6 מציגה שיפורים אלה לפונקציה `parse_config`.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -118,66 +61,27 @@ Listing 12-6 shows the improvements to the `parse_config` function.
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-06/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 12-6: Refactoring `parse_config` to return an
-instance of a `Config` struct</span>
+<span class="caption">רשימה 12-6: ארגון מחדש של הפונקציה `parse_config` כך שהיא מחזירה מופע של המבנה `Config`</span>
 
-We’ve added a struct named `Config` defined to have fields named `query` and
-`file_path`. The signature of `parse_config` now indicates that it returns a
-`Config` value. In the body of `parse_config`, where we used to return
-string slices that reference `String` values in `args`, we now define `Config`
-to contain owned `String` values. The `args` variable in `main` is the owner of
-the argument values and is only letting the `parse_config` function borrow
-them, which means we’d violate Rust’s borrowing rules if `Config` tried to take
-ownership of the values in `args`.
+הוספנו מבנה בשם `Config` שמוגדר עם שני שדות ששמותיהם `query` ו-`file_path`. החותם של `parse_config` מבטא כעת שהוא מחזיר ערך מטיפוס `Config`. בגוף של הפונקציה `parse_config`, היכן שקודם החזרנו חיתוכי מחרוזת שהפנו לערכי `String` ב-`args`, אנחנו מגדירים כעת מופע `Config` שמכיל ערכי `String`. משתנה ה-`args` ב-`main` הוא הבעלים של ערכי הארגומנטים והוא מאפשר לפונקציה `parse_config` רק לשאול אותם, מה שאומר שהיינו מפרים את חוקי ההשאלות של ראסט אילו `Config` היה מנסה לקחת בעלות על הערכים ב-`args`.
 
-There are a number of ways we could manage the `String` data; the easiest,
-though somewhat inefficient, route is to call the `clone` method on the values.
-This will make a full copy of the data for the `Config` instance to own, which
-takes more time and memory than storing a reference to the string data.
-However, cloning the data also makes our code very straightforward because we
-don’t have to manage the lifetimes of the references; in this circumstance,
-giving up a little performance to gain simplicity is a worthwhile trade-off.
+ישנן כמה דרכים לטפל בדאטה מטיפוס `String`; הפשוטה ביותר, אם כי לא מאוד יעילה, היא לקרוא למתודה `clone` על הערכים.
+פעולה זו תיצור עותק של הדאטה עליו המופע של `Config` יקח בעלות, וזה לוקח יותר זמן וזיכרון מאשר אכסון של הפניה למחרוזת.
+אולם, שכפול הדאטה גם הופך את הקוד שלנו לפשוט ביותר כיוון שאנו לא צריכים לנהל את משכי-החיים של ההפניות; בנסיבות אלה, ויתור על מעט יעילות למען נהירות הוא שיקול מוצדק.
 
-> ### The Trade-Offs of Using `clone`
+> ### שיקולי יעילות בשימוש ב-`clone`
 >
-> There’s a tendency among many Rustaceans to avoid using `clone` to fix
-> ownership problems because of its runtime cost. In
-> [Chapter 13][ch13]<!-- ignore -->, you’ll learn how to use more efficient
-> methods in this type of situation. But for now, it’s okay to copy a few
-> strings to continue making progress because you’ll make these copies only
-> once and your file path and query string are very small. It’s better to have
-> a working program that’s a bit inefficient than to try to hyperoptimize code
-> on your first pass. As you become more experienced with Rust, it’ll be
-> easier to start with the most efficient solution, but for now, it’s
-> perfectly acceptable to call `clone`.
+> ישנה נטיה בקרב ראסטיונארים להימנע משימוש ב-`clone` כדי לטפל בבעיות בעלות בגלל עלויות זמן ריצה. [בפרק 13][ch13]<!-- ignore -->, תלמדו כיצד להשתמש במתודות יעילות יותר במצבים מסוג זה. אבל לבינתיים, זה בסדר להעתיק כמה מחרוזות על מנת להמשיך ולהתקדם בגלל שאנו מבצעים העתקות אלה רק פעם אחת, ואורכי המחרוזות של מסלול הקובץ ושל מחרוזת החיפוש קצרים. עדיף שתהיה בידנו תכנית עובדת, אפילו אם פחות יעילה, מאשר לנסות לבצע אופטימיזציה בשלב מוקדם מידי בפיתוח. ככל שתצברו ניסיון בראסט, יקל עליכם להתחיל עם תכנון אפקטיבי יותר של פתרונות, אבל לעת זו זה בסדר גמור להשתמש ב-`clone`.
 
-We’ve updated `main` so it places the instance of `Config` returned by
-`parse_config` into a variable named `config`, and we updated the code that
-previously used the separate `query` and `file_path` variables so it now uses
-the fields on the `Config` struct instead.
+עדכנו את `main` כך שאת המופע של `Config` שמוחזר מ-`parse_config` היא ממקמת לתוך המשתנה `config`, ועדכנו את הקוד שקודם השתמש במשתנים `query` ו-`file_path` בנפרד כך שכעת הוא משתמש בשדות של `Config`.
 
-Now our code more clearly conveys that `query` and `file_path` are related and
-that their purpose is to configure how the program will work. Any code that
-uses these values knows to find them in the `config` instance in the fields
-named for their purpose.
+עכשיו הקוד שלנו מבטא בצורה בהירה יותר את העובדה ש-`query` ו-`file_path` קשורים זה לזה ושהם קיימים למטרת קונפיגורציה של התכנית. כל קוד שמשתמש בערכים אלה יודע למצוא אותם במופע ה-`Config` בשדות ששמם מתאר את יעודם.
 
-#### Creating a Constructor for `Config`
+#### יצירת קונסטרקטור עבור `Config`
 
-So far, we’ve extracted the logic responsible for parsing the command line
-arguments from `main` and placed it in the `parse_config` function. Doing so
-helped us to see that the `query` and `file_path` values were related and that
-relationship should be conveyed in our code. We then added a `Config` struct to
-name the related purpose of `query` and `file_path` and to be able to return the
-values’ names as struct field names from the `parse_config` function.
+עד כה, מיצינו מהפונקציה `main` את הלוגיקה האחראית לפארסינג של הארגומנטים של שורת הפקודה ומיקמנו אותה בפונקציה `parse_config`. בכך יכולנו לראות שהערכים ב-`query` וב-`file_path` קשורים זה לזה ושראוי שקשר זה יבוא לידי ביטוי בקוד. אז הוספנו את המבנה `Config` כדי לתת שם למטרה המקשרת בין `query` לבין `file_path` וכדי להיות מסוגלים להחזיר מהפונקציה `parse_config` את שמות הערכים כשדות במבנה.
 
-So now that the purpose of the `parse_config` function is to create a `Config`
-instance, we can change `parse_config` from a plain function to a function
-named `new` that is associated with the `Config` struct. Making this change
-will make the code more idiomatic. We can create instances of types in the
-standard library, such as `String`, by calling `String::new`. Similarly, by
-changing `parse_config` into a `new` function associated with `Config`, we’ll
-be able to create instances of `Config` by calling `Config::new`. Listing 12-7
-shows the changes we need to make.
+עכשיו, כשהמשמעות של הפונקציה `parse_config` היא יצירת מופע של `Config`, נוכל לשנות את `parse_config` מפונקציה רגילה לפונקציה בשם `new` שמקושרת למבנה `Config`. דבר זה יהפוך את הקוד ליותר אידיאומטי. ניתן ליצור מופעים של טיפוסים בספריה הסטנדרטית, כמו `String`, על-ידי קריאה ל-`String::new`. באופן דומה, על ידי שינוי הפונקציה `parse_config` לפונקציה מקושרת בשם `new`, נוכל ליצור מופעים של `Config` על-ידי קריאה ל-`Config::new`. רשימה 12-7 מציגה את השינויים שיש לבצע.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -185,34 +89,23 @@ shows the changes we need to make.
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-07/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 12-7: Changing `parse_config` into
-`Config::new`</span>
+רשימה 12-7: שינוי הפונקציה `parse_config` לפונקציה מקושרת `Config::new`</span>
 
-We’ve updated `main` where we were calling `parse_config` to instead call
-`Config::new`. We’ve changed the name of `parse_config` to `new` and moved it
-within an `impl` block, which associates the `new` function with `Config`. Try
-compiling this code again to make sure it works.
+עידכנו את `main` היכן שקודם קראנו ל-`parse_config` כך שעכשיו אנו קוראים ל-`Config::new`. שינינו את השם של `parse_config` ל-`new` והעברנו את ההגדרה לבלוק ה-impl`שמקשר את הפונקציה`new`למבנה`Config\`. נסו לקמפל קוד זה פעם נוספת כדי לוודא שהכל בסדר.
 
-### Fixing the Error Handling
+### תיקון הטיפול בשגיאות
 
-Now we’ll work on fixing our error handling. Recall that attempting to access
-the values in the `args` vector at index 1 or index 2 will cause the program to
-panic if the vector contains fewer than three items. Try running the program
-without any arguments; it will look like this:
+כעת נתמקד בתיקון הטיפול בשגיאות. זכרו שניסיון לגשת לערכים בוקטור `args` באינדקס 1 או אינדקס 2 יגרום לתכנית להיכנס לפאניקה במידה והוקטור מכיל פחות משלושה פריטים. נסו להריץ את התכנית ללא ארגומנטים; זה יראה כך:
 
 ```console
 {{#include ../listings/ch12-an-io-project/listing-12-07/output.txt}}
 ```
 
-The line `index out of bounds: the len is 1 but the index is 1` is an error
-message intended for programmers. It won’t help our end users understand what
-they should do instead. Let’s fix that now.
+השורה `index out of bounds: the len is 1 but the index is 1` היא הודעת שגיאה המיועדת למתכנתים. היא לא תעזור למשתמשי הקצה שלנו להבין מה הם צריכים לעשות. הבה נתקן זאת.
 
-#### Improving the Error Message
+#### שיפור הודעות שגיאה
 
-In Listing 12-8, we add a check in the `new` function that will verify that the
-slice is long enough before accessing index 1 and 2. If the slice isn’t long
-enough, the program panics and displays a better error message.
+ברשימה 12-8, אנו מוסיפים בדיקה בפונקציה `new` שתוודא שהחיתוך ארוך מספיק לפני הגישה לאינדקסים 1 ו-2. אם החיתוך אינו מספיק ארוך, התכנית תיכנס לפאניקה ותציג הודעת שגיאה משופרת.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -220,50 +113,29 @@ enough, the program panics and displays a better error message.
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-08/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 12-8: Adding a check for the number of
-arguments</span>
+<span class="caption">רשימה 12-8: הוספת בדיקה אודות מספר הארגומנטים</span>
 
-This code is similar to [the `Guess::new` function we wrote in Listing
-9-13][ch9-custom-types]<!-- ignore -->, where we called `panic!` when the
-`value` argument was out of the range of valid values. Instead of checking for
-a range of values here, we’re checking that the length of `args` is at least 3
-and the rest of the function can operate under the assumption that this
-condition has been met. If `args` has fewer than three items, this condition
-will be true, and we call the `panic!` macro to end the program immediately.
+קוד זה דומה [לקוד the `Guess::new` שכתבנו עבור הפונקציה `Guess::new` ברשימה 9-13][ch9-custom-types]<!-- ignore -->, שם קראנו ל-`panic!` במידה והארגומנט `value` היה מחוץ לטווח הערכים התקפים. במקום לבדוק עבור טווח של ערכים, כאן אנו בודקים שהאורך של `args` הוא לפחות 3 ושאר הפונקציה יכולה לפעול תחת ההנחה שתנאי זה מתקיים. אם ל-`args` יש פחות משלושה פריטים, תנאי זה יהיה נכון, ואז יופעל מאקרו ה-`panic!` שמסיים את התכנית מייד.
 
-With these extra few lines of code in `new`, let’s run the program without any
-arguments again to see what the error looks like now:
+עם שורות נוספות אלה בפונקציה `new`, הבה נריץ את התכנית פעם נוספת ללא ארגומנטים ונראה כיצד נראית הודעת השגיאה כעת:
 
 ```console
 {{#include ../listings/ch12-an-io-project/listing-12-08/output.txt}}
 ```
 
-This output is better: we now have a reasonable error message. However, we also
-have extraneous information we don’t want to give to our users. Perhaps using
-the technique we used in Listing 9-13 isn’t the best to use here: a call to
-`panic!` is more appropriate for a programming problem than a usage problem,
-[as discussed in Chapter 9][ch9-error-guidelines]<!-- ignore -->. Instead,
-we’ll use the other technique you learned about in Chapter 9—[returning a
-`Result`][ch9-result]<!-- ignore --> that indicates either success or an error.
+פלט זה טוב יותר: יש לנו הודעת שגיאה סבירה. אולם, יש לנו גם מידע מיותר שאין אנו רוצים להפיל על המשתמשים. יתכן ששימוש בטכניקה מרשימה 9-13 לא מתאים למצבנו כאן: קריאה ל-`panic!` מתאימה יותר למצב בו יש בעיה תכנותית מאשר לבעית שימוש, [כפי שנידון בפרק 9][ch9-error-guidelines]<!-- ignore -->. לכן, נשתמש במקום זאת בטכניקה עליה למדתם בפרק 9--[החזרת
+`Result`][ch9-result]<!-- ignore --> שמייצג הצלחה או כישלון.
 
 <!-- Old headings. Do not remove or links may break. -->
+
 <a id="returning-a-result-from-new-instead-of-calling-panic"></a>
 
-#### Returning a `Result` Instead of Calling `panic!`
+#### החזרת `Result` במקום קריאה ל-`panic!`
 
-We can instead return a `Result` value that will contain a `Config` instance in
-the successful case and will describe the problem in the error case. We’re also
-going to change the function name from `new` to `build` because many
-programmers expect `new` functions to never fail. When `Config::build` is
-communicating to `main`, we can use the `Result` type to signal there was a
-problem. Then we can change `main` to convert an `Err` variant into a more
-practical error for our users without the surrounding text about `thread
-'main'` and `RUST_BACKTRACE` that a call to `panic!` causes.
+אנחנו יכולים להחזיר ערך `Result` שיכיל מופע של `Config` במקרה של הצלחה ויתאר את הבעיה במקרה של שגיאה. נשנה גם את שם הפונקציה מ-`new` ל-`build` כיוון שמתכנתים רבים מצפים מפונקציות בשם `new` לא להיכשל. כאשר `Config::build` מתקשרת עם `main`, ניתן להשתמש בטיפוס `Result` כדי לסמן במידה ויש בעיה. אז נוכל לשנות את `main` כך שתמיר את הוריאנט `Err` לשגיאה יותר פרקטית עבור המשתמשים שלנו ללא הטקסט הסובב אודות `thread
+'main'` and `RUST_BACKTRACE` שקריאה ל-`panic!` מייצרת.
 
-Listing 12-9 shows the changes we need to make to the return value of the
-function we’re now calling `Config::build` and the body of the function needed
-to return a `Result`. Note that this won’t compile until we update `main` as
-well, which we’ll do in the next listing.
+רשימה 12-9 מראה את השינויים שעלינו לעשות לערך המוחזר של הפונקציה לה אנו קוראים כעת `Config::build`, ולגוף של הפונקציה, על מנת להחזיר ערך מטיפוס `Result`. שימו לב שהקוד לא יעבור קומפילציה עד שנעדכן גם את הפונקציה `main`, וכך נעשה ברשימה הבאה.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -271,33 +143,21 @@ well, which we’ll do in the next listing.
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-09/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 12-9: Returning a `Result` from
-`Config::build`</span>
+<span class="caption">רשימה 12-9: החזרת `Result` מ-`Config::build`</span>
 
-Our `build` function returns a `Result` with a `Config` instance in the success
-case and a `&'static str` in the error case. Our error values will always be
-string literals that have the `'static` lifetime.
+הפונקציה `build` מחזירה ערך מטיפוס `Result` עם מופע של `Config` במקרה של הצלחה ועם `&'static str` במקרה של שגיאה. ערכי השגיאה שלנו תמיד יהיו מחרוזות מפורשות בעלי משך-חיים `'static`.
 
-We’ve made two changes in the body of the function: instead of calling `panic!`
-when the user doesn’t pass enough arguments, we now return an `Err` value, and
-we’ve wrapped the `Config` return value in an `Ok`. These changes make the
-function conform to its new type signature.
+עשינו שני שינויים בגוף הפונקציה: במקום קריאה ל-`panic!` במקרה והמשתמש לא מעביר מספיק ארגומנטים, אנו מחזירים ערך `Err`, וכמו כן עטפנו את ערך ה-`Config` בתוך `Ok`. שינויים אלה מתאימים את הפונקציה לחותם שלה.
 
-Returning an `Err` value from `Config::build` allows the `main` function to
-handle the `Result` value returned from the `build` function and exit the
-process more cleanly in the error case.
+החזרת ערך `Err` מ-`Config::build` מאפשר לפונקציה `main` לטפל בערך ה-`Result` המחוזר מהפונקציה `build`, ואם צריך גם להפסיק את התכנית מוקדם בצורה נקיה אם ארעה שגיאה.
 
 <!-- Old headings. Do not remove or links may break. -->
+
 <a id="calling-confignew-and-handling-errors"></a>
 
-#### Calling `Config::build` and Handling Errors
+#### קריאה ל-`Config::build` וטיפול בשגיאות
 
-To handle the error case and print a user-friendly message, we need to update
-`main` to handle the `Result` being returned by `Config::build`, as shown in
-Listing 12-10. We’ll also take the responsibility of exiting the command line
-tool with a nonzero error code away from `panic!` and instead implement it by
-hand. A nonzero exit status is a convention to signal to the process that
-called our program that the program exited with an error state.
+על מנת לטפל במקרה בו ארעה שגיאה ולהדפיס הודעה ידידותית למשתמש עלינו לעדכן את `main` כך שתטפל בערך `Result` שמוחזר מ-`Config::build`, כפי שמוצג ברשימה 12-10. בנוסף, במקום להסתמך על `panic!`, ניקח על עצמנו את האחריות להפסיק את ריצת כלי שורת הפקודה שלנו עם ערך שונה מאפס במידת הצורך על-ידי מימוש ידני. ערך שונה מאפס הוא המוסכמה שמסמלת לתהליך שקרא לתכנית שלנו שהיא הסתיימה עקב שגיאה.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -305,50 +165,26 @@ called our program that the program exited with an error state.
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-10/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 12-10: Exiting with an error code if building a
-`Config` fails</span>
+<span class="caption">רשימה 12-10: יציאה עם קוד שגיאה במידה ובניית `Config` נכשל</span>
 
-In this listing, we’ve used a method we haven’t covered in detail yet:
-`unwrap_or_else`, which is defined on `Result<T, E>` by the standard library.
-Using `unwrap_or_else` allows us to define some custom, non-`panic!` error
-handling. If the `Result` is an `Ok` value, this method’s behavior is similar
-to `unwrap`: it returns the inner value `Ok` is wrapping. However, if the value
-is an `Err` value, this method calls the code in the *closure*, which is an
-anonymous function we define and pass as an argument to `unwrap_or_else`. We’ll
-cover closures in more detail in [Chapter 13][ch13]<!-- ignore -->. For now,
-you just need to know that `unwrap_or_else` will pass the inner value of the
-`Err`, which in this case is the static string `"not enough arguments"` that we
-added in Listing 12-9, to our closure in the argument `err` that appears
-between the vertical pipes. The code in the closure can then use the `err`
-value when it runs.
+ברשימה זו, השתמשנו במתודה שעוד לא פירטנו עליה:`unwrap_or_else`, שמוגדרת בספריה הסטנדרטית עבור `Result<T, E>`.
+שימוש ב-`unwrap_or_else` מאפשר לנו להגדיר טיפול ידני, ללא שימוש ב-`panic!`, בשגיאות. אם ה-`Result` הוא `Ok`, אז מתודה זו מתנהגת כמו `unwrap`: היא מחזירה את הערך הפנימי שה-`Ok` עוטף. אבל אם הערך הוא `Err`, אז המתודה קוראת לקוד _בסגור_, שהוא פונקציה אנונימית שאנו מגדירים ומעבירים כארגומנט ל-`unwrap_or_else`. נדון בסגורים ביתר פירוט [בפרק 13][ch13]<!-- ignore -->. לבינתים, כל שעליכם לדעת הוא ש-`unwrap_or_else` תעביר את הערך הפנימי של ה-`Err`, שבמקרה זה יהיה המחרוזת הסטטית `"not enough arguments"` שהוספנו ברשימה 12-9, לסגור שלנו לתוך הארגומנט `err` שמופיע בין שני הקווים האנכיים. הקוד שבסגור יכול אז להשתמש בערך ה-`err` בזמן שהוא רץ.
 
-We’ve added a new `use` line to bring `process` from the standard library into
-scope. The code in the closure that will be run in the error case is only two
-lines: we print the `err` value and then call `process::exit`. The
-`process::exit` function will stop the program immediately and return the
-number that was passed as the exit status code. This is similar to the
-`panic!`-based handling we used in Listing 12-8, but we no longer get all the
-extra output. Let’s try it:
+הוספנט שורת `use` חדשה כדי להכניס את `process` מהספריה הסטנדרטית למתחם. הקוד בסגור שירוץ במקרה של שגיאה הוא רק בן שתי שורות: אנו מדפיסים את הערך `err` ואז קוראים ל-`process::exit`. הפונקציה `process::exit` תגרום לתכנית לעצור מייד והיא תחזיר כקוד סטטוס את המספר שהועבר אליה. זה דומה לטיפול מבוסס ה-`panic!` בו השתמשנו ברשימה 12-8, אבל זה לא מייצר את כל הפלט העודף. הבה ננסה:
 
 ```console
 {{#include ../listings/ch12-an-io-project/listing-12-10/output.txt}}
 ```
 
-Great! This output is much friendlier for our users.
+מצוין! פלט זה ידידותי הרבה יותר עבור המשתמשים שלנו.
 
-### Extracting Logic from `main`
+### יצוא חלק מהלוגיקה ב-`main`
 
-Now that we’ve finished refactoring the configuration parsing, let’s turn to
-the program’s logic. As we stated in [“Separation of Concerns for Binary
-Projects”](#separation-of-concerns-for-binary-projects)<!-- ignore -->, we’ll
-extract a function named `run` that will hold all the logic currently in the
-`main` function that isn’t involved with setting up configuration or handling
-errors. When we’re done, `main` will be concise and easy to verify by
-inspection, and we’ll be able to write tests for all the other logic.
+כעת משסיימנו לארגן מחדש את הפארסינג של הקונפיגורציה, הבה נפנה ללוגיקה של התכנית. כפי שאמרנו “Separation of Concerns for Binary
+Projects”<!-- ignore -->, נמצה פונקציה בשם `run` אשר תכיל את כל הלוגיקה שכרגע נמצאת בפונקציה `main` שלא קשורה לניהול קונפיגורציה או טיפול בשגיאות. כאשר נסיים, פונקציית ה-`main` תהיה מתומצתת ופשוטה לווידוא על-ידי התבוננות, ונהיה מסוגלים לכתוב מקרי-מבחן לכל שאר הלוגיקה.
 
-Listing 12-11 shows the extracted `run` function. For now, we’re just making
-the small, incremental improvement of extracting the function. We’re still
-defining the function in *src/main.rs*.
+רשימה 12-11 מראה את הפונקציה `run` שממוצאת מתוך הקוד הקיים. For now, we’re just making
+the small, incremental improvement of extracting the function. אנו עדיין בשלב ההגדרה של הפונקציה _src/main.rs_.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -356,22 +192,14 @@ defining the function in *src/main.rs*.
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-11/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 12-11: Extracting a `run` function containing the
-rest of the program logic</span>
+<span class="caption">רשימה 12-11: מיצוי הפונקציה `run` המכילה את שאר הלוגיקה של התכנית</span>
 
-The `run` function now contains all the remaining logic from `main`, starting
-from reading the file. The `run` function takes the `Config` instance as an
-argument.
+הפונקציה `run` מכילה כעת את שארית הלוגיקה מ-`main`, המתחילה בקריאת הקובץ. הפונקציה `run` מקבלת את המופע של `Config` כארגומנט.
 
-#### Returning Errors from the `run` Function
+#### החזרת שגיאות מהפונקציה `run`
 
-With the remaining program logic separated into the `run` function, we can
-improve the error handling, as we did with `Config::build` in Listing 12-9.
-Instead of allowing the program to panic by calling `expect`, the `run`
-function will return a `Result<T, E>` when something goes wrong. This will let
-us further consolidate the logic around handling errors into `main` in a
-user-friendly way. Listing 12-12 shows the changes we need to make to the
-signature and body of `run`.
+עכשיו ששארת הלוגיקה של הפונקציה הופרדה לתוך הפונקציה `run`, נוכל לשפר את הטיפול בשגיאות, כפי שעשנו עם `Config::build` ברשימה 12-9.
+במקום לאפשר לתכנית להיכנס לפאניקה על-ידי קריאה ל-`expect`, הפונקציה `run` תחזיר מופע של `Result<T, E>` במקרה שמשהו משתבש. בכך יתאפשר לנו למקד את הלוגיקה של הטיפול בשגיאות לפונקציה `main` בצורה ידידותית למשתמש. רשימה 12-12 מראה את השינויים שיש לבצע בחותם הפונקציה `run` ובגופה.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -379,50 +207,29 @@ signature and body of `run`.
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-12/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 12-12: Changing the `run` function to return
-`Result`</span>
+<span class="caption">רשימה 12-12: שינויים לפונקציה `run` כל מנת להחזיר `Result`</span>
 
-We’ve made three significant changes here. First, we changed the return type of
-the `run` function to `Result<(), Box<dyn Error>>`. This function previously
-returned the unit type, `()`, and we keep that as the value returned in the
-`Ok` case.
+עשינו כאן שלושה שינויים משמעותיים. ראשית, שינינו את טיפוס הערך המוחזר של הפונקציה `run` ל-`Result<(), Box<dyn Error>>`. מוקדם יותר פונקציה זו החזירה את ערך היחידה, `()`, ואנו שומרים טיפוס זה כערך המוחזר במקרה של `Ok`.
 
-For the error type, we used the *trait object* `Box<dyn Error>` (and we’ve
-brought `std::error::Error` into scope with a `use` statement at the top).
-We’ll cover trait objects in [Chapter 17][ch17]<!-- ignore -->. For now, just
-know that `Box<dyn Error>` means the function will return a type that
-implements the `Error` trait, but we don’t have to specify what particular type
-the return value will be. This gives us flexibility to return error values that
-may be of different types in different error cases. The `dyn` keyword is short
-for “dynamic.”
+עבור טיפוס השגיאה, השתמשנו _באובייקט התכונה_ `Box<dyn Error> (והכנסנו למתחם את `std::error::Error`באמצעות פקודת`use` בהתחלה).
+נדון באובייקטי תכונה [בפרק 17][ch17]<!-- ignore -->. לעת עתה, דעו ש-`Box<dyn Error>`משמעו שהפונקציה מחזירה טיפוס שמממש את התכונה`Error`, אבל אין צורך לציין בדיוק איזה טיפוס זה יהיה. זה מאפשר לנו את הגמישות להחזיר ערכי שגיאה מטיפוסים שונים עבור מקרי שגיאה שונים. מילת המפתח `dyn\` היא קיצור למלה “dynamic”.
 
-Second, we’ve removed the call to `expect` in favor of the `?` operator, as we
-talked about in [Chapter 9][ch9-question-mark]<!-- ignore -->. Rather than
-`panic!` on an error, `?` will return the error value from the current function
-for the caller to handle.
+שנית, הסרנו את הקריאה ל-`expect` והחלפנו אותה בשימוש באופרטור `?`, כפי שהוסבר [בפרק 9][ch9-question-mark]<!-- ignore -->. במקום להיכנס לפאניקה במקרה של שגיאה, האופרטור `?` יחזיר את ערך השגיאה מהפונקציה הנוכחית להמשך טיפול בחזרה אל הפונקציה הקוראת.
 
-Third, the `run` function now returns an `Ok` value in the success case.
-We’ve declared the `run` function’s success type as `()` in the signature,
-which means we need to wrap the unit type value in the `Ok` value. This
-`Ok(())` syntax might look a bit strange at first, but using `()` like this is
-the idiomatic way to indicate that we’re calling `run` for its side effects
-only; it doesn’t return a value we need.
+השינוי השלישי הוא שהפונקציה `run` מחזירה כעת ערך `Ok` במקרה של הצלחה.
+בחותם הפונקציה הכרזנו את טיפוס ההצלחה של `run` להיות `()`, ולכן עלינו לעטוף את טיפוס היחידה בערך ה-`Ok`. התחביר `Ok(())` עשוי להראות מעט מוזר בהתחלה, אבל זהו שימוש אידואמטי ב-`()` על מנת לציין שאנו קוראים ל-`run` עבור תופעות הלוואי שלה בלבד; הפונקציה לא מחזירה ערך נחוץ.
 
-When you run this code, it will compile but will display a warning:
+כאשר מריצים קוד זה, הוא עובר קומפילציה ומדפיס את האזהרה:
 
 ```console
 {{#include ../listings/ch12-an-io-project/listing-12-12/output.txt}}
 ```
 
-Rust tells us that our code ignored the `Result` value and the `Result` value
-might indicate that an error occurred. But we’re not checking to see whether or
-not there was an error, and the compiler reminds us that we probably meant to
-have some error-handling code here! Let’s rectify that problem now.
+ראסט מודיעה לנו שהקוד שלנו מתעלם מערך `Result`, ושערך זה עלול לציין שארעה שגיאה. אבל אנו לא בודקים לראות אם אכן ארעה שגיאה, והקומפילר מזכיר לנו שוודאי התכוונו לכתוב כאן קוד שמטפל בשגיאה! הבה נתקן את המצב מיד.
 
-#### Handling Errors Returned from `run` in `main`
+#### טיפול ב-`main` בשגיאות המוחזרות מ-`run`
 
-We’ll check for errors and handle them using a technique similar to one we used
-with `Config::build` in Listing 12-10, but with a slight difference:
+אנו נבדוק קיום שגיאות, ונטפל בהן, תוך שימוש בטכניקה הדומה לזו בה השתמשנו עם `Config::build` ברשימה 12-10, אבל בהבדל קל:
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -430,33 +237,22 @@ with `Config::build` in Listing 12-10, but with a slight difference:
 {{#rustdoc_include ../listings/ch12-an-io-project/no-listing-01-handling-errors-in-main/src/main.rs:here}}
 ```
 
-We use `if let` rather than `unwrap_or_else` to check whether `run` returns an
-`Err` value and call `process::exit(1)` if it does. The `run` function doesn’t
-return a value that we want to `unwrap` in the same way that `Config::build`
-returns the `Config` instance. Because `run` returns `()` in the success case,
-we only care about detecting an error, so we don’t need `unwrap_or_else` to
-return the unwrapped value, which would only be `()`.
+אנו משתמשים ב-`if let` במקום ב-`unwrap_or_else` על מנת לבדוק אם `run` החזירה ערך `Err`, ואם כן אנו קוראים ל-`process::exit(1)`. הפונקציה `run` לא מחזירה ערך שאנו רוצים לפתוח באותה הדרך ש-`Config::build` החזיר מופע של `Config`. כיוון שבמקרה של הצלחה `run` מחזירה `()`, אנחנו רק רוצים לזהות שארעה שגיאה, ולכן אין צורך ב-`unwrap_or_else` כדי להחזיר את הערך הפנימי, שפשוט יהיה סתם `()`.
 
-The bodies of the `if let` and the `unwrap_or_else` functions are the same in
-both cases: we print the error and exit.
+הגוף של ה-`if let` וה-`unwrap_or_else` זהים בשני המקרים: אנו מדפיסים את השגיאה ומסיימים.
 
-### Splitting Code into a Library Crate
+### פיצול קוד למכולת ספריה
 
-Our `minigrep` project is looking good so far! Now we’ll split the
-*src/main.rs* file and put some code into the *src/lib.rs* file. That way we
-can test the code and have a *src/main.rs* file with fewer responsibilities.
+פרוייקט ה-`minigrep` שלנו מתחיל להראות טוב! כעת, נפצל את הקובץ _src/main.rs_ ונמקם חלק מהקוד בקובץ _src/lib.rs_. בצורה זו נוכל לבדוק את הקוד ובקובץ _src/main.rs_ יהיו פחות משימות לביצוע.
 
-Let’s move all the code that isn’t the `main` function from *src/main.rs* to
-*src/lib.rs*:
+הבה נעביר מהקובץ _src/main.rs_ את כל הקוד שאינו בפונקציה `main` לקובץ _src/lib.rs_:
 
-* The `run` function definition
-* The relevant `use` statements
-* The definition of `Config`
-* The `Config::build` function definition
+- הגדרת הפונקציה `run`
+- פקודות ה-`use` הרלוונטיות
+- ההגדרה של `Config`
+- הגדרת הפונקציה `Config::build`
 
-The contents of *src/lib.rs* should have the signatures shown in Listing 12-13
-(we’ve omitted the bodies of the functions for brevity). Note that this won’t
-compile until we modify *src/main.rs* in Listing 12-14.
+התוכן של הקובץ _src/lib.rs_ צריך להכיל את החותמות המוצגות ברשימה 12-13 (לשם הבהירות השמטנו את גופי הפונקציות). שימו לב שהקוד לא יעבור קומפילציה עד שנתאים את _src/main.rs_ ברשימה 12-14.
 
 <span class="filename">Filename: src/lib.rs</span>
 
@@ -464,15 +260,11 @@ compile until we modify *src/main.rs* in Listing 12-14.
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-13/src/lib.rs:here}}
 ```
 
-<span class="caption">Listing 12-13: Moving `Config` and `run` into
-*src/lib.rs*</span>
+<span class="caption">רשימה 12-13: העברת `Config` ו-`run` לקובץ _src/lib.rs_</span>
 
-We’ve made liberal use of the `pub` keyword: on `Config`, on its fields and its
-`build` method, and on the `run` function. We now have a library crate that has
-a public API we can test!
+עשינו שימוש חופשי במילת המפתח `pub`: עבור Config`, השדות שלו, והמתודה `build`, והפונקציה `run\`. יש לנו כעת מכולת ספריה עם API פובמי שניתן לבדוק!
 
-Now we need to bring the code we moved to *src/lib.rs* into the scope of the
-binary crate in *src/main.rs*, as shown in Listing 12-14.
+כעת יש להכניס את הקוד שהעברנו אל _src/lib.rs_ לתוך המתחם של המכולה הבינרית ב-_src/main.rs_, כפי שנעשה ברשימה 12-14.
 
 <span class="filename">Filename: src/main.rs</span>
 
@@ -480,22 +272,13 @@ binary crate in *src/main.rs*, as shown in Listing 12-14.
 {{#rustdoc_include ../listings/ch12-an-io-project/listing-12-14/src/main.rs:here}}
 ```
 
-<span class="caption">Listing 12-14: Using the `minigrep` library crate in
-*src/main.rs*</span>
+<span class="caption">רשימה 12-4: שימוש בספרת המכולה של `minigrep` ב-_src/main.rs_</span>
 
-We add a `use minigrep::Config` line to bring the `Config` type from the
-library crate into the binary crate’s scope, and we prefix the `run` function
-with our crate name. Now all the functionality should be connected and should
-work. Run the program with `cargo run` and make sure everything works
-correctly.
+אנו מוסיפים את השורה `use minigrep::Config` כדי להכניס את הטיפוס `Config` ממכולת הספריה למתחם של המכולה הבינרית, ומספקים את המסלול המתאים לקריאה לפונקציה `run`. עכשיו כל הפונקציונאליות צריכה להיות מקושרת ואמורה לעבוד. הריצו את התכנית באמצעות `cargo run` וודאו שהכל עובד כהלכה.
 
-Whew! That was a lot of work, but we’ve set ourselves up for success in the
-future. Now it’s much easier to handle errors, and we’ve made the code more
-modular. Almost all of our work will be done in *src/lib.rs* from here on out.
+וואו! זה הצריך הרבה עבודה, אבל ההשקעה תצדיק את עצמה עם ההצלחה העתידית של הפרוייקט. כעת קל הרבה יותר לטפל בשגיאות והקוד גם יותר מודולרי. כמעט כל העבודה שלנו תהיה, מעתה ואילך, בקובץ _src/lib.rs_.
 
-Let’s take advantage of this newfound modularity by doing something that would
-have been difficult with the old code but is easy with the new code: we’ll
-write some tests!
+הבה ננצל מודולריות זו על-ידי ביצוע משימה שהיה קשה לביצוע עם הקוד הישן, אבל תהיה קלה למדי עם הקוד הנוכחי: נכתוב כמה מקרי מבחן!
 
 [ch13]: ch13-00-functional-features.html
 [ch9-custom-types]: ch09-03-to-panic-or-not-to-panic.html#creating-custom-types-for-validation
