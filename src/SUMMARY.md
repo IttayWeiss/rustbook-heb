@@ -65,13 +65,14 @@
     - [שליטה על אופן הרצת פונקציות מבחן](ch11-02-running-tests.md)
     - [ארגון מבחנים](ch11-03-test-organization.md)
 
-- [An I/O Project: Building a Command Line Program](ch12-00-an-io-project.md)
-    - [Accepting Command Line Arguments](ch12-01-accepting-command-line-arguments.md)
-    - [Reading a File](ch12-02-reading-a-file.md)
-    - [Refactoring to Improve Modularity and Error Handling](ch12-03-improving-error-handling-and-modularity.md)
-    - [Developing the Library’s Functionality with Test Driven Development](ch12-04-testing-the-librarys-functionality.md)
-    - [Working with Environment Variables](ch12-05-working-with-environment-variables.md)
-    - [Writing Error Messages to Standard Error Instead of Standard Output](ch12-06-writing-to-stderr-instead-of-stdout.md)
+- [פרוייקט I/O: בניית תכנית שורת פקודה
+](ch12-00-an-io-project.md)
+    - [קבלת ארגומנטים בשורת הפקודה](ch12-01-accepting-command-line-arguments.md)
+    - [קריאת קובץ](ch12-02-reading-a-file.md)
+    - [ארגון מחדש כדי לשפר מודולריות וטיפול בשגיאות](ch12-03-improving-error-handling-and-modularity.md)
+    - [פיתוח הפונקציונאליות של הספריה עם פיתוח מונחה-בדיקות](ch12-04-testing-the-librarys-functionality.md)
+    - [שימוש במשתני סביבה](ch12-05-working-with-environment-variables.md)
+    - [כתיבת הודעות שגיאה לזרם השגיאות הסטנדרטי במקום לזרם הפלט הסטנדרטי](ch12-06-writing-to-stderr-instead-of-stdout.md)
 
 ## Thinking in Rust
 
