@@ -60,10 +60,10 @@
     - [תכונות: הגדרת התנהגות משותפת](ch10-02-traits.md)
     - [וידוא הפניות באמצעות משך-חיים](ch10-03-lifetime-syntax.md)
 
-- [Writing Automated Tests](ch11-00-testing.md)
-    - [How to Write Tests](ch11-01-writing-tests.md)
-    - [Controlling How Tests Are Run](ch11-02-running-tests.md)
-    - [Test Organization](ch11-03-test-organization.md)
+- [כתיבת בדיקות אוטומטיות](ch11-00-testing.md)
+    - [כיצד לכתוב מבחנים](ch11-01-writing-tests.md)
+    - [שליטה על אופן הרצת פונקציות מבחן](ch11-02-running-tests.md)
+    - [ארגון מבחנים](ch11-03-test-organization.md)
 
 - [An I/O Project: Building a Command Line Program](ch12-00-an-io-project.md)
     - [Accepting Command Line Arguments](ch12-01-accepting-command-line-arguments.md)
